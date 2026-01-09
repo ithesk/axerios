@@ -379,6 +379,153 @@
     .btn:hover{filter: brightness(0.98)}
     .btn svg{width: 16px; height: 16px}
 
+    /* Quote Section */
+    .quote-section{
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(124, 58, 237, 0.03));
+      border: 1px solid rgba(124, 58, 237, 0.20);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .quote-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom: 12px;
+    }
+    .quote-title{
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--violet);
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+    .quote-title svg{width: 16px; height: 16px}
+    .quote-status{
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .quote-items{
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .quote-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .quote-item:last-child{border-bottom:none}
+    .quote-item-name{
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .quote-item-qty{
+      font-size: 11px;
+      color: var(--muted);
+      margin-right: 12px;
+    }
+    .quote-item-price{
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .quote-totals{
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .quote-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 4px 0;
+    }
+    .quote-row-label{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .quote-row-value{
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 700;
+    }
+    .quote-row.total{
+      border-top: 1px solid var(--line);
+      margin-top: 8px;
+      padding-top: 10px;
+    }
+    .quote-row.total .quote-row-label{
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .quote-row.total .quote-row-value{
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--primary);
+    }
+    .quote-actions{
+      display:flex;
+      gap: 10px;
+    }
+    .quote-btn{
+      flex: 1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.1s, filter 0.1s;
+    }
+    .quote-btn:active{transform: scale(0.98)}
+    .quote-btn svg{width: 18px; height: 18px}
+    .quote-btn.approve{
+      background: var(--ok);
+      color: #fff;
+    }
+    .quote-btn.reject{
+      background: rgba(239, 68, 68, 0.12);
+      color: #DC2626;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+    .quote-btn:disabled{
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .quote-responded{
+      text-align: center;
+      padding: 12px;
+      background: rgba(22, 163, 74, 0.08);
+      border-radius: 12px;
+      color: var(--ok);
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .quote-responded.rejected{
+      background: rgba(239, 68, 68, 0.08);
+      color: #DC2626;
+    }
+
     /* Footer */
     .footer{
       text-align:center;
@@ -536,6 +683,9 @@
           </div>
         </div>
 
+        <!-- Quote Section (will be shown if quote exists) -->
+        <div id="quoteSection" class="quote-section" style="display:none;"></div>
+
         <div id="workshopCard" class="workshop"></div>
       </div>
 
@@ -561,7 +711,10 @@
       monitor: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/></svg>`,
       call: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.86.3 1.7.54 2.5a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.57-1.05a2 2 0 0 1 2.11-.45c.8.24 1.64.42 2.5.54A2 2 0 0 1 22 16.92z"/></svg>`,
       shop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1-5h16l1 5"/><path d="M5 9v12h14V9"/><path d="M9 21V12h6v9"/></svg>`,
-      dot: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6"/></svg>`
+      dot: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6"/></svg>`,
+      receipt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><path d="M8 10h8M8 14h4"/></svg>`,
+      checkCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
+      xCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>`
     };
 
     const statusConfig = {
@@ -655,6 +808,9 @@
     }
 
     function renderOrder(order) {
+      // Store token for quote actions
+      currentOrderToken = getToken();
+
       const status = statusConfig[order.status] || {
         name: order.status || 'Actualizando',
         color: 'var(--gray)',
@@ -728,6 +884,13 @@
         `}
       `;
 
+      // Render quote if exists
+      renderQuote(
+        order.quote,
+        order.currency_symbol || '$',
+        order.tax_name || 'IVA'
+      );
+
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error').style.display = 'none';
       document.getElementById('content').style.display = 'block';
@@ -740,6 +903,199 @@
         .replaceAll('>','&gt;')
         .replaceAll('"','&quot;')
         .replaceAll("'","&#039;");
+    }
+
+    // Store current order token for quote actions
+    let currentOrderToken = null;
+    let currentCurrencySymbol = '$';
+    let currentTaxName = 'IVA';
+
+    function formatCurrency(amount, symbol) {
+      const num = parseFloat(amount) || 0;
+      return `${symbol} ${num.toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function renderQuote(quote, currencySymbol, taxName) {
+      if (!quote) {
+        document.getElementById('quoteSection').style.display = 'none';
+        return;
+      }
+
+      currentCurrencySymbol = currencySymbol || '$';
+      currentTaxName = taxName || 'IVA';
+
+      const quoteSection = document.getElementById('quoteSection');
+      const items = quote.items || [];
+
+      // Status badge styles
+      const statusStyles = {
+        draft: { bg: 'rgba(148, 163, 184, 0.15)', color: 'var(--muted)', text: 'Borrador' },
+        sent: { bg: 'rgba(124, 58, 237, 0.15)', color: 'var(--violet)', text: 'Pendiente' },
+        approved: { bg: 'rgba(22, 163, 74, 0.15)', color: 'var(--ok)', text: 'Aprobada' },
+        rejected: { bg: 'rgba(239, 68, 68, 0.15)', color: '#DC2626', text: 'Rechazada' }
+      };
+      const statusStyle = statusStyles[quote.status] || statusStyles.draft;
+
+      // Only show quote if it has been sent (not draft)
+      if (quote.status === 'draft') {
+        quoteSection.style.display = 'none';
+        return;
+      }
+
+      // Render items
+      const itemsHtml = items.map(item => `
+        <div class="quote-item">
+          <span class="quote-item-name" title="${escapeHtml(item.description)}">${escapeHtml(item.description)}</span>
+          ${item.quantity > 1 ? `<span class="quote-item-qty">x${item.quantity}</span>` : ''}
+          <span class="quote-item-price">${formatCurrency(item.total_price, currentCurrencySymbol)}</span>
+        </div>
+      `).join('');
+
+      // Render totals
+      const subtotal = parseFloat(quote.subtotal) || 0;
+      const taxAmount = parseFloat(quote.tax_amount) || 0;
+      const discount = parseFloat(quote.discount_amount) || 0;
+      const total = parseFloat(quote.total) || 0;
+      const taxRate = parseFloat(quote.tax_rate) || 0;
+
+      let totalsHtml = `
+        <div class="quote-row">
+          <span class="quote-row-label">Subtotal</span>
+          <span class="quote-row-value">${formatCurrency(subtotal, currentCurrencySymbol)}</span>
+        </div>
+      `;
+
+      if (taxAmount > 0) {
+        totalsHtml += `
+          <div class="quote-row">
+            <span class="quote-row-label">${escapeHtml(currentTaxName)} (${taxRate}%)</span>
+            <span class="quote-row-value">${formatCurrency(taxAmount, currentCurrencySymbol)}</span>
+          </div>
+        `;
+      }
+
+      if (discount > 0) {
+        totalsHtml += `
+          <div class="quote-row">
+            <span class="quote-row-label">Descuento</span>
+            <span class="quote-row-value" style="color: var(--ok);">-${formatCurrency(discount, currentCurrencySymbol)}</span>
+          </div>
+        `;
+      }
+
+      totalsHtml += `
+        <div class="quote-row total">
+          <span class="quote-row-label">Total</span>
+          <span class="quote-row-value">${formatCurrency(total, currentCurrencySymbol)}</span>
+        </div>
+      `;
+
+      // Render actions or responded message
+      let actionsHtml = '';
+      if (quote.status === 'sent') {
+        actionsHtml = `
+          <div class="quote-actions">
+            <button class="quote-btn reject" onclick="handleRejectQuote()" id="rejectBtn">
+              ${Icons.xCircle}
+              <span>Rechazar</span>
+            </button>
+            <button class="quote-btn approve" onclick="handleApproveQuote()" id="approveBtn">
+              ${Icons.checkCircle}
+              <span>Aprobar</span>
+            </button>
+          </div>
+        `;
+      } else if (quote.status === 'approved') {
+        actionsHtml = `
+          <div class="quote-responded">
+            ${Icons.checkCircle} Cotizacion aprobada
+          </div>
+        `;
+      } else if (quote.status === 'rejected') {
+        actionsHtml = `
+          <div class="quote-responded rejected">
+            ${Icons.xCircle} Cotizacion rechazada
+          </div>
+        `;
+      }
+
+      quoteSection.innerHTML = `
+        <div class="quote-header">
+          <div class="quote-title">
+            ${Icons.receipt}
+            <span>Cotizacion</span>
+          </div>
+          <span class="quote-status" style="background: ${statusStyle.bg}; color: ${statusStyle.color};">
+            ${statusStyle.text}
+          </span>
+        </div>
+        ${items.length > 0 ? `<div class="quote-items">${itemsHtml}</div>` : ''}
+        <div class="quote-totals">${totalsHtml}</div>
+        ${actionsHtml}
+        ${quote.notes ? `<div style="font-size: 12px; color: var(--muted); margin-top: 8px; font-weight: 600;">Nota: ${escapeHtml(quote.notes)}</div>` : ''}
+      `;
+
+      quoteSection.style.display = 'block';
+    }
+
+    async function handleApproveQuote() {
+      if (!currentOrderToken) return;
+
+      const btn = document.getElementById('approveBtn');
+      const rejectBtn = document.getElementById('rejectBtn');
+      if (btn) btn.disabled = true;
+      if (rejectBtn) rejectBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${API_URL}/${currentOrderToken}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (res.ok) {
+          // Reload the page to show updated status
+          loadOrder();
+        } else {
+          alert('No se pudo aprobar la cotizacion. Intenta de nuevo.');
+          if (btn) btn.disabled = false;
+          if (rejectBtn) rejectBtn.disabled = false;
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Error de conexion. Intenta de nuevo.');
+        if (btn) btn.disabled = false;
+        if (rejectBtn) rejectBtn.disabled = false;
+      }
+    }
+
+    async function handleRejectQuote() {
+      if (!currentOrderToken) return;
+
+      const btn = document.getElementById('rejectBtn');
+      const approveBtn = document.getElementById('approveBtn');
+      if (btn) btn.disabled = true;
+      if (approveBtn) approveBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${API_URL}/${currentOrderToken}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (res.ok) {
+          // Reload the page to show updated status
+          loadOrder();
+        } else {
+          alert('No se pudo rechazar la cotizacion. Intenta de nuevo.');
+          if (btn) btn.disabled = false;
+          if (approveBtn) approveBtn.disabled = false;
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Error de conexion. Intenta de nuevo.');
+        if (btn) btn.disabled = false;
+        if (approveBtn) approveBtn.disabled = false;
+      }
     }
 
     loadOrder();

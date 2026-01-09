@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seguimiento de Reparación - axer</title>
+  <style>
+    :root{
+      --bg0:#0B2A5A;
+      --bg1:#0D47A1;
+      --card:#ffffff;
+      --text:#0F172A;
+      --muted:#64748B;
+      --muted2:#94A3B8;
+      --line:#E2E8F0;
+      --soft:#F8FAFC;
+      --shadow: 0 14px 50px rgba(2, 8, 23, 0.22);
+      --radius: 22px;
+      --radius-sm: 14px;
+      --ring: 0 0 0 4px rgba(13, 71, 161, 0.18);
+      --primary:#0D47A1;
+      --ok:#16A34A;
+      --warn:#F59E0B;
+      --violet:#7C3AED;
+      --orange:#F97316;
+      --gray:#64748B;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(900px 450px at 20% 10%, rgba(255,255,255,0.08), transparent 60%),
+        radial-gradient(700px 380px at 80% 0%, rgba(255,255,255,0.10), transparent 55%),
+        linear-gradient(135deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+      padding: 22px 16px;
+      color: var(--text);
+    }
+
+    .container{max-width: 460px; margin: 0 auto;}
+    .card{
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      backdrop-filter: blur(6px);
+    }
+
+    /* Top header inside card */
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .mark{
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(13,71,161,0.16), rgba(13,71,161,0.05));
+      border: 1px solid rgba(13,71,161,0.18);
+      display:grid;
+      place-items:center;
+      flex: 0 0 auto;
+    }
+    .brand-title{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+    .logo{
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      color: var(--primary);
+      line-height: 1.15;
+    }
+    .subtitle{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.3;
+      margin-top: 2px;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Order number */
+    .order{
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .order-label{
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+    .order-number{
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      color: var(--text);
+    }
+
+    /* Status badge */
+    .status{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: linear-gradient(180deg, rgba(248,250,252,1), rgba(248,250,252,0.7));
+      margin: 10px 0 16px;
+    }
+    .status-left{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .status-icon{
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      border: 1px solid rgba(2, 6, 23, 0.06);
+      flex: 0 0 auto;
+      background: rgba(13, 71, 161, 0.07);
+    }
+    .status-text{
+      display:flex;
+      flex-direction:column;
+      min-width: 0;
+    }
+    .status-title{
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .status-hint{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      border: 1px solid rgba(2, 6, 23, 0.06);
+      white-space: nowrap;
+    }
+    .status-pill svg{width: 16px; height: 16px}
+
+    /* Timeline / Progress */
+    .timeline{
+      background: var(--soft);
+      border: 1px solid rgba(148, 163, 184, 0.30);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .timeline-title{
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+    .steps{
+      display:flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items:flex-start;
+    }
+    .step{
+      flex: 1;
+      position: relative;
+      min-width: 0;
+      text-align:center;
+    }
+    .step::before{
+      content:"";
+      position:absolute;
+      top: 14px;
+      left: -50%;
+      width: 100%;
+      height: 3px;
+      background: var(--line);
+      border-radius: 999px;
+    }
+    .step:first-child::before{display:none;}
+    .dot{
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      margin: 0 auto 6px;
+      background: #fff;
+      border: 2px solid var(--line);
+      display:grid;
+      place-items:center;
+      color: var(--muted2);
+    }
+    .dot svg{width: 16px; height:16px;}
+    .label{
+      font-size: 11px;
+      color: var(--muted2);
+      font-weight: 700;
+      line-height: 1.1;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 2px;
+    }
+    .step.completed::before{ background: var(--ok); }
+    .step.completed .dot{
+      border-color: var(--ok);
+      background: rgba(22, 163, 74, 0.12);
+      color: var(--ok);
+    }
+    .step.active::before{ background: var(--ok); }
+    .step.active .dot{
+      border-color: var(--primary);
+      background: rgba(13, 71, 161, 0.12);
+      color: var(--primary);
+      box-shadow: var(--ring);
+    }
+    .step.active .label,
+    .step.completed .label{ color: var(--text); }
+
+    /* Device + info */
+    .device{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 14px;
+      background: var(--soft);
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.30);
+      margin-bottom: 14px;
+    }
+    .device-badge{
+      width: 44px; height: 44px;
+      border-radius: 16px;
+      background: rgba(2, 6, 23, 0.03);
+      border: 1px solid rgba(2, 6, 23, 0.05);
+      display:grid; place-items:center;
+      flex: 0 0 auto;
+    }
+    .device-badge svg{width: 22px; height:22px; color: var(--primary);}
+    .device-meta{min-width:0}
+    .device-meta h3{
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .device-meta p{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      font-weight: 650;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .kv{
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.30);
+      background: #fff;
+    }
+    .k{
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 850;
+      margin-bottom: 6px;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+    .k svg{width: 14px; height: 14px; color: var(--muted);}
+    .v{
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    /* Workshop card */
+    .workshop{
+      background: var(--soft);
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.30);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .workshop-left{min-width:0}
+    .workshop-name{
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .workshop-sub{
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 650;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+    .workshop-sub svg{width: 14px; height: 14px; color: var(--muted);}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(13, 71, 161, 0.10);
+      border: 1px solid rgba(13, 71, 161, 0.20);
+      color: var(--primary);
+      text-decoration:none;
+      font-weight: 900;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .btn:hover{filter: brightness(0.98)}
+    .btn svg{width: 16px; height: 16px}
+
+    /* Footer */
+    .footer{
+      text-align:center;
+      padding: 16px 0 6px;
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    /* Loading + Error */
+    .center{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding: 34px 18px;
+      gap: 12px;
+    }
+    .spinner{
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      border: 3px solid rgba(100,116,139,0.25);
+      border-top-color: rgba(13,71,161,0.95);
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin{to{transform: rotate(360deg)}}
+    .err-icon{
+      width: 54px; height: 54px;
+      border-radius: 18px;
+      background: rgba(239, 68, 68, 0.10);
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      display:grid;
+      place-items:center;
+      margin-bottom: 2px;
+      color: rgba(239,68,68,0.9);
+    }
+    .err-icon svg{width: 26px; height: 26px}
+    .err-title{
+      font-size: 16px;
+      font-weight: 950;
+      color: var(--text);
+      margin-top: 4px;
+    }
+    .err-msg{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    /* small screens polish */
+    @media (max-width: 380px){
+      .grid{grid-template-columns: 1fr}
+      .order-number{font-size: 20px}
+      .step .label{font-size: 10px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Loading -->
+    <div id="loading" class="card">
+      <div class="center">
+        <div class="spinner" aria-label="Cargando"></div>
+        <div style="font-weight:900; color: var(--text);">Cargando seguimiento…</div>
+        <div style="font-size:12px; color: var(--muted); font-weight:650;">
+          Esto puede tomar unos segundos.
+        </div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="error" class="card" style="display:none;">
+      <div class="center">
+        <div class="err-icon">
+          <!-- search-off icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M21 21l-4.3-4.3"></path>
+            <path d="M7 7l8 8"></path>
+          </svg>
+        </div>
+        <div class="err-title">Orden no encontrada</div>
+        <div class="err-msg">El código de seguimiento no es válido o ha expirado.</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div id="content" style="display:none;">
+      <div class="card">
+        <div class="top">
+          <div class="brand">
+            <div class="mark" aria-hidden="true">
+              <!-- bolt icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2L3 14h7l-1 8 12-14h-7l-1-6z"></path>
+              </svg>
+            </div>
+            <div class="brand-title">
+              <div class="logo">axer</div>
+              <div class="subtitle">Seguimiento de reparación</div>
+            </div>
+          </div>
+
+          <div class="chip" title="Actualización automática">
+            <!-- refresh icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.36-2.64"></path>
+              <path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.36 2.64"></path>
+              <path d="M21 3v6h-6"></path>
+              <path d="M3 21v-6h6"></path>
+            </svg>
+            En tiempo real
+          </div>
+        </div>
+
+        <div class="order">
+          <div class="order-label">Orden</div>
+          <div id="orderNumber" class="order-number"></div>
+        </div>
+
+        <div id="statusCard" class="status"></div>
+
+        <div class="timeline">
+          <div class="timeline-title">Progreso</div>
+          <div id="progressBar" class="steps"></div>
+        </div>
+
+        <div id="deviceInfo" class="device"></div>
+
+        <div class="grid">
+          <div class="kv">
+            <div class="k">
+              <!-- calendar icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                <path d="M16 2v4M8 2v4M3 10h18"></path>
+              </svg>
+              Fecha de ingreso
+            </div>
+            <div id="createdDate" class="v"></div>
+          </div>
+
+          <div class="kv">
+            <div class="k">
+              <!-- clock icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 7v6l4 2"></path>
+              </svg>
+              Última actualización
+            </div>
+            <div id="updatedDate" class="v"></div>
+          </div>
+        </div>
+
+        <div id="workshopCard" class="workshop"></div>
+      </div>
+
+      <div class="footer">Powered by axer</div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://sllehrkityhutialtztl.supabase.co/functions/v1/tracking';
+
+    // Icons (inline SVG strings) — no emojis, no external libs
+    const Icons = {
+      inbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v11H16l-2 3h-4l-2-3H4V4z"/></svg>`,
+      search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`,
+      tag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41L12 22l-8.59-8.59A2 2 0 0 1 3 12V3h9a2 2 0 0 1 1.41.59l7.18 7.18a2 2 0 0 1 0 2.83z"/><path d="M7 7h.01"/></svg>`,
+      check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>`,
+      wrench: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4l-2.1 2.1-3-3 2.1-2.1z"/></svg>`,
+      spark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l1.2 4.6L18 8l-4.8 1.4L12 14l-1.2-4.6L6 8l4.8-1.4L12 2z"/><path d="M19 14l.7 2.7L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 14z"/></svg>`,
+      box: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9 5-9-5"/><path d="M3 8V16l9 5 9-5V8"/><path d="M12 13V21"/></svg>`,
+      phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>`,
+      tablet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg>`,
+      laptop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h18"/><path d="M5 17V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10"/></svg>`,
+      monitor: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/></svg>`,
+      call: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.86.3 1.7.54 2.5a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.57-1.05a2 2 0 0 1 2.11-.45c.8.24 1.64.42 2.5.54A2 2 0 0 1 22 16.92z"/></svg>`,
+      shop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1-5h16l1 5"/><path d="M5 9v12h14V9"/><path d="M9 21V12h6v9"/></svg>`,
+      dot: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6"/></svg>`
+    };
+
+    const statusConfig = {
+      received:   { name: 'Recibido',           color: 'var(--gray)',  icon: Icons.inbox,   hint: 'Tu equipo fue recibido en el taller.' },
+      diagnosing: { name: 'En diagnóstico',     color: 'var(--warn)',  icon: Icons.search,  hint: 'Estamos evaluando el problema.' },
+      quoted:     { name: 'Cotizado',           color: 'var(--violet)',icon: Icons.tag,     hint: 'Te compartimos el costo estimado.' },
+      approved:   { name: 'Aprobado',           color: 'var(--primary)',icon: Icons.check,  hint: 'Aprobación confirmada. Iniciamos pronto.' },
+      in_repair:  { name: 'En reparación',      color: 'var(--orange)',icon: Icons.wrench,  hint: 'Estamos trabajando en la reparación.' },
+      ready:      { name: 'Listo para entrega', color: 'var(--ok)',    icon: Icons.spark,   hint: 'Tu equipo está listo.' },
+      delivered:  { name: 'Entregado',          color: 'var(--gray)',  icon: Icons.box,     hint: 'Reparación finalizada y entregada.' },
+    };
+
+    const deviceIcons = {
+      phone: Icons.phone,
+      tablet: Icons.tablet,
+      laptop: Icons.laptop,
+      other: Icons.monitor
+    };
+    const deviceNames = { phone: 'Teléfono', tablet: 'Tablet', laptop: 'Laptop', other: 'Dispositivo' };
+
+    function getToken() {
+      const path = window.location.pathname;
+      const parts = path.split('/').filter(Boolean);
+      return parts[parts.length - 1] || new URLSearchParams(window.location.search).get('token');
+    }
+
+    function formatDate(dateStr, includeTime=false) {
+      const d = new Date(dateStr);
+      if (Number.isNaN(d.getTime())) return '';
+      const options = { year:'numeric', month:'long', day:'numeric' };
+      if (includeTime) { options.hour='2-digit'; options.minute='2-digit'; }
+      return d.toLocaleDateString('es-DO', options);
+    }
+
+    function renderProgressBar(currentStatus) {
+      const steps = [
+        { key: 'received',   label: 'Recibido' },
+        { key: 'diagnosing', label: 'Diagnóstico' },
+        { key: 'in_repair',  label: 'Reparación' },
+        { key: 'ready',      label: 'Listo' },
+        { key: 'delivered',  label: 'Entregado' },
+      ];
+
+      const statusOrder = ['received','diagnosing','quoted','approved','in_repair','ready','delivered'];
+      const currentIndex = statusOrder.indexOf(currentStatus);
+
+      return steps.map((step) => {
+        const stepIndex = statusOrder.indexOf(step.key);
+
+        const isCompleted = stepIndex < currentIndex;
+        const isActive =
+          stepIndex === currentIndex ||
+          (currentStatus === 'quoted' && step.key === 'diagnosing') ||
+          (currentStatus === 'approved' && step.key === 'diagnosing');
+
+        const cls = isCompleted ? 'completed' : isActive ? 'active' : '';
+
+        const dotIcon = isCompleted ? Icons.check : Icons.dot;
+
+        return `
+          <div class="step ${cls}">
+            <div class="dot">${dotIcon}</div>
+            <div class="label" title="${step.label}">${step.label}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadOrder() {
+      const token = getToken();
+      if (!token) return showError();
+
+      try {
+        const res = await fetch(`${API_URL}/${token}`, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) return showError();
+
+        const order = await res.json();
+        if (order?.error) return showError();
+
+        renderOrder(order);
+      } catch (e) {
+        console.error(e);
+        showError();
+      }
+    }
+
+    function showError() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('content').style.display = 'none';
+    }
+
+    function renderOrder(order) {
+      const status = statusConfig[order.status] || {
+        name: order.status || 'Actualizando',
+        color: 'var(--gray)',
+        icon: Icons.tag,
+        hint: 'Estamos actualizando tu estado.'
+      };
+
+      document.getElementById('orderNumber').textContent = order.order_number || '—';
+
+      // Status card
+      const pillStyle = `color:${status.color}; background: color-mix(in srgb, ${status.color} 12%, white); border-color: color-mix(in srgb, ${status.color} 20%, white);`;
+      const iconStyle = `background: color-mix(in srgb, ${status.color} 10%, white); color:${status.color};`;
+
+      document.getElementById('statusCard').innerHTML = `
+        <div class="status-left">
+          <div class="status-icon" style="${iconStyle}">${status.icon}</div>
+          <div class="status-text">
+            <div class="status-title">Estado actual</div>
+            <div class="status-hint">${status.hint || ''}</div>
+          </div>
+        </div>
+        <div class="status-pill" style="${pillStyle}">
+          ${status.icon}
+          <span>${status.name}</span>
+        </div>
+      `;
+
+      // Progress
+      document.getElementById('progressBar').innerHTML = renderProgressBar(order.status);
+
+      // Device
+      const brand = (order.device_brand || '').trim();
+      const model = (order.device_model || '').trim();
+      const deviceTitle = `${brand} ${model}`.trim() || 'Equipo';
+      const typeName = deviceNames[order.device_type] || 'Dispositivo';
+      const dIcon = deviceIcons[order.device_type] || deviceIcons.other;
+
+      document.getElementById('deviceInfo').innerHTML = `
+        <div class="device-badge">${dIcon}</div>
+        <div class="device-meta">
+          <h3 title="${escapeHtml(deviceTitle)}">${escapeHtml(deviceTitle)}</h3>
+          <p>${escapeHtml(typeName)}</p>
+        </div>
+      `;
+
+      document.getElementById('createdDate').textContent = formatDate(order.created_at);
+      document.getElementById('updatedDate').textContent = formatDate(order.updated_at || order.created_at, true);
+
+      // Workshop
+      const phone = (order.workshop_phone || '').trim();
+      const name = (order.workshop_name || 'Taller').trim();
+
+      document.getElementById('workshopCard').innerHTML = `
+        <div class="workshop-left">
+          <div class="workshop-name">${escapeHtml(name)}</div>
+          <div class="workshop-sub">
+            ${Icons.shop}
+            <span>Contacto del taller</span>
+          </div>
+        </div>
+        ${phone ? `
+          <a class="btn" href="tel:${phone}">
+            ${Icons.call}
+            Llamar
+          </a>
+        ` : `
+          <span class="btn" style="opacity:.6; pointer-events:none;">
+            ${Icons.call}
+            Sin teléfono
+          </span>
+        `}
+      `;
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+    }
+
+    loadOrder();
+  </script>
+</body>
+</html>

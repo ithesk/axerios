@@ -1,0 +1,45 @@
+# Xcode
+*.xcuserstate
+*.xcscmblueprint
+xcuserdata/
+DerivedData/
+.build/
+
+# CocoaPods
+Pods/
+*.xcworkspace
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# macOS
+.DS_Store
+*.swp
+*~.nib
+
+# Build
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Secrets - Never commit
+*.xcconfig
+Secrets.swift
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
+
+# Vercel
+tracking-web/.vercel/
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# IDE
+.idea/
+*.code-workspace

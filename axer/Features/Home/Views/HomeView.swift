@@ -12,6 +12,7 @@ struct HomeView: View {
     @State private var showPhotoPicker = false
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var isUploadingAvatar = false
+    @State private var currentStatsPage = 0
 
     var body: some View {
         ZStack {
@@ -50,6 +51,7 @@ struct HomeView: View {
         .task {
             if let workshopId = sessionStore.workshop?.id {
                 await ordersViewModel.loadOrders(workshopId: workshopId)
+                await ordersViewModel.loadQuotes(workshopId: workshopId)
             }
         }
         .onChange(of: sessionStore.workshop?.id) { _, newWorkshopId in
@@ -57,6 +59,7 @@ struct HomeView: View {
             if let workshopId = newWorkshopId {
                 Task {
                     await ordersViewModel.loadOrders(workshopId: workshopId)
+                    await ordersViewModel.loadQuotes(workshopId: workshopId)
                 }
             }
         }
@@ -200,7 +203,33 @@ struct HomeView: View {
     }
 
     private var quickStatsSection: some View {
-        let stats = ordersViewModel.orderStats()
+        VStack(spacing: 12) {
+            // Carousel
+            TabView(selection: $currentStatsPage) {
+                activeOrdersCard
+                    .tag(0)
+                todayQuotesCard
+                    .tag(1)
+                monthSummaryCard
+                    .tag(2)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .frame(height: 180)
+
+            // Page indicators
+            HStack(spacing: 8) {
+                ForEach(0..<3, id: \.self) { index in
+                    Circle()
+                        .fill(currentStatsPage == index ? Color(hex: "0D47A1") : Color(hex: "CBD5E1"))
+                        .frame(width: 8, height: 8)
+                        .animation(.easeInOut(duration: 0.2), value: currentStatsPage)
+                }
+            }
+        }
+    }
+
+    // MARK: - Slide 1: Active Orders
+    private var activeOrdersCard: some View {
         let activeOrders = ordersViewModel.activeOrders.count
         let diagnosingCount = ordersViewModel.orders.filter { $0.status == .diagnosing }.count
         let inRepairCount = ordersViewModel.orders.filter { $0.status == .inRepair }.count
@@ -208,65 +237,163 @@ struct HomeView: View {
         let totalActive = max(activeOrders, 1)
         let progress = Double(inRepairCount + readyCount) / Double(totalActive)
 
-        return VStack(spacing: 16) {
-            // Main Orders Card
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("\(activeOrders) Órdenes Activas")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(Color(hex: "0F172A"))
+        return HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("\(activeOrders) Órdenes Activas")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(Color(hex: "0F172A"))
 
-                    Text("\(readyCount) listas para entrega")
-                        .font(.system(size: 14))
+                Text("\(readyCount) listas para entrega")
+                    .font(.system(size: 14))
+                    .foregroundColor(Color(hex: "64748B"))
+
+                // Progress bar
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color(hex: "E2E8F0"))
+                            .frame(height: 8)
+
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color(hex: "0D47A1"))
+                            .frame(width: geometry.size.width * progress, height: 8)
+                    }
+                }
+                .frame(height: 8)
+                .padding(.top, 4)
+
+                // Status chips
+                HStack(spacing: 12) {
+                    StatusChip(icon: "wrench.fill", label: "Reparando", count: inRepairCount, color: Color(hex: "F59E0B"))
+                    StatusChip(icon: "magnifyingglass", label: "Diagnóstico", count: diagnosingCount, color: Color(hex: "0D47A1"))
+                }
+                .padding(.top, 8)
+            }
+
+            Spacer()
+
+            // Circular indicator
+            ZStack {
+                Circle()
+                    .stroke(Color(hex: "E2E8F0"), lineWidth: 4)
+                    .frame(width: 52, height: 52)
+
+                Circle()
+                    .trim(from: 0, to: progress)
+                    .stroke(Color(hex: "0D47A1"), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .frame(width: 52, height: 52)
+                    .rotationEffect(.degrees(-90))
+
+                Text("\(readyCount)")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(Color(hex: "0D47A1"))
+            }
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+    }
+
+    // MARK: - Slide 2: Today's Approved Quotes
+    private var todayQuotesCard: some View {
+        let todayAmount = ordersViewModel.todayApprovedAmount
+        let todayCount = ordersViewModel.todayApprovedQuotes.count
+        let currencySymbol = sessionStore.workshop?.displayCurrencySymbol ?? "$"
+
+        return HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .foregroundColor(Color(hex: "16A34A"))
+                    Text("Aprobadas Hoy")
+                        .font(.system(size: 14, weight: .medium))
                         .foregroundColor(Color(hex: "64748B"))
+                }
 
-                    // Progress bar
-                    GeometryReader { geometry in
-                        ZStack(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color(hex: "E2E8F0"))
-                                .frame(height: 8)
+                Text("\(currencySymbol)\(formatAmount(todayAmount))")
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundColor(Color(hex: "0F172A"))
 
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color(hex: "0D47A1"))
-                                .frame(width: geometry.size.width * progress, height: 8)
-                        }
-                    }
-                    .frame(height: 8)
-                    .padding(.top, 4)
+                Text("\(todayCount) cotización\(todayCount == 1 ? "" : "es") aprobada\(todayCount == 1 ? "" : "s")")
+                    .font(.system(size: 14))
+                    .foregroundColor(Color(hex: "64748B"))
 
-                    // Status chips
-                    HStack(spacing: 12) {
-                        StatusChip(icon: "wrench.fill", label: "Reparando", count: inRepairCount, color: Color(hex: "F59E0B"))
-                        StatusChip(icon: "magnifyingglass", label: "Diagnóstico", count: diagnosingCount, color: Color(hex: "0D47A1"))
-                    }
-                    .padding(.top, 8)
+                Spacer()
+            }
+
+            Spacer()
+
+            // Icon
+            ZStack {
+                Circle()
+                    .fill(Color(hex: "DCFCE7"))
+                    .frame(width: 52, height: 52)
+
+                Image(systemName: "dollarsign.circle.fill")
+                    .font(.system(size: 28))
+                    .foregroundColor(Color(hex: "16A34A"))
+            }
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+    }
+
+    // MARK: - Slide 3: Month Summary
+    private var monthSummaryCard: some View {
+        let monthAmount = ordersViewModel.monthApprovedAmount
+        let monthQuotes = ordersViewModel.monthApprovedQuotes.count
+        let monthReceived = ordersViewModel.monthReceivedOrders.count
+        let monthDelivered = ordersViewModel.monthDeliveredOrders.count
+        let currencySymbol = sessionStore.workshop?.displayCurrencySymbol ?? "$"
+
+        let monthName: String = {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "es_ES")
+            formatter.dateFormat = "MMMM"
+            return formatter.string(from: Date()).capitalized
+        }()
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                HStack(spacing: 6) {
+                    Image(systemName: "calendar")
+                        .foregroundColor(Color(hex: "0D47A1"))
+                    Text("Resumen de \(monthName)")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(Color(hex: "64748B"))
                 }
 
                 Spacer()
 
-                // Circular indicator
-                ZStack {
-                    Circle()
-                        .stroke(Color(hex: "E2E8F0"), lineWidth: 4)
-                        .frame(width: 52, height: 52)
-
-                    Circle()
-                        .trim(from: 0, to: progress)
-                        .stroke(Color(hex: "0D47A1"), style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                        .frame(width: 52, height: 52)
-                        .rotationEffect(.degrees(-90))
-
-                    Text("\(readyCount)")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(Color(hex: "0D47A1"))
-                }
+                Text("\(currencySymbol)\(formatAmount(monthAmount))")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(Color(hex: "16A34A"))
             }
-            .padding(20)
-            .background(Color.white)
-            .cornerRadius(16)
-            .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+
+            Divider()
+
+            HStack(spacing: 16) {
+                MonthStatItem(icon: "tray.and.arrow.down.fill", label: "Recibidas", value: "\(monthReceived)", color: Color(hex: "3B82F6"))
+                MonthStatItem(icon: "checkmark.seal.fill", label: "Aprobadas", value: "\(monthQuotes)", color: Color(hex: "16A34A"))
+                MonthStatItem(icon: "shippingbox.fill", label: "Entregadas", value: "\(monthDelivered)", color: Color(hex: "8B5CF6"))
+            }
         }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+    }
+
+    private func formatAmount(_ amount: Decimal) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        formatter.groupingSeparator = ","
+        return formatter.string(from: amount as NSDecimalNumber) ?? "0"
     }
 
     private var recentOrdersSection: some View {
@@ -327,6 +454,38 @@ struct HomeView: View {
         let components = name.split(separator: " ")
         let initials = components.prefix(2).compactMap { $0.first }.map { String($0) }
         return initials.joined().uppercased()
+    }
+}
+
+// MARK: - Month Stat Item
+
+struct MonthStatItem: View {
+    let icon: String
+    let label: String
+    let value: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 6) {
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.1))
+                    .frame(width: 40, height: 40)
+
+                Image(systemName: icon)
+                    .font(.system(size: 16))
+                    .foregroundColor(color)
+            }
+
+            Text(value)
+                .font(.system(size: 18, weight: .bold))
+                .foregroundColor(Color(hex: "0F172A"))
+
+            Text(label)
+                .font(.system(size: 11))
+                .foregroundColor(Color(hex: "64748B"))
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

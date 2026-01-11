@@ -7,6 +7,7 @@ import Supabase
 final class OrdersViewModel: ObservableObject {
     @Published var orders: [Order] = []
     @Published var customers: [Customer] = []
+    @Published var quotes: [Quote] = []
     @Published var isLoading = false
     @Published var error: String?
     @Published var searchText = ""
@@ -38,6 +39,9 @@ final class OrdersViewModel: ObservableObject {
     // MARK: - Load Orders
 
     func loadOrders(workshopId: UUID) async {
+        print("🔄 [Orders] ========== CARGANDO ORDENES ==========")
+        print("🔄 [Orders] Workshop ID: \(workshopId)")
+
         isLoading = true
         error = nil
 
@@ -51,12 +55,17 @@ final class OrdersViewModel: ObservableObject {
                 .value
 
             self.orders = response
+            print("✅ [Orders] Órdenes cargadas: \(response.count)")
+            for order in response {
+                print("   - \(order.orderNumber): \(order.status.rawValue) - createdAt: \(String(describing: order.createdAt))")
+            }
         } catch {
             self.error = "Error cargando ordenes: \(error.localizedDescription)"
-            print("Error loading orders: \(error)")
+            print("❌ [Orders] Error loading orders: \(error)")
         }
 
         isLoading = false
+        print("🔄 [Orders] =====================================")
     }
 
     // MARK: - Load Customers
@@ -162,6 +171,8 @@ final class OrdersViewModel: ObservableObject {
         deviceColor: String?,
         deviceImei: String?,
         devicePassword: String?,
+        devicePowersOn: Bool?,
+        diagnostics: DeviceDiagnostics?,
         problemDescription: String,
         photos: [UIImage]
     ) async -> Order? {
@@ -183,6 +194,8 @@ final class OrdersViewModel: ObservableObject {
                 let device_color: String?
                 let device_imei: String?
                 let device_password: String?
+                let device_powers_on: Bool?
+                let device_diagnostics: DeviceDiagnostics?
                 let problem_description: String
                 let status: String
             }
@@ -197,6 +210,8 @@ final class OrdersViewModel: ObservableObject {
                 device_color: deviceColor?.isEmpty == true ? nil : deviceColor,
                 device_imei: deviceImei?.isEmpty == true ? nil : deviceImei,
                 device_password: devicePassword?.isEmpty == true ? nil : devicePassword,
+                device_powers_on: devicePowersOn,
+                device_diagnostics: diagnostics,
                 problem_description: problemDescription,
                 status: OrderStatus.received.rawValue
             )
@@ -346,6 +361,24 @@ final class OrdersViewModel: ObservableObject {
 
     func orderStats() -> (today: Int, inProgress: Int, ready: Int, total: Int) {
         let calendar = Calendar.current
+
+        // Debug: mostrar todas las órdenes y sus fechas
+        print("📊 [Stats] ========== DEBUG ORDENES ==========")
+        print("📊 [Stats] Total órdenes cargadas: \(orders.count)")
+
+        for (index, order) in orders.enumerated() {
+            let dateStr: String
+            if let createdAt = order.createdAt {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                dateStr = formatter.string(from: createdAt)
+                let isToday = calendar.isDateInToday(createdAt)
+                print("📊 [Stats] Orden \(index + 1): \(order.orderNumber) - Fecha: \(dateStr) - ¿Hoy?: \(isToday) - Status: \(order.status.rawValue)")
+            } else {
+                print("📊 [Stats] Orden \(index + 1): \(order.orderNumber) - Fecha: NIL - Status: \(order.status.rawValue)")
+            }
+        }
+
         let today = orders.filter { order in
             guard let createdAt = order.createdAt else { return false }
             return calendar.isDateInToday(createdAt)
@@ -357,7 +390,92 @@ final class OrdersViewModel: ObservableObject {
 
         let ready = orders.filter { $0.status == .ready }.count
 
+        print("📊 [Stats] Resultado: Hoy=\(today), EnProceso=\(inProgress), Listas=\(ready), Total=\(orders.count)")
+        print("📊 [Stats] =====================================")
+
         return (today, inProgress, ready, orders.count)
+    }
+
+    // MARK: - Load Quotes
+
+    func loadQuotes(workshopId: UUID) async {
+        do {
+            let response: [Quote] = try await supabase.client
+                .from("quotes")
+                .select("*, items:quote_items(*)")
+                .eq("workshop_id", value: workshopId.uuidString)
+                .order("created_at", ascending: false)
+                .execute()
+                .value
+
+            self.quotes = response
+            print("✅ [Quotes] Cotizaciones cargadas: \(response.count)")
+        } catch {
+            print("❌ [Quotes] Error loading quotes: \(error)")
+        }
+    }
+
+    // MARK: - Quote Stats
+
+    /// Cotizaciones aprobadas hoy
+    var todayApprovedQuotes: [Quote] {
+        let calendar = Calendar.current
+        return quotes.filter { quote in
+            guard quote.status == .approved,
+                  let respondedAt = quote.respondedAt else { return false }
+            return calendar.isDateInToday(respondedAt)
+        }
+    }
+
+    /// Monto total de cotizaciones aprobadas hoy
+    var todayApprovedAmount: Decimal {
+        todayApprovedQuotes.reduce(0) { $0 + $1.total }
+    }
+
+    /// Cotizaciones aprobadas este mes
+    var monthApprovedQuotes: [Quote] {
+        let calendar = Calendar.current
+        let now = Date()
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) else {
+            return []
+        }
+        return quotes.filter { quote in
+            guard quote.status == .approved,
+                  let respondedAt = quote.respondedAt else { return false }
+            return respondedAt >= startOfMonth
+        }
+    }
+
+    /// Monto total de cotizaciones aprobadas este mes
+    var monthApprovedAmount: Decimal {
+        monthApprovedQuotes.reduce(0) { $0 + $1.total }
+    }
+
+    /// Órdenes completadas (entregadas) este mes
+    var monthDeliveredOrders: [Order] {
+        let calendar = Calendar.current
+        let now = Date()
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) else {
+            return []
+        }
+        return orders.filter { order in
+            guard order.status == .delivered,
+                  let deliveredAt = order.deliveredAt else { return false }
+            return deliveredAt >= startOfMonth
+        }
+    }
+
+    /// Órdenes recibidas este mes
+    var monthReceivedOrders: [Order] {
+        let calendar = Calendar.current
+        let now = Date()
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) else {
+            return []
+        }
+        return orders.filter { order in
+            guard let createdAt = order.createdAt else { return false }
+            return createdAt >= startOfMonth
+        }
     }
 
     // MARK: - Load Status History

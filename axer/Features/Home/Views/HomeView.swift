@@ -135,17 +135,6 @@ struct HomeView: View {
                                     .tint(.white)
                             )
                     }
-
-                    // Icono de cámara
-                    Circle()
-                        .fill(Color(hex: "0D47A1"))
-                        .frame(width: 20, height: 20)
-                        .overlay(
-                            Image(systemName: "camera.fill")
-                                .font(.system(size: 10))
-                                .foregroundColor(.white)
-                        )
-                        .offset(x: 18, y: 18)
                 }
             }
             .onChange(of: selectedPhotoItem) { _, newItem in
@@ -168,21 +157,45 @@ struct HomeView: View {
     }
 
     private func handlePhotoSelection(_ item: PhotosPickerItem?) async {
-        guard let item = item else { return }
+        guard let item = item else {
+            print("📷 [Avatar] No item selected")
+            return
+        }
 
+        print("📷 [Avatar] Photo selected, starting upload...")
         isUploadingAvatar = true
-        defer { isUploadingAvatar = false }
+        defer {
+            isUploadingAvatar = false
+            print("📷 [Avatar] Upload process finished")
+        }
 
         do {
-            guard let data = try await item.loadTransferable(type: Data.self) else { return }
+            print("📷 [Avatar] Loading transferable data...")
+            guard let data = try await item.loadTransferable(type: Data.self) else {
+                print("📷 [Avatar] ERROR: Could not load data from photo")
+                return
+            }
+            print("📷 [Avatar] Data loaded: \(data.count) bytes")
 
             // Comprimir imagen
-            guard let uiImage = UIImage(data: data),
-                  let compressedData = uiImage.jpegData(compressionQuality: 0.7) else { return }
+            guard let uiImage = UIImage(data: data) else {
+                print("📷 [Avatar] ERROR: Could not create UIImage from data")
+                return
+            }
+            print("📷 [Avatar] UIImage created: \(uiImage.size)")
 
-            _ = try await sessionStore.uploadAvatar(imageData: compressedData)
+            guard let compressedData = uiImage.jpegData(compressionQuality: 0.7) else {
+                print("📷 [Avatar] ERROR: Could not compress image")
+                return
+            }
+            print("📷 [Avatar] Compressed to: \(compressedData.count) bytes")
+
+            print("📷 [Avatar] Calling sessionStore.uploadAvatar...")
+            let url = try await sessionStore.uploadAvatar(imageData: compressedData)
+            print("📷 [Avatar] SUCCESS! Avatar URL: \(url)")
         } catch {
-            print("Error uploading avatar: \(error)")
+            print("📷 [Avatar] ERROR uploading: \(error.localizedDescription)")
+            print("📷 [Avatar] Full error: \(error)")
         }
     }
 

@@ -15,6 +15,7 @@ struct OrderDetailView: View {
     @State private var activities: [OrderActivity] = []
     @State private var isLoadingActivity = false
     @State private var isGeneratingToken = false
+    @State private var showPrintLabel = false
 
     var body: some View {
         ZStack {
@@ -29,11 +30,19 @@ struct OrderDetailView: View {
                         // Header card
                         headerCard(order)
 
+                        // Status Timeline
+                        statusTimelineCard(order)
+
                         // Customer card
                         customerCard(order)
 
                         // Device card
                         deviceCard(order)
+
+                        // Diagnostics card (if available)
+                        if order.devicePowersOn != nil || order.deviceDiagnostics != nil {
+                            diagnosticsCard(order)
+                        }
 
                         // Problem card
                         problemCard(order)
@@ -96,6 +105,11 @@ struct OrderDetailView: View {
                 )
             }
         }
+        .sheet(isPresented: $showPrintLabel) {
+            if let order = order {
+                PrintLabelView(order: order)
+            }
+        }
         .task {
             await loadOrder()
             await loadActivity()
@@ -132,6 +146,160 @@ struct OrderDetailView: View {
         .padding(20)
         .background(Color.white)
         .cornerRadius(16)
+    }
+
+    // MARK: - Status Timeline Card
+
+    private func statusTimelineCard(_ order: Order) -> some View {
+        let allStatuses = OrderStatus.allCases
+        let currentIndex = allStatuses.firstIndex(of: order.status) ?? 0
+
+        return VStack(alignment: .leading, spacing: 16) {
+            Text("Progreso")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(Color(hex: "64748B"))
+
+            // Horizontal timeline
+            HStack(spacing: 0) {
+                ForEach(Array(allStatuses.enumerated()), id: \.element) { index, status in
+                    let state = getTimelineState(index: index, currentIndex: currentIndex)
+
+                    // Status node
+                    VStack(spacing: 6) {
+                        // Circle with icon
+                        ZStack {
+                            Circle()
+                                .fill(state.backgroundColor)
+                                .frame(width: 36, height: 36)
+
+                            if state == .completed {
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundColor(.white)
+                            } else {
+                                Image(systemName: status.icon)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(state.iconColor)
+                            }
+                        }
+
+                        // Status name (only for current and adjacent)
+                        if shouldShowLabel(index: index, currentIndex: currentIndex, total: allStatuses.count) {
+                            Text(status.shortName)
+                                .font(.system(size: 9, weight: state == .current ? .semibold : .regular))
+                                .foregroundColor(state == .current ? Color(hex: status.color) : Color(hex: "94A3B8"))
+                                .lineLimit(1)
+                                .frame(width: 50)
+                        } else {
+                            Text("")
+                                .font(.system(size: 9))
+                                .frame(width: 50)
+                        }
+                    }
+
+                    // Connector line (except for last item)
+                    if index < allStatuses.count - 1 {
+                        Rectangle()
+                            .fill(index < currentIndex ? Color(hex: "22C55E") : Color(hex: "E2E8F0"))
+                            .frame(height: 3)
+                            .frame(maxWidth: .infinity)
+                            .offset(y: -12)
+                    }
+                }
+            }
+
+            // Current status detail
+            HStack(spacing: 12) {
+                Image(systemName: order.status.icon)
+                    .font(.system(size: 18))
+                    .foregroundColor(Color(hex: order.status.color))
+                    .frame(width: 24)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Estado actual")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(hex: "64748B"))
+
+                    Text(order.status.displayName)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(Color(hex: order.status.color))
+                }
+
+                Spacer()
+
+                // Next status hint (if not delivered)
+                if let nextStatus = getNextStatus(current: order.status) {
+                    Button {
+                        showStatusPicker = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("Siguiente:")
+                                .font(.system(size: 11))
+                                .foregroundColor(Color(hex: "94A3B8"))
+                            Text(nextStatus.shortName)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(Color(hex: "0D47A1"))
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 10))
+                                .foregroundColor(Color(hex: "0D47A1"))
+                        }
+                    }
+                }
+            }
+            .padding(12)
+            .background(Color(hex: order.status.color).opacity(0.08))
+            .cornerRadius(10)
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+    }
+
+    private enum TimelineState {
+        case completed, current, pending
+
+        var backgroundColor: Color {
+            switch self {
+            case .completed: return Color(hex: "22C55E")
+            case .current: return Color(hex: "0D47A1")
+            case .pending: return Color(hex: "E2E8F0")
+            }
+        }
+
+        var iconColor: Color {
+            switch self {
+            case .completed: return .white
+            case .current: return .white
+            case .pending: return Color(hex: "94A3B8")
+            }
+        }
+    }
+
+    private func getTimelineState(index: Int, currentIndex: Int) -> TimelineState {
+        if index < currentIndex {
+            return .completed
+        } else if index == currentIndex {
+            return .current
+        } else {
+            return .pending
+        }
+    }
+
+    private func shouldShowLabel(index: Int, currentIndex: Int, total: Int) -> Bool {
+        // Show label for: first, current, last, and adjacent to current
+        if index == 0 || index == total - 1 { return true }
+        if index == currentIndex { return true }
+        if abs(index - currentIndex) == 1 { return true }
+        return false
+    }
+
+    private func getNextStatus(current: OrderStatus) -> OrderStatus? {
+        let allStatuses = OrderStatus.allCases
+        guard let currentIndex = allStatuses.firstIndex(of: current),
+              currentIndex < allStatuses.count - 1 else {
+            return nil
+        }
+        return allStatuses[currentIndex + 1]
     }
 
     // MARK: - Customer Card
@@ -211,6 +379,101 @@ struct OrderDetailView: View {
         .padding(20)
         .background(Color.white)
         .cornerRadius(16)
+    }
+
+    // MARK: - Diagnostics Card
+
+    private func diagnosticsCard(_ order: Order) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Diagnóstico Inicial", systemImage: "checklist")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(Color(hex: "64748B"))
+
+            // Power status
+            if let powersOn = order.devicePowersOn {
+                HStack(spacing: 12) {
+                    Image(systemName: powersOn ? "power.circle.fill" : "power.circle")
+                        .font(.system(size: 20))
+                        .foregroundColor(powersOn ? Color(hex: "22C55E") : Color(hex: "EF4444"))
+
+                    Text(powersOn ? "El equipo enciende" : "El equipo NO enciende")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(Color(hex: "0D2137"))
+
+                    Spacer()
+                }
+                .padding(12)
+                .background(powersOn ? Color(hex: "22C55E").opacity(0.1) : Color(hex: "EF4444").opacity(0.1))
+                .cornerRadius(10)
+            }
+
+            // Diagnostic checks
+            if let diagnostics = order.deviceDiagnostics {
+                let checks = getDiagnosticChecks(diagnostics: diagnostics, deviceType: order.deviceType, powersOn: order.devicePowersOn)
+
+                if !checks.isEmpty {
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 8) {
+                        ForEach(checks, id: \.field) { check in
+                            DiagnosticDetailRow(
+                                field: check.field,
+                                status: check.status
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+    }
+
+    private func getDiagnosticChecks(diagnostics: DeviceDiagnostics, deviceType: DeviceType, powersOn: Bool?) -> [(field: DiagnosticField, status: DiagnosticCheckStatus)] {
+        var checks: [(DiagnosticField, DiagnosticCheckStatus)] = []
+
+        // Get relevant fields for this device type
+        let relevantFields = DeviceDiagnostics.relevantChecks(for: deviceType, powersOn: powersOn)
+
+        for field in relevantFields {
+            let status = getStatusForField(field, diagnostics: diagnostics)
+            // Only include if it was actually tested (not the default notTested)
+            if status != .notTested {
+                checks.append((field, status))
+            }
+        }
+
+        return checks
+    }
+
+    private func getStatusForField(_ field: DiagnosticField, diagnostics: DeviceDiagnostics) -> DiagnosticCheckStatus {
+        switch field {
+        case .screen: return diagnostics.screen
+        case .touch: return diagnostics.touch
+        case .charging: return diagnostics.charging
+        case .battery: return diagnostics.battery
+        case .buttons: return diagnostics.buttons
+        case .faceId: return diagnostics.faceId
+        case .touchId: return diagnostics.touchId
+        case .frontCamera: return diagnostics.frontCamera
+        case .rearCamera: return diagnostics.rearCamera
+        case .microphone: return diagnostics.microphone
+        case .speaker: return diagnostics.speaker
+        case .wifi: return diagnostics.wifi
+        case .bluetooth: return diagnostics.bluetooth
+        case .cellular: return diagnostics.cellular
+        case .visibleDamage: return diagnostics.visibleDamage
+        case .waterDamage: return diagnostics.waterDamage
+        case .keyboard: return diagnostics.keyboard
+        case .trackpad: return diagnostics.trackpad
+        case .ports: return diagnostics.ports
+        case .bootable: return diagnostics.bootable
+        case .pairing: return diagnostics.pairing
+        case .heartSensor: return diagnostics.heartSensor
+        case .powerStatus: return .notTested
+        }
     }
 
     // MARK: - Problem Card
@@ -380,13 +643,29 @@ struct OrderDetailView: View {
                 }
             }
 
+            // Print label button
+            Button {
+                showPrintLabel = true
+            } label: {
+                HStack {
+                    Image(systemName: "qrcode.viewfinder")
+                    Text("Imprimir Label")
+                }
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(Color(hex: "0D47A1"))
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                .background(Color(hex: "E3F2FD"))
+                .cornerRadius(26)
+            }
+
             // Share tracking link
             if let token = order.publicToken {
                 Button {
                     shareTrackingLink(token: token)
                 } label: {
                     HStack {
-                        Image(systemName: "link")
+                        Image(systemName: "link.circle.fill")
                         Text("Compartir Seguimiento")
                     }
                     .font(.system(size: 16, weight: .medium))
@@ -742,6 +1021,32 @@ struct AddNoteSheet: View {
             }
         }
         .presentationDetents([.medium])
+    }
+}
+
+// MARK: - Diagnostic Detail Row
+
+struct DiagnosticDetailRow: View {
+    let field: DiagnosticField
+    let status: DiagnosticCheckStatus
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: status.icon)
+                .font(.system(size: 14))
+                .foregroundColor(Color(hex: status.color))
+
+            Text(field.displayName)
+                .font(.system(size: 13))
+                .foregroundColor(Color(hex: "0D2137"))
+                .lineLimit(1)
+
+            Spacer()
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(Color(hex: status.color).opacity(0.08))
+        .cornerRadius(8)
     }
 }
 

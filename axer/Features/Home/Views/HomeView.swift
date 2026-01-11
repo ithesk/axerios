@@ -6,7 +6,6 @@ struct HomeView: View {
     @EnvironmentObject var router: Router
 
     @StateObject private var ordersViewModel = OrdersViewModel()
-    @State private var showLogoutAlert = false
     @State private var showNewOrder = false
 
     var body: some View {
@@ -21,7 +20,6 @@ struct HomeView: View {
                     VStack(spacing: AxerSpacing.lg) {
                         welcomeHeader
                         quickStatsSection
-                        menuSection
                         recentOrdersSection
                     }
                     .padding(AxerSpacing.md)
@@ -41,32 +39,20 @@ struct HomeView: View {
         }
         .navigationTitle("Inicio")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    showLogoutAlert = true
-                } label: {
-                    Image(systemName: "rectangle.portrait.and.arrow.right")
-                        .foregroundColor(AxerColors.textSecondary)
-                }
-            }
-        }
-        .alert("Cerrar Sesion", isPresented: $showLogoutAlert) {
-            Button("Cancelar", role: .cancel) {}
-            Button("Salir", role: .destructive) {
-                Task {
-                    try? await sessionStore.signOut()
-                }
-            }
-        } message: {
-            Text("Estas seguro que quieres cerrar sesion?")
-        }
         .sheet(isPresented: $showNewOrder) {
             NewOrderView(viewModel: ordersViewModel)
         }
         .task {
             if let workshopId = sessionStore.workshop?.id {
                 await ordersViewModel.loadOrders(workshopId: workshopId)
+            }
+        }
+        .onChange(of: sessionStore.workshop?.id) { _, newWorkshopId in
+            // Reload orders when workshop becomes available (after session restore)
+            if let workshopId = newWorkshopId {
+                Task {
+                    await ordersViewModel.loadOrders(workshopId: workshopId)
+                }
             }
         }
     }
@@ -134,41 +120,11 @@ struct HomeView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: AxerSpacing.sm) {
-                StatCard(title: "Ordenes Hoy", value: "\(stats.today)", icon: "doc.text", color: AxerColors.primary)
-                StatCard(title: "En Proceso", value: "\(stats.inProgress)", icon: "wrench", color: AxerColors.warning)
-                StatCard(title: "Listas", value: "\(stats.ready)", icon: "checkmark.circle", color: AxerColors.success)
-                StatCard(title: "Total", value: "\(stats.total)", icon: "tray.full", color: AxerColors.primaryDark)
+                StatCard(title: "Ordenes Hoy", value: "\(stats.today)", icon: "calendar.badge.clock", color: AxerColors.primary)
+                StatCard(title: "En Proceso", value: "\(stats.inProgress)", icon: "wrench.and.screwdriver.fill", color: AxerColors.warning)
+                StatCard(title: "Listas", value: "\(stats.ready)", icon: "checkmark.seal.fill", color: AxerColors.success)
+                StatCard(title: "Total", value: "\(stats.total)", icon: "tray.full.fill", color: AxerColors.primaryDark)
             }
-        }
-    }
-
-    private var menuSection: some View {
-        VStack(alignment: .leading, spacing: AxerSpacing.sm) {
-            Text("Menu")
-                .font(AxerTypography.headline)
-                .foregroundColor(AxerColors.textPrimary)
-
-            VStack(spacing: 0) {
-                MenuRow(
-                    icon: "doc.text",
-                    title: "Ordenes",
-                    subtitle: "Ver todas las ordenes"
-                ) {
-                    router.navigate(to: .orders)
-                }
-
-                Divider().padding(.leading, 56)
-
-                MenuRow(
-                    icon: "person.2",
-                    title: "Equipo",
-                    subtitle: "Administrar usuarios"
-                ) {
-                    router.navigate(to: .team)
-                }
-            }
-            .background(Color.white)
-            .cornerRadius(12)
         }
     }
 
@@ -194,12 +150,12 @@ struct HomeView: View {
 
             if ordersViewModel.orders.isEmpty {
                 VStack(spacing: 12) {
-                    Image(systemName: "doc.text")
-                        .font(.system(size: 40))
+                    Image(systemName: "tray.fill")
+                        .font(.system(size: 44))
                         .foregroundColor(Color(hex: "CBD5E1"))
 
                     Text("Sin ordenes aun")
-                        .font(.system(size: 15))
+                        .font(.system(size: 15, weight: .medium))
                         .foregroundColor(Color(hex: "64748B"))
 
                     Text("Crea tu primera orden")
@@ -233,42 +189,7 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Menu Row
-struct MenuRow: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.system(size: 20))
-                    .foregroundColor(AxerColors.primary)
-                    .frame(width: 32)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(AxerColors.textPrimary)
-
-                    Text(subtitle)
-                        .font(.system(size: 13))
-                        .foregroundColor(AxerColors.textSecondary)
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(AxerColors.textSecondary)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-        }
-    }
-}
+// MARK: - Stat Card
 
 struct StatCard: View {
     let title: String

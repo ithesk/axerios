@@ -12,6 +12,11 @@ struct Profile: Codable, Identifiable {
         case fullName = "full_name"
         case role
     }
+
+    var firstName: String {
+        guard let fullName = fullName else { return "Usuario" }
+        return fullName.split(separator: " ").first.map(String.init) ?? fullName
+    }
 }
 
 enum UserRole: String, Codable {

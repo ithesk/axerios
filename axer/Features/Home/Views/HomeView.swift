@@ -77,54 +77,102 @@ struct HomeView: View {
     }
 
     private var welcomeHeader: some View {
-        AxerCard {
-            HStack {
-                VStack(alignment: .leading, spacing: AxerSpacing.xxs) {
-                    Text("Bienvenido")
-                        .font(AxerTypography.caption1)
-                        .foregroundColor(AxerColors.textSecondary)
-
-                    Text(sessionStore.profile?.fullName ?? "Usuario")
-                        .font(AxerTypography.title2)
-                        .foregroundColor(AxerColors.textPrimary)
-
-                    if let workshop = sessionStore.workshop {
-                        Text(workshop.name)
-                            .font(AxerTypography.subheadline)
-                            .foregroundColor(AxerColors.primary)
-                    }
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 8) {
+                    Text("Hola \(sessionStore.profile?.firstName ?? "Usuario")")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(Color(hex: "0F172A"))
+                    Text("👋")
+                        .font(.system(size: 26))
                 }
-                Spacer()
 
-                Circle()
-                    .fill(AxerColors.primaryLight.opacity(0.2))
-                    .frame(width: 56, height: 56)
-                    .overlay(
-                        Text(initials)
-                            .font(AxerTypography.headline)
-                            .foregroundColor(AxerColors.primary)
-                    )
+                if let workshop = sessionStore.workshop {
+                    Text(workshop.name)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(Color(hex: "0D47A1"))
+                }
             }
+            Spacer()
+
+            Circle()
+                .fill(Color(hex: "E3F2FD"))
+                .frame(width: 52, height: 52)
+                .overlay(
+                    Text(initials)
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(Color(hex: "0D47A1"))
+                )
         }
     }
 
     private var quickStatsSection: some View {
         let stats = ordersViewModel.orderStats()
+        let activeOrders = ordersViewModel.activeOrders.count
+        let diagnosingCount = ordersViewModel.orders.filter { $0.status == .diagnosing }.count
+        let inRepairCount = ordersViewModel.orders.filter { $0.status == .inRepair }.count
+        let readyCount = ordersViewModel.orders.filter { $0.status == .ready }.count
+        let totalActive = max(activeOrders, 1)
+        let progress = Double(inRepairCount + readyCount) / Double(totalActive)
 
-        return VStack(alignment: .leading, spacing: AxerSpacing.sm) {
-            Text("Resumen")
-                .font(AxerTypography.headline)
-                .foregroundColor(AxerColors.textPrimary)
+        return VStack(spacing: 16) {
+            // Main Orders Card
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("\(activeOrders) Órdenes Activas")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(Color(hex: "0F172A"))
 
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: AxerSpacing.sm) {
-                StatCard(title: "Ordenes Hoy", value: "\(stats.today)", icon: "calendar.badge.clock", color: AxerColors.primary)
-                StatCard(title: "En Proceso", value: "\(stats.inProgress)", icon: "wrench.and.screwdriver.fill", color: AxerColors.warning)
-                StatCard(title: "Listas", value: "\(stats.ready)", icon: "checkmark.seal.fill", color: AxerColors.success)
-                StatCard(title: "Total", value: "\(stats.total)", icon: "tray.full.fill", color: AxerColors.primaryDark)
+                    Text("\(readyCount) listas para entrega")
+                        .font(.system(size: 14))
+                        .foregroundColor(Color(hex: "64748B"))
+
+                    // Progress bar
+                    GeometryReader { geometry in
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color(hex: "E2E8F0"))
+                                .frame(height: 8)
+
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color(hex: "0D47A1"))
+                                .frame(width: geometry.size.width * progress, height: 8)
+                        }
+                    }
+                    .frame(height: 8)
+                    .padding(.top, 4)
+
+                    // Status chips
+                    HStack(spacing: 12) {
+                        StatusChip(icon: "wrench.fill", label: "Reparando", count: inRepairCount, color: Color(hex: "F59E0B"))
+                        StatusChip(icon: "magnifyingglass", label: "Diagnóstico", count: diagnosingCount, color: Color(hex: "0D47A1"))
+                    }
+                    .padding(.top, 8)
+                }
+
+                Spacer()
+
+                // Circular indicator
+                ZStack {
+                    Circle()
+                        .stroke(Color(hex: "E2E8F0"), lineWidth: 4)
+                        .frame(width: 52, height: 52)
+
+                    Circle()
+                        .trim(from: 0, to: progress)
+                        .stroke(Color(hex: "0D47A1"), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                        .frame(width: 52, height: 52)
+                        .rotationEffect(.degrees(-90))
+
+                    Text("\(readyCount)")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(Color(hex: "0D47A1"))
+                }
             }
+            .padding(20)
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
         }
     }
 
@@ -189,32 +237,34 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Stat Card
+// MARK: - Status Chip
 
-struct StatCard: View {
-    let title: String
-    let value: String
+struct StatusChip: View {
     let icon: String
+    let label: String
+    let count: Int
     let color: Color
 
     var body: some View {
-        AxerCard {
-            VStack(alignment: .leading, spacing: AxerSpacing.xs) {
-                HStack {
-                    Image(systemName: icon)
-                        .foregroundColor(color)
-                    Spacer()
-                }
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(color)
 
-                Text(value)
-                    .font(AxerTypography.title1)
-                    .foregroundColor(AxerColors.textPrimary)
+            Text(label)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(Color(hex: "64748B"))
 
-                Text(title)
-                    .font(AxerTypography.caption1)
-                    .foregroundColor(AxerColors.textSecondary)
+            if count > 0 {
+                Text("\(count)")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(color)
             }
         }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(color.opacity(0.1))
+        .cornerRadius(8)
     }
 }
 

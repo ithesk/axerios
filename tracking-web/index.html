@@ -378,6 +378,22 @@
     }
     .btn:hover{filter: brightness(0.98)}
     .btn svg{width: 16px; height: 16px}
+    .btn.whatsapp{
+      background: rgba(37, 211, 102, 0.12);
+      border-color: rgba(37, 211, 102, 0.25);
+      color: #128C7E;
+    }
+    .workshop-actions{
+      display: flex;
+      gap: 8px;
+    }
+    .workshop-hint{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+      font-weight: 600;
+      text-align: center;
+    }
 
     /* Quote Section */
     .quote-section{
@@ -504,9 +520,12 @@
       color: #fff;
     }
     .quote-btn.reject{
-      background: rgba(239, 68, 68, 0.12);
-      color: #DC2626;
-      border: 1px solid rgba(239, 68, 68, 0.25);
+      background: rgba(148, 163, 184, 0.08);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .quote-btn.reject:hover{
+      background: rgba(148, 163, 184, 0.15);
     }
     .quote-btn:disabled{
       opacity: 0.5;
@@ -524,6 +543,54 @@
     .quote-responded.rejected{
       background: rgba(239, 68, 68, 0.08);
       color: #DC2626;
+    }
+    .quote-trust{
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 10px;
+      padding: 8px;
+      background: rgba(22, 163, 74, 0.06);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .quote-trust svg{
+      width: 14px;
+      height: 14px;
+      color: var(--ok);
+    }
+
+    /* Sticky CTA for mobile */
+    .quote-sticky{
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      padding: 12px 16px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      z-index: 100;
+      display: none;
+    }
+    .quote-sticky .quote-actions{
+      max-width: 460px;
+      margin: 0 auto;
+    }
+    .quote-sticky-spacer{
+      height: 80px;
+      display: none;
+    }
+    @media (max-width: 600px){
+      .quote-sticky.visible{
+        display: block;
+      }
+      .quote-sticky-spacer.visible{
+        display: block;
+      }
     }
 
     /* Footer */
@@ -689,8 +756,12 @@
         <div id="workshopCard" class="workshop"></div>
       </div>
 
-      <div class="footer">Powered by axer <span style="opacity:0.5">v1.1</span></div>
+      <div class="quote-sticky-spacer" id="stickySpacer"></div>
+      <div class="footer">Powered by axer <span style="opacity:0.5">v1.2</span></div>
     </div>
+
+    <!-- Sticky CTA for mobile -->
+    <div class="quote-sticky" id="stickyQuote"></div>
   </div>
 
   <script>
@@ -714,17 +785,19 @@
       dot: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6"/></svg>`,
       receipt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><path d="M8 10h8M8 14h4"/></svg>`,
       checkCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
-      xCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>`
+      xCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>`,
+      whatsapp: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`,
+      shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>`
     };
 
     const statusConfig = {
-      received:   { name: 'Recibido',           color: 'var(--gray)',  icon: Icons.inbox,   hint: 'Tu equipo fue recibido en el taller.' },
-      diagnosing: { name: 'En diagnóstico',     color: 'var(--warn)',  icon: Icons.search,  hint: 'Estamos evaluando el problema.' },
-      quoted:     { name: 'Cotizado',           color: 'var(--violet)',icon: Icons.tag,     hint: 'Te compartimos el costo estimado.' },
-      approved:   { name: 'Aprobado',           color: 'var(--primary)',icon: Icons.check,  hint: 'Aprobación confirmada. Iniciamos pronto.' },
-      in_repair:  { name: 'En reparación',      color: 'var(--orange)',icon: Icons.wrench,  hint: 'Estamos trabajando en la reparación.' },
-      ready:      { name: 'Listo para entrega', color: 'var(--ok)',    icon: Icons.spark,   hint: 'Tu equipo está listo.' },
-      delivered:  { name: 'Entregado',          color: 'var(--gray)',  icon: Icons.box,     hint: 'Reparación finalizada y entregada.' },
+      received:   { name: 'Recibido',           color: 'var(--gray)',  icon: Icons.inbox,   hint: 'Tu equipo fue recibido en el taller. Pronto comenzaremos el diagnóstico.' },
+      diagnosing: { name: 'En diagnóstico',     color: 'var(--warn)',  icon: Icons.search,  hint: 'Estamos evaluando el problema de tu equipo. Te avisaremos cuando la cotización esté lista.' },
+      quoted:     { name: 'Cotizado',           color: 'var(--violet)',icon: Icons.tag,     hint: 'Ya tenemos el presupuesto listo. Revísalo abajo y apruébalo para continuar.' },
+      approved:   { name: 'Aprobado',           color: 'var(--primary)',icon: Icons.check,  hint: 'Gracias por tu aprobación. Comenzaremos la reparación muy pronto.' },
+      in_repair:  { name: 'En reparación',      color: 'var(--orange)',icon: Icons.wrench,  hint: 'Estamos trabajando en tu equipo. Te avisaremos cuando esté listo.' },
+      ready:      { name: 'Listo para entrega', color: 'var(--ok)',    icon: Icons.spark,   hint: 'Tu equipo está listo. Puedes pasar a recogerlo cuando quieras.' },
+      delivered:  { name: 'Entregado',          color: 'var(--gray)',  icon: Icons.box,     hint: 'Reparación completada. Gracias por tu confianza.' },
     };
 
     const deviceIcons = {
@@ -747,6 +820,26 @@
       const options = { year:'numeric', month:'long', day:'numeric' };
       if (includeTime) { options.hour='2-digit'; options.minute='2-digit'; }
       return d.toLocaleDateString('es-DO', options);
+    }
+
+    function formatRelativeTime(dateStr) {
+      const d = new Date(dateStr);
+      if (Number.isNaN(d.getTime())) return '';
+
+      const now = new Date();
+      const diffMs = now - d;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return 'Hace un momento';
+      if (diffMins < 60) return `Hace ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
+      if (diffHours < 24) return `Hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
+      if (diffDays === 1) return 'Ayer';
+      if (diffDays < 7) return `Hace ${diffDays} días`;
+
+      // For older dates, show the actual date
+      return formatDate(dateStr, false);
     }
 
     function renderProgressBar(currentStatus) {
@@ -857,25 +950,31 @@
       `;
 
       document.getElementById('createdDate').textContent = formatDate(order.created_at);
-      document.getElementById('updatedDate').textContent = formatDate(order.updated_at || order.created_at, true);
+      document.getElementById('updatedDate').textContent = formatRelativeTime(order.updated_at || order.created_at);
 
       // Workshop
       const phone = (order.workshop_phone || '').trim();
       const name = (order.workshop_name || 'Taller').trim();
+      const cleanPhone = phone.replace(/\D/g, '');
 
       document.getElementById('workshopCard').innerHTML = `
         <div class="workshop-left">
           <div class="workshop-name">${escapeHtml(name)}</div>
           <div class="workshop-sub">
             ${Icons.shop}
-            <span>Contacto del taller</span>
+            <span>¿Tienes dudas? Contáctanos</span>
           </div>
         </div>
         ${phone ? `
-          <a class="btn" href="tel:${phone}">
-            ${Icons.call}
-            Llamar
-          </a>
+          <div class="workshop-actions">
+            <a class="btn whatsapp" href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener">
+              ${Icons.whatsapp}
+            </a>
+            <a class="btn" href="tel:${phone}">
+              ${Icons.call}
+              Llamar
+            </a>
+          </div>
         ` : `
           <span class="btn" style="opacity:.6; pointer-events:none;">
             ${Icons.call}
@@ -990,6 +1089,14 @@
         </div>
       `;
 
+      // Trust message
+      const trustHtml = `
+        <div class="quote-trust">
+          ${Icons.shield}
+          <span>No se realizará ningún cargo sin tu aprobación</span>
+        </div>
+      `;
+
       // Render actions or responded message
       let actionsHtml = '';
       if (quote.status === 'sent') {
@@ -997,24 +1104,25 @@
           <div class="quote-actions">
             <button class="quote-btn reject" onclick="handleRejectQuote()" id="rejectBtn">
               ${Icons.xCircle}
-              <span>Rechazar</span>
+              <span>Tengo una duda</span>
             </button>
             <button class="quote-btn approve" onclick="handleApproveQuote()" id="approveBtn">
               ${Icons.checkCircle}
               <span>Aprobar</span>
             </button>
           </div>
+          ${trustHtml}
         `;
       } else if (quote.status === 'approved') {
         actionsHtml = `
           <div class="quote-responded">
-            ${Icons.checkCircle} Cotizacion aprobada
+            ${Icons.checkCircle} Cotización aprobada
           </div>
         `;
       } else if (quote.status === 'rejected') {
         actionsHtml = `
           <div class="quote-responded rejected">
-            ${Icons.xCircle} Cotizacion rechazada
+            ${Icons.xCircle} Cotización rechazada
           </div>
         `;
       }
@@ -1036,15 +1144,65 @@
       `;
 
       quoteSection.style.display = 'block';
+
+      // Setup sticky CTA for mobile (only if quote is pending)
+      if (quote.status === 'sent') {
+        const stickyQuote = document.getElementById('stickyQuote');
+        const stickySpacer = document.getElementById('stickySpacer');
+
+        stickyQuote.innerHTML = `
+          <div class="quote-actions">
+            <button class="quote-btn reject" onclick="handleRejectQuote()" id="rejectBtnSticky">
+              ${Icons.xCircle}
+              <span>Tengo una duda</span>
+            </button>
+            <button class="quote-btn approve" onclick="handleApproveQuote()" id="approveBtnSticky">
+              ${Icons.checkCircle}
+              <span>Aprobar</span>
+            </button>
+          </div>
+        `;
+
+        // Show/hide sticky based on scroll
+        const checkStickyVisibility = () => {
+          const quoteRect = quoteSection.getBoundingClientRect();
+          const isQuoteVisible = quoteRect.bottom > 0 && quoteRect.top < window.innerHeight;
+          const isQuoteActionsVisible = quoteRect.bottom > 100;
+
+          if (!isQuoteActionsVisible) {
+            stickyQuote.classList.add('visible');
+            stickySpacer.classList.add('visible');
+          } else {
+            stickyQuote.classList.remove('visible');
+            stickySpacer.classList.remove('visible');
+          }
+        };
+
+        window.addEventListener('scroll', checkStickyVisibility, { passive: true });
+        checkStickyVisibility();
+      } else {
+        // Hide sticky if quote is not pending
+        document.getElementById('stickyQuote').classList.remove('visible');
+        document.getElementById('stickySpacer').classList.remove('visible');
+      }
+    }
+
+    function setQuoteButtonsDisabled(disabled) {
+      const buttons = [
+        document.getElementById('approveBtn'),
+        document.getElementById('rejectBtn'),
+        document.getElementById('approveBtnSticky'),
+        document.getElementById('rejectBtnSticky')
+      ];
+      buttons.forEach(btn => {
+        if (btn) btn.disabled = disabled;
+      });
     }
 
     async function handleApproveQuote() {
       if (!currentOrderToken) return;
 
-      const btn = document.getElementById('approveBtn');
-      const rejectBtn = document.getElementById('rejectBtn');
-      if (btn) btn.disabled = true;
-      if (rejectBtn) rejectBtn.disabled = true;
+      setQuoteButtonsDisabled(true);
 
       try {
         const res = await fetch(`${API_URL}/${currentOrderToken}/approve`, {
@@ -1056,25 +1214,20 @@
           // Reload the page to show updated status
           loadOrder();
         } else {
-          alert('No se pudo aprobar la cotizacion. Intenta de nuevo.');
-          if (btn) btn.disabled = false;
-          if (rejectBtn) rejectBtn.disabled = false;
+          alert('No se pudo aprobar la cotización. Intenta de nuevo.');
+          setQuoteButtonsDisabled(false);
         }
       } catch (e) {
         console.error(e);
-        alert('Error de conexion. Intenta de nuevo.');
-        if (btn) btn.disabled = false;
-        if (rejectBtn) rejectBtn.disabled = false;
+        alert('Error de conexión. Intenta de nuevo.');
+        setQuoteButtonsDisabled(false);
       }
     }
 
     async function handleRejectQuote() {
       if (!currentOrderToken) return;
 
-      const btn = document.getElementById('rejectBtn');
-      const approveBtn = document.getElementById('approveBtn');
-      if (btn) btn.disabled = true;
-      if (approveBtn) approveBtn.disabled = true;
+      setQuoteButtonsDisabled(true);
 
       try {
         const res = await fetch(`${API_URL}/${currentOrderToken}/reject`, {
@@ -1086,15 +1239,13 @@
           // Reload the page to show updated status
           loadOrder();
         } else {
-          alert('No se pudo rechazar la cotizacion. Intenta de nuevo.');
-          if (btn) btn.disabled = false;
-          if (approveBtn) approveBtn.disabled = false;
+          alert('No se pudo enviar tu duda. Intenta de nuevo o contáctanos directamente.');
+          setQuoteButtonsDisabled(false);
         }
       } catch (e) {
         console.error(e);
-        alert('Error de conexion. Intenta de nuevo.');
-        if (btn) btn.disabled = false;
-        if (approveBtn) approveBtn.disabled = false;
+        alert('Error de conexión. Intenta de nuevo.');
+        setQuoteButtonsDisabled(false);
       }
     }
 

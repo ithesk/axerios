@@ -17,12 +17,13 @@ struct HomeView: View {
                 OfflineBanner()
 
                 ScrollView {
-                    VStack(spacing: AxerSpacing.lg) {
+                    VStack(spacing: 20) {
                         welcomeHeader
                         quickStatsSection
                         recentOrdersSection
                     }
-                    .padding(AxerSpacing.md)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
                     .padding(.bottom, 80)
                 }
             }
@@ -37,8 +38,7 @@ struct HomeView: View {
             }
             .padding(20)
         }
-        .navigationTitle("Inicio")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarHidden(true)
         .sheet(isPresented: $showNewOrder) {
             NewOrderView(viewModel: ordersViewModel)
         }

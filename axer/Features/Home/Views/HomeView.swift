@@ -1,4 +1,6 @@
 import SwiftUI
+import PhotosUI
+import UIKit
 
 struct HomeView: View {
     @EnvironmentObject var sessionStore: SessionStore
@@ -7,6 +9,9 @@ struct HomeView: View {
 
     @StateObject private var ordersViewModel = OrdersViewModel()
     @State private var showNewOrder = false
+    @State private var showPhotoPicker = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var isUploadingAvatar = false
 
     var body: some View {
         ZStack {
@@ -95,14 +100,89 @@ struct HomeView: View {
             }
             Spacer()
 
-            Circle()
-                .fill(Color(hex: "E3F2FD"))
-                .frame(width: 52, height: 52)
-                .overlay(
-                    Text(initials)
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(Color(hex: "0D47A1"))
-                )
+            // Avatar con PhotosPicker
+            PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                ZStack {
+                    if let avatarUrl = sessionStore.profile?.avatarUrl,
+                       let url = URL(string: avatarUrl) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            case .failure(_):
+                                avatarPlaceholder
+                            case .empty:
+                                ProgressView()
+                            @unknown default:
+                                avatarPlaceholder
+                            }
+                        }
+                        .frame(width: 52, height: 52)
+                        .clipShape(Circle())
+                    } else {
+                        avatarPlaceholder
+                    }
+
+                    // Overlay de carga
+                    if isUploadingAvatar {
+                        Circle()
+                            .fill(Color.black.opacity(0.5))
+                            .frame(width: 52, height: 52)
+                            .overlay(
+                                ProgressView()
+                                    .tint(.white)
+                            )
+                    }
+
+                    // Icono de cámara
+                    Circle()
+                        .fill(Color(hex: "0D47A1"))
+                        .frame(width: 20, height: 20)
+                        .overlay(
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 10))
+                                .foregroundColor(.white)
+                        )
+                        .offset(x: 18, y: 18)
+                }
+            }
+            .onChange(of: selectedPhotoItem) { _, newItem in
+                Task {
+                    await handlePhotoSelection(newItem)
+                }
+            }
+        }
+    }
+
+    private var avatarPlaceholder: some View {
+        Circle()
+            .fill(Color(hex: "E3F2FD"))
+            .frame(width: 52, height: 52)
+            .overlay(
+                Text(initials)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(Color(hex: "0D47A1"))
+            )
+    }
+
+    private func handlePhotoSelection(_ item: PhotosPickerItem?) async {
+        guard let item = item else { return }
+
+        isUploadingAvatar = true
+        defer { isUploadingAvatar = false }
+
+        do {
+            guard let data = try await item.loadTransferable(type: Data.self) else { return }
+
+            // Comprimir imagen
+            guard let uiImage = UIImage(data: data),
+                  let compressedData = uiImage.jpegData(compressionQuality: 0.7) else { return }
+
+            _ = try await sessionStore.uploadAvatar(imageData: compressedData)
+        } catch {
+            print("Error uploading avatar: \(error)")
         }
     }
 

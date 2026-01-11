@@ -275,6 +275,51 @@ final class SessionStore: ObservableObject {
         await loadUserData()
     }
 
+    // MARK: - Avatar Upload
+
+    func uploadAvatar(imageData: Data) async throws -> String {
+        guard let userId = user?.id else {
+            throw NSError(domain: "SessionStore", code: 401, userInfo: [NSLocalizedDescriptionKey: "No hay usuario autenticado"])
+        }
+
+        let fileName = "\(userId.uuidString)/avatar.jpg"
+        let bucketName = "avatars"
+
+        // Upload to Supabase Storage
+        try await supabase.client.storage
+            .from(bucketName)
+            .upload(
+                path: fileName,
+                file: imageData,
+                options: FileOptions(
+                    cacheControl: "3600",
+                    contentType: "image/jpeg",
+                    upsert: true
+                )
+            )
+
+        // Get public URL
+        let publicURL = try supabase.client.storage
+            .from(bucketName)
+            .getPublicURL(path: fileName)
+
+        // Update profile with avatar URL
+        struct ProfileUpdate: Encodable {
+            let avatar_url: String
+        }
+
+        try await supabase.client
+            .from("profiles")
+            .update(ProfileUpdate(avatar_url: publicURL.absoluteString))
+            .eq("id", value: userId.uuidString)
+            .execute()
+
+        // Reload profile
+        await loadUserData()
+
+        return publicURL.absoluteString
+    }
+
     // MARK: - Pending Workshop Data Management
 
     /// Guarda los datos del workshop temporalmente mientras se verifica el email

@@ -5,12 +5,14 @@ struct Profile: Codable, Identifiable {
     let workshopId: UUID?
     let fullName: String?
     let role: UserRole
+    let avatarUrl: String?
 
     enum CodingKeys: String, CodingKey {
         case id
         case workshopId = "workshop_id"
         case fullName = "full_name"
         case role
+        case avatarUrl = "avatar_url"
     }
 
     var firstName: String {

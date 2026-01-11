@@ -18,7 +18,7 @@ enum Tab: Int, CaseIterable {
     var icon: String {
         switch self {
         case .home: return "square.grid.2x2.fill"
-        case .orders: return "wrench.and.screwdriver.fill"
+        case .orders: return "list.clipboard.fill"
         case .customers: return "person.2.circle.fill"
         case .settings: return "gearshape.fill"
         }

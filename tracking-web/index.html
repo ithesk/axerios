@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Seguimiento de Reparación - axer</title>
+  <title>Seguimiento de Reparacion - axer</title>
+  <!-- Typography: Plus Jakarta Sans for titles, Inter for body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg0:#0B2A5A;
-      --bg1:#0D47A1;
+      /* Custom color palette with identity */
+      --bg0:#0f2847;
+      --bg1:#1e3a5f;
       --card:#ffffff;
       --text:#0F172A;
       --muted:#64748B;
@@ -17,36 +22,87 @@
       --shadow: 0 14px 50px rgba(2, 8, 23, 0.22);
       --radius: 22px;
       --radius-sm: 14px;
-      --ring: 0 0 0 4px rgba(13, 71, 161, 0.18);
-      --primary:#0D47A1;
-      --ok:#16A34A;
-      --warn:#F59E0B;
-      --violet:#7C3AED;
-      --orange:#F97316;
+      --ring: 0 0 0 4px rgba(30, 58, 95, 0.18);
+
+      /* Axer brand colors */
+      --axer-primary:#1e3a5f;
+      --axer-primary-light:#e8f0f8;
+      --axer-success:#0d9488;
+      --axer-warning:#ea580c;
+      --axer-accent:#7c3aed;
+      --axer-gray:#64748B;
+
+      /* Legacy mappings */
+      --primary:#1e3a5f;
+      --ok:#0d9488;
+      --warn:#ea580c;
+      --violet:#7c3aed;
+      --orange:#ea580c;
       --gray:#64748B;
+
+      /* Spacing rhythm */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 40px;
+      --space-2xl: 64px;
     }
 
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{height:100%}
     body{
-      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      font-family: 'Inter', ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background:
-        radial-gradient(900px 450px at 20% 10%, rgba(255,255,255,0.08), transparent 60%),
-        radial-gradient(700px 380px at 80% 0%, rgba(255,255,255,0.10), transparent 55%),
+        radial-gradient(900px 450px at 20% 10%, rgba(255,255,255,0.06), transparent 60%),
+        radial-gradient(700px 380px at 80% 0%, rgba(255,255,255,0.08), transparent 55%),
         linear-gradient(135deg, var(--bg0), var(--bg1));
       min-height:100vh;
-      padding: 22px 16px;
+      padding: var(--space-lg) var(--space-md);
       color: var(--text);
     }
 
-    .container{max-width: 460px; margin: 0 auto;}
+    /* Noise texture overlay for organic feel */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.03;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    .container{max-width: 460px; margin: 0 auto; position: relative;}
     .card{
       background: var(--card);
       border-radius: var(--radius);
-      padding: 22px;
+      padding: var(--space-lg);
       box-shadow: var(--shadow);
       border: 1px solid rgba(148, 163, 184, 0.22);
       backdrop-filter: blur(6px);
+    }
+
+    /* Plus Jakarta Sans for titles */
+    .order-number,
+    .status-title,
+    .device-meta h3,
+    .workshop-name,
+    .quote-title,
+    .quote-row.total .quote-row-label,
+    .err-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    /* Tabular numbers for prices */
+    .price,
+    .quote-item-price,
+    .quote-row-value {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: 'tnum';
     }
 
     /* Top header inside card */
@@ -54,8 +110,8 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap: 14px;
-      margin-bottom: 18px;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
     }
     .brand{
       display:flex;
@@ -64,19 +120,19 @@
       min-width: 0;
     }
     .mark{
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      background: rgba(148, 163, 184, 0.08);
-      border: 1px solid rgba(148, 163, 184, 0.15);
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--axer-primary), #2d4a6f);
       display:grid;
       place-items:center;
       flex: 0 0 auto;
+      box-shadow: 0 2px 8px rgba(30, 58, 95, 0.3);
     }
     .mark svg{
-      color: var(--muted);
-      width: 16px;
-      height: 16px;
+      color: white;
+      width: 18px;
+      height: 18px;
     }
     .brand-title{
       display:flex;
@@ -84,52 +140,73 @@
       min-width:0;
     }
     .logo{
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.1px;
-      color: var(--muted);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
       line-height: 1.15;
     }
     .subtitle{
-      font-size: 11px;
-      color: var(--muted2);
+      font-size: 12px;
+      color: var(--muted);
       line-height: 1.3;
-      margin-top: 1px;
+      margin-top: 2px;
     }
 
     .chip{
       display:inline-flex;
       align-items:center;
-      gap: 8px;
-      padding: 8px 10px;
+      gap: 6px;
+      padding: 6px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.65);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
+      background: rgba(13, 148, 136, 0.08);
+      border: 1px solid rgba(13, 148, 136, 0.20);
+      color: var(--axer-success);
+      font-size: 11px;
+      font-weight: 700;
       white-space: nowrap;
+    }
+    .chip svg {
+      width: 12px;
+      height: 12px;
+    }
+    .chip .pulse {
+      width: 6px;
+      height: 6px;
+      background: var(--axer-success);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
     }
 
     /* Order number */
     .order{
       display:flex;
       flex-direction:column;
-      gap: 6px;
-      margin-bottom: 14px;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
     }
     .order-label{
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       font-weight: 700;
     }
     .order-number{
-      font-size: 22px;
+      font-size: 26px;
       font-weight: 800;
-      letter-spacing: 0.2px;
       color: var(--text);
+    }
+    .order-context{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 2px;
     }
 
     /* Status badge */
@@ -137,12 +214,12 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap: 14px;
-      padding: 14px 14px;
+      gap: var(--space-md);
+      padding: var(--space-md);
       border-radius: 16px;
       border: 1px solid rgba(148, 163, 184, 0.35);
       background: linear-gradient(180deg, rgba(248,250,252,1), rgba(248,250,252,0.7));
-      margin: 10px 0 16px;
+      margin: var(--space-sm) 0 var(--space-lg);
     }
     .status-left{
       display:flex;
@@ -151,14 +228,14 @@
       min-width: 0;
     }
     .status-icon{
-      width: 38px;
-      height: 38px;
+      width: 42px;
+      height: 42px;
       border-radius: 14px;
       display:grid;
       place-items:center;
       border: 1px solid rgba(2, 6, 23, 0.06);
       flex: 0 0 auto;
-      background: rgba(13, 71, 161, 0.07);
+      background: rgba(30, 58, 95, 0.07);
     }
     .status-text{
       display:flex;
@@ -166,7 +243,7 @@
       min-width: 0;
     }
     .status-title{
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       color: var(--text);
       line-height: 1.2;
@@ -174,42 +251,42 @@
     .status-hint{
       font-size: 12px;
       color: var(--muted);
-      margin-top: 2px;
-      line-height: 1.3;
+      margin-top: 3px;
+      line-height: 1.4;
     }
     .status-pill{
       display:inline-flex;
       align-items:center;
-      gap: 8px;
-      padding: 8px 10px;
+      gap: 6px;
+      padding: 8px 12px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 800;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
       border: 1px solid rgba(2, 6, 23, 0.06);
       white-space: nowrap;
     }
-    .status-pill svg{width: 16px; height: 16px}
+    .status-pill svg{width: 14px; height: 14px}
 
     /* Timeline / Progress */
     .timeline{
       background: var(--soft);
       border: 1px solid rgba(148, 163, 184, 0.30);
       border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 16px;
+      padding: var(--space-md);
+      margin-bottom: var(--space-lg);
     }
     .timeline-title{
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 10px;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
     }
     .steps{
       display:flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: space-between;
       align-items:flex-start;
     }
@@ -228,6 +305,7 @@
       height: 3px;
       background: var(--line);
       border-radius: 999px;
+      transition: background 0.3s ease;
     }
     .step:first-child::before{display:none;}
     .dot{
@@ -240,58 +318,131 @@
       display:grid;
       place-items:center;
       color: var(--muted2);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .dot svg{width: 16px; height:16px;}
+    .dot svg{width: 14px; height:14px;}
     .label{
-      font-size: 11px;
+      font-size: 10px;
       color: var(--muted2);
       font-weight: 700;
-      line-height: 1.1;
+      line-height: 1.2;
       overflow:hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       padding: 0 2px;
     }
-    .step.completed::before{ background: rgba(22, 163, 74, 0.35); }
+    .step.completed::before{ background: rgba(13, 148, 136, 0.4); }
     .step.completed .dot{
-      border-color: rgba(22, 163, 74, 0.4);
-      background: rgba(22, 163, 74, 0.08);
-      color: rgba(22, 163, 74, 0.7);
+      border-color: var(--axer-success);
+      background: rgba(13, 148, 136, 0.1);
+      color: var(--axer-success);
+      animation: step-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .step.active::before{ background: rgba(22, 163, 74, 0.35); }
+    @keyframes step-pop {
+      0% { transform: scale(0.8); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    .step.active::before{ background: rgba(13, 148, 136, 0.4); }
     .step.active .dot{
-      border-color: rgba(100, 116, 139, 0.5);
-      background: rgba(100, 116, 139, 0.08);
-      color: var(--muted);
-      box-shadow: none;
+      border-color: var(--axer-primary);
+      background: rgba(30, 58, 95, 0.08);
+      color: var(--axer-primary);
+      box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.1);
     }
-    .step.active .label{ color: var(--muted); }
+    .step.active .label{ color: var(--axer-primary); font-weight: 800; }
     .step.completed .label{ color: var(--muted); }
+
+    /* Technician card */
+    .technician{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px var(--space-md);
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.06), rgba(124, 58, 237, 0.02));
+      border: 1px solid rgba(124, 58, 237, 0.15);
+      border-radius: 12px;
+      margin-bottom: var(--space-md);
+    }
+    .technician-avatar{
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--axer-accent), #9061f0);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .technician-info{
+      flex: 1;
+      min-width: 0;
+    }
+    .technician-label{
+      font-size: 11px;
+      color: var(--axer-accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .technician-name{
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 2px;
+    }
+    .technician-stats{
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* Time estimate */
+    .time-estimate{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(234, 88, 12, 0.06);
+      border: 1px solid rgba(234, 88, 12, 0.15);
+      border-radius: 10px;
+      margin-bottom: var(--space-md);
+      font-size: 12px;
+      color: var(--axer-warning);
+      font-weight: 600;
+    }
+    .time-estimate svg{
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
 
     /* Device + info */
     .device{
       display:flex;
       align-items:center;
       gap: 12px;
-      padding: 14px;
+      padding: var(--space-md);
       background: var(--soft);
       border-radius: 16px;
       border: 1px solid rgba(148, 163, 184, 0.30);
-      margin-bottom: 14px;
+      margin-bottom: var(--space-md);
     }
     .device-badge{
-      width: 44px; height: 44px;
-      border-radius: 16px;
-      background: rgba(2, 6, 23, 0.03);
-      border: 1px solid rgba(2, 6, 23, 0.05);
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      background: rgba(30, 58, 95, 0.05);
+      border: 1px solid rgba(30, 58, 95, 0.10);
       display:grid; place-items:center;
       flex: 0 0 auto;
     }
-    .device-badge svg{width: 22px; height:22px; color: var(--primary);}
-    .device-meta{min-width:0}
+    .device-badge svg{width: 26px; height:26px; color: var(--axer-primary);}
+    .device-meta{min-width:0; flex: 1;}
     .device-meta h3{
-      font-size: 14px;
-      font-weight: 900;
+      font-size: 15px;
+      font-weight: 800;
       color: var(--text);
       line-height: 1.2;
       white-space: nowrap;
@@ -302,55 +453,62 @@
       font-size: 12px;
       color: var(--muted);
       margin-top: 3px;
-      font-weight: 650;
+      font-weight: 600;
     }
 
     .grid{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 14px;
+      margin-bottom: var(--space-md);
     }
     .kv{
-      padding: 12px;
-      border-radius: 16px;
+      padding: 14px;
+      border-radius: 14px;
       border: 1px solid rgba(148, 163, 184, 0.30);
       background: #fff;
     }
     .k{
-      font-size: 11px;
+      font-size: 10px;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 850;
+      letter-spacing: 0.1em;
+      font-weight: 800;
       margin-bottom: 6px;
       display:flex;
       align-items:center;
-      gap: 8px;
+      gap: 6px;
     }
-    .k svg{width: 14px; height: 14px; color: var(--muted);}
+    .k svg{width: 12px; height: 12px; color: var(--muted);}
     .v{
       font-size: 13px;
       color: var(--text);
-      font-weight: 800;
-      line-height: 1.25;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .v-sub{
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 2px;
     }
 
     /* Workshop card */
     .workshop{
       background: var(--soft);
       border-radius: 16px;
-      padding: 14px;
+      padding: var(--space-md);
       border: 1px solid rgba(148, 163, 184, 0.30);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap: 12px;
+      margin-top: var(--space-xl);
     }
     .workshop-left{min-width:0}
     .workshop-name{
-      font-size: 13px;
-      font-weight: 900;
+      font-size: 14px;
+      font-weight: 800;
       color: var(--text);
       line-height: 1.2;
       white-space: nowrap;
@@ -361,72 +519,73 @@
       margin-top: 4px;
       font-size: 12px;
       color: var(--muted);
-      font-weight: 650;
+      font-weight: 600;
       display:flex;
       align-items:center;
-      gap: 8px;
+      gap: 6px;
     }
     .workshop-sub svg{width: 14px; height: 14px; color: var(--muted);}
     .btn{
       display:inline-flex;
       align-items:center;
-      gap: 8px;
-      padding: 10px 12px;
+      gap: 6px;
+      padding: 10px 14px;
       border-radius: 999px;
-      background: rgba(13, 71, 161, 0.10);
-      border: 1px solid rgba(13, 71, 161, 0.20);
-      color: var(--primary);
+      background: rgba(30, 58, 95, 0.08);
+      border: 1px solid rgba(30, 58, 95, 0.15);
+      color: var(--axer-primary);
       text-decoration:none;
-      font-weight: 900;
+      font-weight: 800;
       font-size: 12px;
       white-space: nowrap;
+      transition: transform 0.15s, background 0.15s;
     }
-    .btn:hover{filter: brightness(0.98)}
+    .btn:hover{
+      background: rgba(30, 58, 95, 0.12);
+      transform: translateY(-1px);
+    }
+    .btn:active{transform: scale(0.98)}
     .btn svg{width: 16px; height: 16px}
     .btn.whatsapp{
-      background: rgba(37, 211, 102, 0.12);
-      border-color: rgba(37, 211, 102, 0.25);
+      background: rgba(37, 211, 102, 0.10);
+      border-color: rgba(37, 211, 102, 0.20);
       color: #128C7E;
+    }
+    .btn.whatsapp:hover{
+      background: rgba(37, 211, 102, 0.18);
     }
     .workshop-actions{
       display: flex;
       gap: 8px;
     }
-    .workshop-hint{
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 8px;
-      font-weight: 600;
-      text-align: center;
-    }
 
     /* Quote Section */
     .quote-section{
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(124, 58, 237, 0.03));
-      border: 1px solid rgba(124, 58, 237, 0.20);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 14px;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(124, 58, 237, 0.02));
+      border: 1px solid rgba(124, 58, 237, 0.18);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: var(--space-md);
     }
     .quote-header{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .quote-title{
-      font-size: 13px;
-      font-weight: 900;
-      color: var(--violet);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--axer-accent);
       display:flex;
       align-items:center;
       gap: 8px;
     }
-    .quote-title svg{width: 16px; height: 16px}
+    .quote-title svg{width: 18px; height: 18px}
     .quote-status{
       font-size: 11px;
       font-weight: 800;
-      padding: 4px 10px;
+      padding: 5px 10px;
       border-radius: 999px;
     }
     .quote-items{
@@ -434,18 +593,19 @@
       border-radius: 12px;
       overflow: hidden;
       margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     .quote-item{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--line);
     }
     .quote-item:last-child{border-bottom:none}
     .quote-item-name{
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 600;
       color: var(--text);
       flex: 1;
       min-width: 0;
@@ -457,6 +617,7 @@
       font-size: 11px;
       color: var(--muted);
       margin-right: 12px;
+      font-weight: 600;
     }
     .quote-item-price{
       font-size: 13px;
@@ -466,8 +627,9 @@
     .quote-totals{
       background: #fff;
       border-radius: 12px;
-      padding: 12px;
+      padding: 14px;
       margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     .quote-row{
       display:flex;
@@ -488,17 +650,24 @@
     .quote-row.total{
       border-top: 1px solid var(--line);
       margin-top: 8px;
-      padding-top: 10px;
+      padding-top: 12px;
     }
     .quote-row.total .quote-row-label{
       font-size: 14px;
-      font-weight: 900;
+      font-weight: 800;
       color: var(--text);
     }
     .quote-row.total .quote-row-value{
-      font-size: 18px;
-      font-weight: 900;
-      color: var(--primary);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--axer-primary);
+    }
+    .quote-row.total .quote-row-value.counting{
+      animation: countUp 0.6s ease-out;
+    }
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .quote-actions{
       display:flex;
@@ -514,15 +683,22 @@
       border-radius: 14px;
       border: none;
       font-size: 14px;
-      font-weight: 900;
+      font-weight: 800;
       cursor: pointer;
-      transition: transform 0.1s, filter 0.1s;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+    .quote-btn:hover{
+      transform: scale(1.02);
     }
     .quote-btn:active{transform: scale(0.98)}
     .quote-btn svg{width: 18px; height: 18px}
     .quote-btn.approve{
-      background: var(--ok);
+      background: var(--axer-success);
       color: #fff;
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+    }
+    .quote-btn.approve:hover{
+      box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
     }
     .quote-btn.reject{
       background: rgba(148, 163, 184, 0.08);
@@ -535,15 +711,36 @@
     .quote-btn:disabled{
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none !important;
+    }
+    .quote-btn.success{
+      background: var(--axer-success);
+      pointer-events: none;
+    }
+    .quote-btn.success svg{
+      animation: checkPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes checkPop {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
     }
     .quote-responded{
       text-align: center;
-      padding: 12px;
-      background: rgba(22, 163, 74, 0.08);
+      padding: 14px;
+      background: rgba(13, 148, 136, 0.08);
       border-radius: 12px;
-      color: var(--ok);
+      color: var(--axer-success);
       font-weight: 800;
-      font-size: 13px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .quote-responded svg{
+      width: 20px;
+      height: 20px;
     }
     .quote-responded.rejected{
       background: rgba(239, 68, 68, 0.08);
@@ -551,22 +748,22 @@
     }
     .quote-trust{
       text-align: center;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--muted);
       font-weight: 600;
-      margin-top: 10px;
-      padding: 8px;
-      background: rgba(22, 163, 74, 0.06);
-      border-radius: 8px;
+      margin-top: 12px;
+      padding: 10px;
+      background: rgba(13, 148, 136, 0.06);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
     }
     .quote-trust svg{
-      width: 14px;
-      height: 14px;
-      color: var(--ok);
+      width: 16px;
+      height: 16px;
+      color: var(--axer-success);
     }
 
     /* Sticky CTA for mobile */
@@ -576,7 +773,7 @@
       left: 0;
       right: 0;
       background: #fff;
-      padding: 12px 16px;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
       box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
       z-index: 100;
       display: none;
@@ -601,10 +798,14 @@
     /* Footer */
     .footer{
       text-align:center;
-      padding: 16px 0 6px;
-      color: rgba(255,255,255,0.72);
+      padding: var(--space-lg) 0 var(--space-sm);
+      color: rgba(255,255,255,0.6);
       font-size: 12px;
-      font-weight: 650;
+      font-weight: 600;
+    }
+    .footer a{
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
     }
 
     /* Loading + Error */
@@ -614,46 +815,54 @@
       align-items:center;
       justify-content:center;
       text-align:center;
-      padding: 34px 18px;
-      gap: 12px;
+      padding: var(--space-xl) var(--space-lg);
+      gap: var(--space-md);
     }
     .spinner{
-      width: 28px; height: 28px;
+      width: 32px; height: 32px;
       border-radius: 999px;
-      border: 3px solid rgba(100,116,139,0.25);
-      border-top-color: rgba(13,71,161,0.95);
-      animation: spin 0.9s linear infinite;
+      border: 3px solid rgba(100,116,139,0.2);
+      border-top-color: var(--axer-primary);
+      animation: spin 0.8s linear infinite;
     }
     @keyframes spin{to{transform: rotate(360deg)}}
-    .err-icon{
-      width: 54px; height: 54px;
-      border-radius: 18px;
-      background: rgba(239, 68, 68, 0.10);
-      border: 1px solid rgba(239, 68, 68, 0.18);
-      display:grid;
-      place-items:center;
-      margin-bottom: 2px;
-      color: rgba(239,68,68,0.9);
+
+    /* Error state - improved */
+    .err-illustration{
+      width: 80px;
+      height: 80px;
+      margin-bottom: var(--space-sm);
     }
-    .err-icon svg{width: 26px; height: 26px}
+    .err-illustration svg{
+      width: 100%;
+      height: 100%;
+    }
     .err-title{
-      font-size: 16px;
-      font-weight: 950;
+      font-size: 18px;
+      font-weight: 800;
       color: var(--text);
-      margin-top: 4px;
+      margin-top: var(--space-sm);
     }
     .err-msg{
-      font-size: 12px;
+      font-size: 13px;
       color: var(--muted);
-      font-weight: 650;
-      line-height: 1.4;
+      font-weight: 500;
+      line-height: 1.5;
+      max-width: 280px;
+    }
+    .err-actions{
+      margin-top: var(--space-md);
+      display: flex;
+      gap: var(--space-sm);
     }
 
     /* small screens polish */
     @media (max-width: 380px){
       .grid{grid-template-columns: 1fr}
-      .order-number{font-size: 20px}
-      .step .label{font-size: 10px}
+      .order-number{font-size: 22px}
+      .step .label{font-size: 9px}
+      .status{flex-direction: column; align-items: flex-start;}
+      .status-pill{margin-top: 8px;}
     }
   </style>
 </head>
@@ -663,9 +872,9 @@
     <div id="loading" class="card">
       <div class="center">
         <div class="spinner" aria-label="Cargando"></div>
-        <div style="font-weight:900; color: var(--text);">Cargando seguimiento…</div>
-        <div style="font-size:12px; color: var(--muted); font-weight:650;">
-          Esto puede tomar unos segundos.
+        <div style="font-weight:800; color: var(--text); font-size: 15px;">Buscando tu orden...</div>
+        <div style="font-size:12px; color: var(--muted); font-weight:500;">
+          Solo tomara un momento
         </div>
       </div>
     </div>
@@ -673,16 +882,22 @@
     <!-- Error -->
     <div id="error" class="card" style="display:none;">
       <div class="center">
-        <div class="err-icon">
-          <!-- search-off icon -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="M21 21l-4.3-4.3"></path>
-            <path d="M7 7l8 8"></path>
+        <div class="err-illustration">
+          <!-- Magnifying glass with question mark illustration -->
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="35" cy="35" r="24" stroke="#E2E8F0" stroke-width="4"/>
+            <path d="M53 53L68 68" stroke="#E2E8F0" stroke-width="4" stroke-linecap="round"/>
+            <text x="35" y="42" text-anchor="middle" fill="#94A3B8" font-size="24" font-weight="700">?</text>
           </svg>
         </div>
-        <div class="err-title">Orden no encontrada</div>
-        <div class="err-msg">El código de seguimiento no es válido o ha expirado.</div>
+        <div class="err-title">No encontramos esa orden</div>
+        <div class="err-msg">Verifica que el enlace este correcto o contacta al taller directamente</div>
+        <div class="err-actions">
+          <button class="btn" onclick="location.reload()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.36-2.64"/><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.36 2.64"/><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/></svg>
+            Reintentar
+          </button>
+        </div>
       </div>
     </div>
 
@@ -693,39 +908,38 @@
           <div class="brand">
             <div class="mark" aria-hidden="true">
               <!-- bolt icon -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M13 2L3 14h7l-1 8 12-14h-7l-1-6z"></path>
               </svg>
             </div>
             <div class="brand-title">
               <div class="logo">axer</div>
-              <div class="subtitle">Seguimiento de reparación</div>
+              <div class="subtitle">Seguimiento de reparacion</div>
             </div>
           </div>
 
-          <div class="chip" title="Actualización automática">
-            <!-- refresh icon -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.36-2.64"></path>
-              <path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.36 2.64"></path>
-              <path d="M21 3v6h-6"></path>
-              <path d="M3 21v-6h6"></path>
-            </svg>
-            En tiempo real
+          <div class="chip" title="Actualizacion en tiempo real">
+            <span class="pulse"></span>
+            En vivo
           </div>
         </div>
 
         <div class="order">
           <div class="order-label">Orden</div>
           <div id="orderNumber" class="order-number"></div>
+          <div id="orderContext" class="order-context"></div>
         </div>
 
         <div id="statusCard" class="status"></div>
+
+        <div id="timeEstimate" class="time-estimate" style="display:none;"></div>
 
         <div class="timeline">
           <div class="timeline-title">Progreso</div>
           <div id="progressBar" class="steps"></div>
         </div>
+
+        <div id="technicianCard" class="technician" style="display:none;"></div>
 
         <div id="deviceInfo" class="device"></div>
 
@@ -737,9 +951,10 @@
                 <rect x="3" y="4" width="18" height="18" rx="2"></rect>
                 <path d="M16 2v4M8 2v4M3 10h18"></path>
               </svg>
-              Fecha de ingreso
+              Ingreso
             </div>
             <div id="createdDate" class="v"></div>
+            <div id="createdDateSub" class="v-sub"></div>
           </div>
 
           <div class="kv">
@@ -749,9 +964,10 @@
                 <circle cx="12" cy="12" r="9"></circle>
                 <path d="M12 7v6l4 2"></path>
               </svg>
-              Última actualización
+              Actualizado
             </div>
             <div id="updatedDate" class="v"></div>
+            <div id="updatedDateSub" class="v-sub"></div>
           </div>
         </div>
 
@@ -762,7 +978,7 @@
       </div>
 
       <div class="quote-sticky-spacer" id="stickySpacer"></div>
-      <div class="footer">Powered by axer <span style="opacity:0.5">v1.2</span></div>
+      <div class="footer">Seguimiento por <a href="#">axer</a></div>
     </div>
 
     <!-- Sticky CTA for mobile -->
@@ -772,46 +988,63 @@
   <script>
     const API_URL = 'https://sllehrkityhutialtztl.supabase.co/functions/v1/tracking';
 
-    // Icons (inline SVG strings) — no emojis, no external libs
+    // Icons with custom stroke
     const Icons = {
-      inbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v11H16l-2 3h-4l-2-3H4V4z"/></svg>`,
-      search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`,
-      tag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41L12 22l-8.59-8.59A2 2 0 0 1 3 12V3h9a2 2 0 0 1 1.41.59l7.18 7.18a2 2 0 0 1 0 2.83z"/><path d="M7 7h.01"/></svg>`,
-      check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>`,
-      wrench: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4l-2.1 2.1-3-3 2.1-2.1z"/></svg>`,
-      spark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l1.2 4.6L18 8l-4.8 1.4L12 14l-1.2-4.6L6 8l4.8-1.4L12 2z"/><path d="M19 14l.7 2.7L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 14z"/></svg>`,
-      box: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9 5-9-5"/><path d="M3 8V16l9 5 9-5V8"/><path d="M12 13V21"/></svg>`,
-      phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>`,
-      tablet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg>`,
-      laptop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h18"/><path d="M5 17V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10"/></svg>`,
-      monitor: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/></svg>`,
-      call: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.86.3 1.7.54 2.5a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.57-1.05a2 2 0 0 1 2.11-.45c.8.24 1.64.42 2.5.54A2 2 0 0 1 22 16.92z"/></svg>`,
-      shop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1-5h16l1 5"/><path d="M5 9v12h14V9"/><path d="M9 21V12h6v9"/></svg>`,
-      dot: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6"/></svg>`,
-      receipt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><path d="M8 10h8M8 14h4"/></svg>`,
-      checkCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
-      xCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>`,
-      whatsapp: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`,
-      shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>`
+      inbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`,
+      search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>`,
+      tag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L12 22l-8.59-8.59A2 2 0 0 1 3 12V3h9a2 2 0 0 1 1.41.59l7.18 7.18a2 2 0 0 1 0 2.83z"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/></svg>`,
+      check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`,
+      wrench: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+      spark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4m0 14v-4m9-5h-4M3 12h4m12.3-5.3l-2.8 2.8M7.5 16.5l-2.8 2.8m12.6 0l-2.8-2.8M7.5 7.5L4.7 4.7"/></svg>`,
+      box: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+      // Device icons - more specific
+      iphone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 5h4" stroke-width="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>`,
+      android: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="5" r="1" fill="currentColor"/></svg>`,
+      tablet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>`,
+      laptop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10"/><path d="M2 17h20a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1z"/></svg>`,
+      watch: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 6V3h6v3M9 18v3h6v-3"/></svg>`,
+      monitor: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>`,
+      call: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.86.3 1.7.54 2.5a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.57-1.05a2 2 0 0 1 2.11-.45c.8.24 1.64.42 2.5.54A2 2 0 0 1 22 16.92z"/></svg>`,
+      shop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M5 9v12h14V9"/><path d="M9 21V12h6v9"/></svg>`,
+      dot: `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>`,
+      receipt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><path d="M8 10h8M8 14h4"/></svg>`,
+      checkCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4" stroke-width="2"/></svg>`,
+      xCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>`,
+      whatsapp: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`,
+      shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4" stroke-width="2"/></svg>`,
+      clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`
     };
 
+    // Status config with friendly copy
     const statusConfig = {
-      received:   { name: 'Recibido',           color: 'var(--gray)',  icon: Icons.inbox,   hint: 'Tu equipo fue recibido en el taller. Pronto comenzaremos el diagnóstico.' },
-      diagnosing: { name: 'En diagnóstico',     color: 'var(--warn)',  icon: Icons.search,  hint: 'Estamos evaluando el problema de tu equipo. Te avisaremos cuando la cotización esté lista.' },
-      quoted:     { name: 'Cotizado',           color: 'var(--violet)',icon: Icons.tag,     hint: 'Ya tenemos el presupuesto listo. Revísalo abajo y apruébalo para continuar.' },
-      approved:   { name: 'Aprobado',           color: 'var(--primary)',icon: Icons.check,  hint: 'Gracias por tu aprobación. Comenzaremos la reparación muy pronto.' },
-      in_repair:  { name: 'En reparación',      color: 'var(--orange)',icon: Icons.wrench,  hint: 'Estamos trabajando en tu equipo. Te avisaremos cuando esté listo.' },
-      ready:      { name: 'Listo para entrega', color: 'var(--ok)',    icon: Icons.spark,   hint: 'Tu equipo está listo. Puedes pasar a recogerlo cuando quieras.' },
-      delivered:  { name: 'Entregado',          color: 'var(--gray)',  icon: Icons.box,     hint: 'Reparación completada. Gracias por tu confianza.' },
+      received:   { name: 'Recibido',           color: 'var(--axer-gray)',   icon: Icons.inbox,   hint: 'Tu equipo ya esta con nosotros. Pronto comenzamos el diagnostico.' },
+      diagnosing: { name: 'En diagnostico',     color: 'var(--axer-warning)', icon: Icons.search,  hint: 'Nuestros tecnicos estan revisando tu equipo. Te escribimos apenas tengamos el presupuesto.' },
+      quoted:     { name: 'Cotizado',           color: 'var(--axer-accent)', icon: Icons.tag,     hint: 'Ya tenemos el presupuesto listo. Revisalo abajo y apruebalo para continuar.' },
+      approved:   { name: 'Aprobado',           color: 'var(--axer-primary)',icon: Icons.check,   hint: 'Gracias por tu aprobacion. Comenzamos la reparacion muy pronto.' },
+      in_repair:  { name: 'En reparacion',      color: 'var(--axer-warning)',icon: Icons.wrench,  hint: 'Estamos trabajando en tu equipo. Te avisamos cuando este listo.' },
+      ready:      { name: 'Listo para entrega', color: 'var(--axer-success)',icon: Icons.spark,   hint: 'Tu equipo esta listo. Puedes pasar a recogerlo cuando quieras.' },
+      delivered:  { name: 'Entregado',          color: 'var(--axer-gray)',   icon: Icons.box,     hint: 'Reparacion completada. Gracias por tu confianza.' },
     };
 
+    // Device icons mapping
     const deviceIcons = {
-      phone: Icons.phone,
+      iphone: Icons.iphone,
+      android: Icons.android,
+      phone: Icons.iphone,
       tablet: Icons.tablet,
       laptop: Icons.laptop,
+      watch: Icons.watch,
       other: Icons.monitor
     };
-    const deviceNames = { phone: 'Teléfono', tablet: 'Tablet', laptop: 'Laptop', other: 'Dispositivo' };
+    const deviceNames = {
+      iphone: 'iPhone',
+      android: 'Android',
+      phone: 'Telefono',
+      tablet: 'Tablet',
+      laptop: 'Laptop',
+      watch: 'Smartwatch',
+      other: 'Dispositivo'
+    };
 
     function getToken() {
       const path = window.location.pathname;
@@ -819,39 +1052,62 @@
       return parts[parts.length - 1] || new URLSearchParams(window.location.search).get('token');
     }
 
-    function formatDate(dateStr, includeTime=false) {
+    function formatDate(dateStr) {
       const d = new Date(dateStr);
       if (Number.isNaN(d.getTime())) return '';
-      const options = { year:'numeric', month:'long', day:'numeric' };
-      if (includeTime) { options.hour='2-digit'; options.minute='2-digit'; }
-      return d.toLocaleDateString('es-DO', options);
+      return d.toLocaleDateString('es-DO', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function formatTime(dateStr) {
+      const d = new Date(dateStr);
+      if (Number.isNaN(d.getTime())) return '';
+      return d.toLocaleTimeString('es-DO', { hour: 'numeric', minute: '2-digit', hour12: true });
     }
 
     function formatRelativeTime(dateStr) {
       const d = new Date(dateStr);
-      if (Number.isNaN(d.getTime())) return '';
+      if (Number.isNaN(d.getTime())) return { main: '', sub: '' };
 
       const now = new Date();
       const diffMs = now - d;
       const diffMins = Math.floor(diffMs / 60000);
       const diffHours = Math.floor(diffMs / 3600000);
       const diffDays = Math.floor(diffMs / 86400000);
+      const time = formatTime(dateStr);
 
-      if (diffMins < 1) return 'Hace un momento';
-      if (diffMins < 60) return `Hace ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
-      if (diffHours < 24) return `Hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
-      if (diffDays === 1) return 'Ayer';
-      if (diffDays < 7) return `Hace ${diffDays} días`;
+      if (diffMins < 1) return { main: 'Ahora mismo', sub: '' };
+      if (diffMins < 60) return { main: `Hace ${diffMins} min`, sub: time };
+      if (diffHours < 24) return { main: `Hace ${diffHours}h`, sub: time };
+      if (diffDays === 1) return { main: 'Ayer', sub: time };
+      if (diffDays < 7) return { main: `Hace ${diffDays} dias`, sub: time };
 
-      // For older dates, show the actual date
-      return formatDate(dateStr, false);
+      return { main: formatDate(dateStr), sub: time };
+    }
+
+    function getOrderContext(orderNumber, createdAt) {
+      const d = new Date(createdAt);
+      if (Number.isNaN(d.getTime())) return '';
+
+      const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+      const month = months[d.getMonth()];
+      const year = d.getFullYear();
+
+      // Extract order number from string (e.g., "ITS-004" -> 4)
+      const match = orderNumber.match(/(\d+)$/);
+      const num = match ? parseInt(match[1]) : '';
+
+      if (num) {
+        return `Orden #${num} de ${month} ${year}`;
+      }
+      return `${month} ${year}`;
     }
 
     function renderProgressBar(currentStatus) {
       const steps = [
         { key: 'received',   label: 'Recibido' },
-        { key: 'diagnosing', label: 'Diagnóstico' },
-        { key: 'in_repair',  label: 'Reparación' },
+        { key: 'diagnosing', label: 'Diagnostico' },
+        { key: 'in_repair',  label: 'Reparacion' },
         { key: 'ready',      label: 'Listo' },
         { key: 'delivered',  label: 'Entregado' },
       ];
@@ -906,21 +1162,22 @@
     }
 
     function renderOrder(order) {
-      // Store token for quote actions
       currentOrderToken = getToken();
 
       const status = statusConfig[order.status] || {
         name: order.status || 'Actualizando',
-        color: 'var(--gray)',
+        color: 'var(--axer-gray)',
         icon: Icons.tag,
         hint: 'Estamos actualizando tu estado.'
       };
 
-      document.getElementById('orderNumber').textContent = order.order_number || '—';
+      // Order number with context
+      document.getElementById('orderNumber').textContent = order.order_number || '-';
+      document.getElementById('orderContext').textContent = getOrderContext(order.order_number, order.created_at);
 
       // Status card
-      const pillStyle = `color:${status.color}; background: color-mix(in srgb, ${status.color} 12%, white); border-color: color-mix(in srgb, ${status.color} 20%, white);`;
-      const iconStyle = `background: color-mix(in srgb, ${status.color} 10%, white); color:${status.color};`;
+      const pillStyle = `color:${status.color}; background: color-mix(in srgb, ${status.color} 10%, white); border-color: color-mix(in srgb, ${status.color} 18%, white);`;
+      const iconStyle = `background: color-mix(in srgb, ${status.color} 8%, white); color:${status.color};`;
 
       document.getElementById('statusCard').innerHTML = `
         <div class="status-left">
@@ -936,15 +1193,52 @@
         </div>
       `;
 
+      // Time estimate (show for diagnosing, in_repair)
+      const timeEstimate = document.getElementById('timeEstimate');
+      if (['diagnosing', 'in_repair'].includes(order.status)) {
+        const createdDate = new Date(order.created_at);
+        const now = new Date();
+        const daysSince = Math.floor((now - createdDate) / 86400000);
+
+        let estimateText = '';
+        if (order.status === 'diagnosing') {
+          estimateText = `Diagnostico tipico: 24-48 horas · Llevas ${daysSince === 0 ? 'menos de 1 dia' : daysSince + ' dia' + (daysSince > 1 ? 's' : '')}`;
+        } else if (order.status === 'in_repair') {
+          estimateText = `Reparacion en progreso · Dia ${daysSince + 1}`;
+        }
+
+        timeEstimate.innerHTML = `${Icons.clock} ${estimateText}`;
+        timeEstimate.style.display = 'flex';
+      } else {
+        timeEstimate.style.display = 'none';
+      }
+
       // Progress
       document.getElementById('progressBar').innerHTML = renderProgressBar(order.status);
+
+      // Technician card (show if assigned)
+      const techCard = document.getElementById('technicianCard');
+      if (order.technician_name) {
+        const initials = order.technician_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        techCard.innerHTML = `
+          <div class="technician-avatar">${initials}</div>
+          <div class="technician-info">
+            <div class="technician-label">Tecnico asignado</div>
+            <div class="technician-name">${escapeHtml(order.technician_name)}</div>
+          </div>
+        `;
+        techCard.style.display = 'flex';
+      } else {
+        techCard.style.display = 'none';
+      }
 
       // Device
       const brand = (order.device_brand || '').trim();
       const model = (order.device_model || '').trim();
       const deviceTitle = `${brand} ${model}`.trim() || 'Equipo';
-      const typeName = deviceNames[order.device_type] || 'Dispositivo';
-      const dIcon = deviceIcons[order.device_type] || deviceIcons.other;
+      const deviceType = order.device_type || 'other';
+      const typeName = deviceNames[deviceType] || 'Dispositivo';
+      const dIcon = deviceIcons[deviceType] || deviceIcons.other;
 
       document.getElementById('deviceInfo').innerHTML = `
         <div class="device-badge">${dIcon}</div>
@@ -954,8 +1248,14 @@
         </div>
       `;
 
+      // Dates with specific times
+      const created = formatRelativeTime(order.created_at);
+      const updated = formatRelativeTime(order.updated_at || order.created_at);
+
       document.getElementById('createdDate').textContent = formatDate(order.created_at);
-      document.getElementById('updatedDate').textContent = formatRelativeTime(order.updated_at || order.created_at);
+      document.getElementById('createdDateSub').textContent = formatTime(order.created_at);
+      document.getElementById('updatedDate').textContent = updated.main;
+      document.getElementById('updatedDateSub').textContent = updated.sub;
 
       // Workshop
       const phone = (order.workshop_phone || '').trim();
@@ -967,12 +1267,12 @@
           <div class="workshop-name">${escapeHtml(name)}</div>
           <div class="workshop-sub">
             ${Icons.shop}
-            <span>¿Tienes dudas? Contáctanos</span>
+            <span>Tienes dudas? Contactanos</span>
           </div>
         </div>
         ${phone ? `
           <div class="workshop-actions">
-            <a class="btn whatsapp" href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener">
+            <a class="btn whatsapp" href="https://wa.me/${cleanPhone}" target="_blank" rel="noopener" title="WhatsApp">
               ${Icons.whatsapp}
             </a>
             <a class="btn" href="tel:${phone}">
@@ -981,9 +1281,9 @@
             </a>
           </div>
         ` : `
-          <span class="btn" style="opacity:.6; pointer-events:none;">
+          <span class="btn" style="opacity:.5; pointer-events:none;">
             ${Icons.call}
-            Sin teléfono
+            Sin telefono
           </span>
         `}
       `;
@@ -1009,7 +1309,6 @@
         .replaceAll("'","&#039;");
     }
 
-    // Store current order token for quote actions
     let currentOrderToken = null;
     let currentCurrencySymbol = '$';
     let currentTaxName = 'IVA';
@@ -1031,22 +1330,19 @@
       const quoteSection = document.getElementById('quoteSection');
       const items = quote.items || [];
 
-      // Status badge styles
       const statusStyles = {
         draft: { bg: 'rgba(148, 163, 184, 0.15)', color: 'var(--muted)', text: 'Borrador' },
-        sent: { bg: 'rgba(124, 58, 237, 0.15)', color: 'var(--violet)', text: 'Pendiente' },
-        approved: { bg: 'rgba(22, 163, 74, 0.15)', color: 'var(--ok)', text: 'Aprobada' },
+        sent: { bg: 'rgba(124, 58, 237, 0.15)', color: 'var(--axer-accent)', text: 'Pendiente' },
+        approved: { bg: 'rgba(13, 148, 136, 0.15)', color: 'var(--axer-success)', text: 'Aprobada' },
         rejected: { bg: 'rgba(239, 68, 68, 0.15)', color: '#DC2626', text: 'Rechazada' }
       };
       const statusStyle = statusStyles[quote.status] || statusStyles.draft;
 
-      // Only show quote if it has been sent (not draft)
       if (quote.status === 'draft') {
         quoteSection.style.display = 'none';
         return;
       }
 
-      // Render items
       const itemsHtml = items.map(item => `
         <div class="quote-item">
           <span class="quote-item-name" title="${escapeHtml(item.description)}">${escapeHtml(item.description)}</span>
@@ -1055,7 +1351,6 @@
         </div>
       `).join('');
 
-      // Render totals
       const subtotal = parseFloat(quote.subtotal) || 0;
       const taxAmount = parseFloat(quote.tax_amount) || 0;
       const discount = parseFloat(quote.discount_amount) || 0;
@@ -1082,7 +1377,7 @@
         totalsHtml += `
           <div class="quote-row">
             <span class="quote-row-label">Descuento</span>
-            <span class="quote-row-value" style="color: var(--ok);">-${formatCurrency(discount, currentCurrencySymbol)}</span>
+            <span class="quote-row-value" style="color: var(--axer-success);">-${formatCurrency(discount, currentCurrencySymbol)}</span>
           </div>
         `;
       }
@@ -1090,26 +1385,24 @@
       totalsHtml += `
         <div class="quote-row total">
           <span class="quote-row-label">Total</span>
-          <span class="quote-row-value">${formatCurrency(total, currentCurrencySymbol)}</span>
+          <span class="quote-row-value counting">${formatCurrency(total, currentCurrencySymbol)}</span>
         </div>
       `;
 
-      // Trust message
       const trustHtml = `
         <div class="quote-trust">
           ${Icons.shield}
-          <span>No se realizará ningún cargo sin tu aprobación</span>
+          <span>Tranquilo, nada se cobra sin tu OK</span>
         </div>
       `;
 
-      // Render actions or responded message
       let actionsHtml = '';
       if (quote.status === 'sent') {
         actionsHtml = `
           <div class="quote-actions">
             <button class="quote-btn reject" onclick="handleRejectQuote()" id="rejectBtn">
               ${Icons.xCircle}
-              <span>Tengo una duda</span>
+              <span>Tengo preguntas</span>
             </button>
             <button class="quote-btn approve" onclick="handleApproveQuote()" id="approveBtn">
               ${Icons.checkCircle}
@@ -1121,13 +1414,13 @@
       } else if (quote.status === 'approved') {
         actionsHtml = `
           <div class="quote-responded">
-            ${Icons.checkCircle} Cotización aprobada
+            ${Icons.checkCircle} Cotizacion aprobada
           </div>
         `;
       } else if (quote.status === 'rejected') {
         actionsHtml = `
           <div class="quote-responded rejected">
-            ${Icons.xCircle} Cotización rechazada
+            ${Icons.xCircle} Cotizacion rechazada
           </div>
         `;
       }
@@ -1145,12 +1438,12 @@
         ${items.length > 0 ? `<div class="quote-items">${itemsHtml}</div>` : ''}
         <div class="quote-totals">${totalsHtml}</div>
         ${actionsHtml}
-        ${quote.notes ? `<div style="font-size: 12px; color: var(--muted); margin-top: 8px; font-weight: 600;">Nota: ${escapeHtml(quote.notes)}</div>` : ''}
+        ${quote.notes ? `<div style="font-size: 12px; color: var(--muted); margin-top: 10px; font-weight: 500; line-height: 1.4;">Nota: ${escapeHtml(quote.notes)}</div>` : ''}
       `;
 
       quoteSection.style.display = 'block';
 
-      // Setup sticky CTA for mobile (only if quote is pending)
+      // Sticky CTA for mobile
       if (quote.status === 'sent') {
         const stickyQuote = document.getElementById('stickyQuote');
         const stickySpacer = document.getElementById('stickySpacer');
@@ -1159,7 +1452,7 @@
           <div class="quote-actions">
             <button class="quote-btn reject" onclick="handleRejectQuote()" id="rejectBtnSticky">
               ${Icons.xCircle}
-              <span>Tengo una duda</span>
+              <span>Tengo preguntas</span>
             </button>
             <button class="quote-btn approve" onclick="handleApproveQuote()" id="approveBtnSticky">
               ${Icons.checkCircle}
@@ -1168,10 +1461,8 @@
           </div>
         `;
 
-        // Show/hide sticky based on scroll
         const checkStickyVisibility = () => {
           const quoteRect = quoteSection.getBoundingClientRect();
-          const isQuoteVisible = quoteRect.bottom > 0 && quoteRect.top < window.innerHeight;
           const isQuoteActionsVisible = quoteRect.bottom > 100;
 
           if (!isQuoteActionsVisible) {
@@ -1186,7 +1477,6 @@
         window.addEventListener('scroll', checkStickyVisibility, { passive: true });
         checkStickyVisibility();
       } else {
-        // Hide sticky if quote is not pending
         document.getElementById('stickyQuote').classList.remove('visible');
         document.getElementById('stickySpacer').classList.remove('visible');
       }
@@ -1216,15 +1506,25 @@
         });
 
         if (res.ok) {
-          // Reload the page to show updated status
-          loadOrder();
+          // Show success animation then reload
+          const approveBtn = document.getElementById('approveBtn');
+          const approveBtnSticky = document.getElementById('approveBtnSticky');
+
+          [approveBtn, approveBtnSticky].forEach(btn => {
+            if (btn) {
+              btn.classList.add('success');
+              btn.innerHTML = `${Icons.check} Aprobado`;
+            }
+          });
+
+          setTimeout(() => loadOrder(), 800);
         } else {
-          alert('No se pudo aprobar la cotización. Intenta de nuevo.');
+          alert('No se pudo aprobar la cotizacion. Intenta de nuevo.');
           setQuoteButtonsDisabled(false);
         }
       } catch (e) {
         console.error(e);
-        alert('Error de conexión. Intenta de nuevo.');
+        alert('Error de conexion. Intenta de nuevo.');
         setQuoteButtonsDisabled(false);
       }
     }
@@ -1241,15 +1541,14 @@
         });
 
         if (res.ok) {
-          // Reload the page to show updated status
           loadOrder();
         } else {
-          alert('No se pudo enviar tu duda. Intenta de nuevo o contáctanos directamente.');
+          alert('No se pudo enviar tu duda. Intenta de nuevo o contactanos directamente.');
           setQuoteButtonsDisabled(false);
         }
       } catch (e) {
         console.error(e);
-        alert('Error de conexión. Intenta de nuevo.');
+        alert('Error de conexion. Intenta de nuevo.');
         setQuoteButtonsDisabled(false);
       }
     }

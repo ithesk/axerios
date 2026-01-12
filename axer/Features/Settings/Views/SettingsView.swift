@@ -82,7 +82,7 @@ struct SettingsView: View {
                             showEditWorkshop = true
                         } label: {
                             HStack {
-                                Label("Impuesto", systemImage: "percent.circle.fill")
+                                Label("Impuesto", systemImage: "number.circle.fill")
                                 Spacer()
                                 Text("\(workshop.displayTaxName) (\(workshop.displayTaxRate)%)")
                                     .foregroundColor(Color(hex: "64748B"))
@@ -109,7 +109,7 @@ struct SettingsView: View {
                         .foregroundColor(.primary)
                     } else {
                         HStack {
-                            Label("Impuesto", systemImage: "percent.circle.fill")
+                            Label("Impuesto", systemImage: "number.circle.fill")
                             Spacer()
                             Text("\(workshop.displayTaxName) (\(workshop.displayTaxRate)%)")
                                 .foregroundColor(Color(hex: "64748B"))

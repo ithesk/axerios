@@ -82,6 +82,8 @@
 "join_workshop.verify_error" = "Could not verify the code";
 "join_workshop.accept_error" = "Could not accept the invitation";
 "join_workshop.create_error" = "Error creating account";
+"join_workshop.confirm" = "Confirm";
+"join_workshop.create_account" = "Create Account";
 
 // MARK: - Home
 "home.greeting" = "Hello, %@";
@@ -107,6 +109,13 @@
 "orders.qr_not_found" = "No order found with that QR code. Make sure the order has a tracking link generated.";
 "orders.scan_qr_accessibility" = "Scan QR code";
 "orders.scan_qr_hint" = "Opens the scanner to find an order by its QR code";
+"orders.all" = "All";
+"orders.my_orders" = "My orders";
+"orders.no_orders" = "No orders";
+"orders.no_results" = "No results";
+"orders.create_first" = "Create your first order";
+"orders.try_another" = "Try another term";
+"orders.search_hint" = "Search order, customer, IMEI...";
 
 // MARK: - Order Detail
 "order_detail.not_found" = "Order not found";
@@ -178,6 +187,20 @@
 "new_order.email_optional_placeholder" = "Email (optional)";
 "new_order.imei" = "IMEI";
 "new_order.imei_placeholder" = "15 digits";
+"new_order.search_customer" = "Search by name or phone";
+"new_order.device_powered_on" = "Device powered on";
+"new_order.device_powered_off" = "Device powered off";
+"new_order.pin_pattern" = "PIN or unlock pattern";
+"new_order.add_model" = "Add model";
+"new_order.add_brand_prompt" = "Add brand";
+"new_order.add_model_prompt" = "Add model";
+"new_order.customer" = "Customer";
+"new_order.device" = "Device";
+"new_order.problem" = "Problem";
+"new_order.status" = "Status";
+"new_order.diagnosis" = "Diagnosis";
+"new_order.fails_count" = "%d fails of %d checked";
+"new_order.create_order" = "Create Order";
 
 // MARK: - IMEI Scanner
 "imei_scanner.title" = "Scan IMEI";
@@ -340,6 +363,7 @@
 "services.default_price" = "Default price";
 "services.name_placeholder" = "Service name";
 "services.price_placeholder" = "0.00";
+"services.empty_search" = "Try another term";
 
 // MARK: - Onboarding
 "onboarding.created_title" = "Workshop Created!";

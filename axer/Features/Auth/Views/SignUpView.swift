@@ -13,7 +13,7 @@ struct SignUpView: View {
 
     var body: some View {
         ZStack {
-            Color.white
+            AxerColors.surface
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -24,7 +24,7 @@ struct SignUpView: View {
                     } label: {
                         Image(systemName: "arrow.left")
                             .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(Color(hex: "0D2137"))
+                            .foregroundColor(AxerColors.textPrimary)
                     }
                     Spacer()
                 }
@@ -35,13 +35,13 @@ struct SignUpView: View {
                     VStack(spacing: 32) {
                         // Titulo
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Crear Cuenta")
+                            Text(L10n.SignUp.title)
                                 .font(.system(size: 28, weight: .bold))
-                                .foregroundColor(Color(hex: "0D2137"))
+                                .foregroundColor(AxerColors.textPrimary)
 
-                            Text("Completa tus datos para comenzar")
+                            Text(L10n.SignUp.subtitle)
                                 .font(.system(size: 16))
-                                .foregroundColor(Color(hex: "64748B"))
+                                .foregroundColor(AxerColors.textSecondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 32)
@@ -78,32 +78,32 @@ struct SignUpView: View {
                             HStack {
                                 if isLoading {
                                     ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "00BCD4")))
+                                        .progressViewStyle(CircularProgressViewStyle(tint: AxerColors.accent))
                                 }
-                                Text("Crear Cuenta")
+                                Text(L10n.SignUp.button)
                                     .font(.system(size: 17, weight: .semibold))
                             }
-                            .foregroundColor(Color(hex: "00BCD4"))
+                            .foregroundColor(AxerColors.accent)
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
-                            .background(Color(hex: "0D2137"))
+                            .background(AxerColors.textPrimary)
                             .cornerRadius(28)
                         }
                         .disabled(!isFormValid || isLoading)
                         .opacity(isFormValid ? 1 : 0.6)
 
                         // Terminos
-                        Text("Al crear una cuenta, aceptas nuestros Terminos de Servicio y Politica de Privacidad")
+                        Text(L10n.SignUp.termsText)
                             .font(.system(size: 13))
-                            .foregroundColor(Color(hex: "94A3B8"))
+                            .foregroundColor(AxerColors.textTertiary)
                             .multilineTextAlignment(.center)
                     }
                     .padding(.horizontal, 24)
                 }
             }
         }
-        .alert("Error", isPresented: $showError) {
-            Button("OK", role: .cancel) {}
+        .alert(L10n.Common.error, isPresented: $showError) {
+            Button(L10n.Common.ok, role: .cancel) {}
         } message: {
             Text(errorMessage)
         }
@@ -119,7 +119,7 @@ struct SignUpView: View {
             try await sessionStore.signUp(email: email, password: password)
             dismiss()
         } catch {
-            errorMessage = "No se pudo crear la cuenta. Intenta de nuevo."
+            errorMessage = L10n.Error.creatingAccount
             showError = true
         }
         isLoading = false

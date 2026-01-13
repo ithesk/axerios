@@ -11,7 +11,7 @@ struct EmailVerificationView: View {
 
     var body: some View {
         ZStack {
-            Color.white
+            AxerColors.surface
                 .ignoresSafeArea()
 
             VStack(spacing: 32) {
@@ -20,32 +20,32 @@ struct EmailVerificationView: View {
                 // Icon
                 ZStack {
                     Circle()
-                        .fill(Color(hex: "E3F2FD"))
+                        .fill(AxerColors.primaryLight)
                         .frame(width: 120, height: 120)
 
                     Image(systemName: "envelope.badge")
                         .font(.system(size: 50))
-                        .foregroundColor(Color(hex: "0D47A1"))
+                        .foregroundColor(AxerColors.primary)
                 }
 
                 // Text
                 VStack(spacing: 12) {
-                    Text("Verifica tu Email")
+                    Text(L10n.EmailVerification.title)
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(Color(hex: "0D2137"))
+                        .foregroundColor(AxerColors.textPrimary)
 
-                    Text("Hemos enviado un enlace de verificacion a:")
+                    Text(L10n.EmailVerification.sentTo)
                         .font(.system(size: 16))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
                         .multilineTextAlignment(.center)
 
                     Text(email)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(Color(hex: "0D47A1"))
+                        .foregroundColor(AxerColors.primary)
 
-                    Text("Revisa tu bandeja de entrada y haz clic en el enlace para continuar.")
+                    Text(L10n.EmailVerification.checkInbox)
                         .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "94A3B8"))
+                        .foregroundColor(AxerColors.textTertiary)
                         .multilineTextAlignment(.center)
                         .padding(.top, 8)
                 }
@@ -59,12 +59,12 @@ struct EmailVerificationView: View {
                     Button {
                         Task { await resendVerificationEmail() }
                     } label: {
-                        Text("Reenviar Email")
+                        Text(L10n.EmailVerification.resend)
                             .font(.system(size: 17, weight: .medium))
-                            .foregroundColor(Color(hex: "0D47A1"))
+                            .foregroundColor(AxerColors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
-                            .background(Color(hex: "E3F2FD"))
+                            .background(AxerColors.primaryLight)
                             .cornerRadius(28)
                     }
 
@@ -74,19 +74,19 @@ struct EmailVerificationView: View {
                         sessionStore.clearPendingWorkshopData()
                         dismiss()
                     } label: {
-                        Text("Volver al Inicio")
+                        Text(L10n.EmailVerification.backHome)
                             .font(.system(size: 17, weight: .medium))
-                            .foregroundColor(Color(hex: "64748B"))
+                            .foregroundColor(AxerColors.textSecondary)
                     }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 32)
             }
         }
-        .alert("Email Enviado", isPresented: $showResendSuccess) {
-            Button("OK", role: .cancel) {}
+        .alert(L10n.EmailVerification.resentTitle, isPresented: $showResendSuccess) {
+            Button(L10n.Common.ok, role: .cancel) {}
         } message: {
-            Text("Hemos reenviado el email de verificacion.")
+            Text(L10n.EmailVerification.resentSuccess)
         }
     }
 

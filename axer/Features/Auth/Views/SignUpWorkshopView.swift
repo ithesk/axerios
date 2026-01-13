@@ -18,7 +18,7 @@ struct SignUpWorkshopView: View {
 
     var body: some View {
         ZStack {
-            Color.white
+            AxerColors.surface
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -45,8 +45,8 @@ struct SignUpWorkshopView: View {
                 bottomButton
             }
         }
-        .alert("Error", isPresented: $showError) {
-            Button("OK", role: .cancel) {}
+        .alert(L10n.Common.error, isPresented: $showError) {
+            Button(L10n.Common.ok, role: .cancel) {}
         } message: {
             Text(errorMessage)
         }
@@ -70,7 +70,7 @@ struct SignUpWorkshopView: View {
             } label: {
                 Image(systemName: "arrow.left")
                     .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
             }
             Spacer()
         }
@@ -83,7 +83,7 @@ struct SignUpWorkshopView: View {
         HStack(spacing: 8) {
             ForEach(0..<2) { index in
                 Capsule()
-                    .fill(index <= currentStep ? Color(hex: "0D47A1") : Color(hex: "E2E8F0"))
+                    .fill(index <= currentStep ? AxerColors.primary : AxerColors.border)
                     .frame(height: 4)
             }
         }
@@ -95,13 +95,13 @@ struct SignUpWorkshopView: View {
     private var workshopStepView: some View {
         VStack(alignment: .leading, spacing: 24) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Datos del Taller")
+                Text(L10n.WorkshopSignUp.step1Title)
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
-                Text("Ingresa la informacion de tu negocio")
+                Text(L10n.WorkshopSignUp.step1Subtitle)
                     .font(.system(size: 16))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
             }
 
             VStack(spacing: 16) {
@@ -125,13 +125,13 @@ struct SignUpWorkshopView: View {
     private var accountStepView: some View {
         VStack(alignment: .leading, spacing: 24) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Tu Cuenta")
+                Text(L10n.WorkshopSignUp.step2Title)
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
-                Text("Crea tu cuenta de administrador")
+                Text(L10n.WorkshopSignUp.step2Subtitle)
                     .font(.system(size: 16))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
             }
 
             VStack(spacing: 16) {
@@ -158,9 +158,9 @@ struct SignUpWorkshopView: View {
                 )
             }
 
-            Text("La contrasena debe tener al menos 6 caracteres")
+            Text(L10n.SignUp.passwordHint)
                 .font(.system(size: 13))
-                .foregroundColor(Color(hex: "94A3B8"))
+                .foregroundColor(AxerColors.textTertiary)
         }
     }
 
@@ -177,15 +177,15 @@ struct SignUpWorkshopView: View {
                 HStack {
                     if isLoading {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "00BCD4")))
+                            .progressViewStyle(CircularProgressViewStyle(tint: AxerColors.accent))
                     }
-                    Text(currentStep == 0 ? "Continuar" : "Crear Taller")
+                    Text(currentStep == 0 ? L10n.Common.continue : L10n.WorkshopSignUp.createButton)
                         .font(.system(size: 17, weight: .semibold))
                 }
-                .foregroundColor(Color(hex: "00BCD4"))
+                .foregroundColor(AxerColors.accent)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(Color(hex: "0D2137"))
+                .background(AxerColors.textPrimary)
                 .cornerRadius(28)
             }
             .disabled(!isCurrentStepValid || isLoading)
@@ -222,7 +222,7 @@ struct SignUpWorkshopView: View {
             showEmailVerification = true
 
         } catch {
-            errorMessage = "No se pudo crear la cuenta. Intenta de nuevo."
+            errorMessage = L10n.Error.creatingAccount
             showError = true
         }
 

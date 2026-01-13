@@ -1,0 +1,461 @@
+/*
+  Localizable.strings (Spanish)
+  axer
+
+  Spanish localization - Primary language
+*/
+
+// MARK: - Common
+"common.cancel" = "Cancelar";
+"common.save" = "Guardar";
+"common.close" = "Cerrar";
+"common.delete" = "Eliminar";
+"common.edit" = "Editar";
+"common.add" = "Agregar";
+"common.done" = "Listo";
+"common.next" = "Siguiente";
+"common.back" = "Atras";
+"common.continue" = "Continuar";
+"common.loading" = "Cargando...";
+"common.error" = "Error";
+"common.ok" = "OK";
+"common.yes" = "Si";
+"common.no" = "No";
+"common.search" = "Buscar";
+"common.required_field" = "* Campo requerido";
+
+// MARK: - Auth - Login
+"login.title" = "Iniciar Sesion";
+"login.subtitle" = "Ingresa tus datos para continuar";
+"login.email_placeholder" = "Email";
+"login.password_placeholder" = "Contrasena";
+"login.button" = "Iniciar Sesion";
+"login.error_invalid_credentials" = "Credenciales incorrectas. Intenta de nuevo.";
+
+// MARK: - Auth - Sign Up
+"signup.title" = "Crear Cuenta";
+"signup.subtitle" = "Completa tus datos para comenzar";
+"signup.fullname_placeholder" = "Nombre completo";
+"signup.email_placeholder" = "Email";
+"signup.password_placeholder" = "Contrasena";
+"signup.terms_text" = "Al crear una cuenta, aceptas nuestros Terminos de Servicio y Politica de Privacidad";
+"signup.password_hint" = "La contrasena debe tener al menos 6 caracteres";
+"signup.button" = "Crear Cuenta";
+
+// MARK: - Auth - Workshop Sign Up
+"workshop_signup.step1_title" = "Datos del Taller";
+"workshop_signup.step1_subtitle" = "Ingresa la informacion de tu negocio";
+"workshop_signup.step2_title" = "Tu Cuenta";
+"workshop_signup.step2_subtitle" = "Crea tu cuenta de administrador";
+"workshop_signup.workshop_name" = "Nombre del taller";
+"workshop_signup.phone_optional" = "Telefono (opcional)";
+"workshop_signup.create_button" = "Crear Taller";
+
+// MARK: - Auth - Welcome
+"welcome.app_name" = "axer";
+"welcome.tagline" = "Juntos vamos a\norganizar tu taller";
+"welcome.create_workshop" = "Crear mi Taller";
+"welcome.have_invite" = "Tengo un codigo de invitacion";
+"welcome.have_account" = "Ya tengo cuenta";
+
+// MARK: - Auth - Email Verification
+"email_verification.title" = "Verifica tu Email";
+"email_verification.sent_to" = "Hemos enviado un enlace de verificacion a:";
+"email_verification.check_inbox" = "Revisa tu bandeja de entrada y haz clic en el enlace para continuar.";
+"email_verification.resend" = "Reenviar Email";
+"email_verification.back_home" = "Volver al Inicio";
+"email_verification.resent_success" = "Hemos reenviado el email de verificacion.";
+"email_verification.resent_title" = "Email Enviado";
+
+// MARK: - Auth - Join Workshop
+"join_workshop.title" = "Unirse a Taller";
+"join_workshop.code_title" = "Codigo de Invitacion";
+"join_workshop.code_subtitle" = "Ingresa el codigo que te compartio el administrador del taller.";
+"join_workshop.verify_button" = "Verificar Codigo";
+"join_workshop.valid_title" = "Invitacion Valida!";
+"join_workshop.joining_to" = "Te uniras a:";
+"join_workshop.as_member" = "como %@";
+"join_workshop.create_account_title" = "Crea tu Cuenta";
+"join_workshop.create_account_subtitle" = "Ingresa tus datos para unirte al taller";
+"join_workshop.create_and_join" = "Crear Cuenta y Unirme";
+"join_workshop.invalid_code" = "Codigo invalido o expirado";
+"join_workshop.verify_error" = "No se pudo verificar el codigo";
+"join_workshop.accept_error" = "No se pudo aceptar la invitacion";
+"join_workshop.create_error" = "Error creando cuenta";
+"join_workshop.confirm" = "Confirmar";
+"join_workshop.create_account" = "Crear Cuenta";
+
+// MARK: - Home
+"home.greeting" = "Hola, %@";
+"home.new_order" = "Nueva Orden";
+"home.active_orders" = "Ordenes Activas";
+"home.ready_delivery" = "lista(s) para entrega";
+"home.none_ready" = "Ninguna lista para entrega";
+"home.approved_today" = "Aprobadas Hoy";
+"home.quotes_approved" = "cotizacion(es) aprobada(s)";
+"home.month_summary" = "Resumen de %@";
+"home.recent_orders" = "Ordenes Recientes";
+"home.view_all" = "Ver todas";
+"home.no_orders_yet" = "Sin ordenes aun";
+"home.create_first" = "Crea tu primera orden";
+
+// MARK: - Orders List
+"orders.title" = "Ordenes";
+"orders.loading" = "Cargando ordenes...";
+"orders.search_placeholder" = "Buscar orden...";
+"orders.new_order" = "Nueva Orden";
+"orders.scan_qr" = "Escanear orden";
+"orders.all_statuses" = "Todos estados";
+"orders.qr_not_found" = "No se encontro ninguna orden con ese codigo QR. Asegurate de que la orden tenga un link de seguimiento generado.";
+"orders.scan_qr_accessibility" = "Escanear codigo QR";
+"orders.scan_qr_hint" = "Abre el escaner para buscar una orden por su codigo QR";
+"orders.all" = "Todas";
+"orders.my_orders" = "Mis órdenes";
+"orders.no_orders" = "No hay ordenes";
+"orders.no_results" = "Sin resultados";
+"orders.create_first" = "Crea tu primera orden";
+"orders.try_another" = "Intenta con otro termino";
+"orders.search_hint" = "Buscar orden, cliente, IMEI...";
+
+// MARK: - Order Detail
+"order_detail.not_found" = "Orden no encontrada";
+"order_detail.progress" = "Progreso";
+"order_detail.current_status" = "Estado actual";
+"order_detail.next_status" = "Siguiente:";
+"order_detail.client" = "Cliente";
+"order_detail.responsible" = "Responsable";
+"order_detail.mine" = "Mia";
+"order_detail.unassigned" = "Sin asignar";
+"order_detail.take_order_hint" = "Toma esta orden para ser responsable";
+"order_detail.take_order" = "Tomar orden";
+"order_detail.assign" = "Asignar";
+"order_detail.take_order_confirm" = "Quieres ser el responsable de esta orden?";
+"order_detail.device" = "Dispositivo";
+"order_detail.initial_diagnosis" = "Diagnostico Inicial";
+"order_detail.reported_problem" = "Problema Reportado";
+"order_detail.quote" = "Cotizacion";
+"order_detail.items_count" = "%d items";
+"order_detail.create_quote" = "Crear Cotizacion";
+"order_detail.note" = "Nota";
+"order_detail.no_activity" = "Sin actividad registrada";
+"order_detail.change_status" = "Cambiar Estado";
+"order_detail.print_label" = "Imprimir Label";
+"order_detail.share_tracking" = "Compartir Seguimiento";
+"order_detail.generate_link" = "Generar Link de Seguimiento";
+"order_detail.internal_notes_hint" = "Las notas internas solo son visibles para el equipo del taller";
+"order_detail.current" = "Actual";
+"order_detail.preview" = "Vista previa";
+"order_detail.new_note" = "Nueva Nota";
+"order_detail.assign_to" = "Asignar a";
+"order_detail.share_order" = "Compartir orden";
+"order_detail.whatsapp" = "WhatsApp";
+"order_detail.email" = "Email";
+"order_detail.take" = "Tomar";
+
+// MARK: - New Order
+"new_order.title" = "Nueva Orden";
+"new_order.select_customer" = "Selecciona el cliente";
+"new_order.customer_not_found" = "No se encontro el cliente";
+"new_order.create_customer" = "Crear nuevo cliente";
+"new_order.new_customer" = "Nuevo Cliente";
+"new_order.create_customer_button" = "Crear Cliente";
+"new_order.device_data" = "Datos del dispositivo";
+"new_order.device_type" = "Tipo de dispositivo";
+"new_order.brand" = "Marca";
+"new_order.model" = "Modelo";
+"new_order.device_status" = "Estado del equipo";
+"new_order.turns_on" = "Enciende";
+"new_order.doesnt_turn_on" = "No enciende";
+"new_order.quick_checklist" = "Checklist rapido";
+"new_order.additional_info" = "Informacion adicional";
+"new_order.password_pattern" = "Contrasena/Patron";
+"new_order.describe_problem" = "Describe el problema";
+"new_order.problem_placeholder" = "Que le pasa al equipo?";
+"new_order.photos_optional" = "Fotos del equipo (opcional)";
+"new_order.camera" = "Camara";
+"new_order.gallery" = "Galeria";
+"new_order.summary" = "Resumen";
+"new_order.select_brand" = "Seleccionar Marca";
+"new_order.select_model" = "Seleccionar Modelo";
+"new_order.add_brand" = "Agregar \"%@\"";
+"new_order.brand_will_save" = "Esta marca se guardara para futuras ordenes";
+"new_order.no_models_saved" = "No hay modelos guardados";
+"new_order.type_to_add" = "Escribe para agregar uno nuevo";
+"new_order.model_will_save" = "Este modelo se guardara para %@";
+"new_order.fullname_placeholder" = "Nombre completo";
+"new_order.phone_placeholder" = "Telefono";
+"new_order.email_optional_placeholder" = "Email (opcional)";
+"new_order.imei" = "IMEI";
+"new_order.imei_placeholder" = "15 digitos";
+"new_order.search_customer" = "Buscar por nombre o telefono";
+"new_order.device_powered_on" = "Equipo encendido";
+"new_order.device_powered_off" = "Equipo apagado";
+"new_order.pin_pattern" = "PIN o patron de desbloqueo";
+"new_order.add_model" = "Agregar modelo";
+"new_order.add_brand_prompt" = "Agregar marca";
+"new_order.add_model_prompt" = "Agregar modelo";
+"new_order.customer" = "Cliente";
+"new_order.device" = "Dispositivo";
+"new_order.problem" = "Problema";
+"new_order.status" = "Estado";
+"new_order.diagnosis" = "Diagnostico";
+"new_order.fails_count" = "%d fallas de %d verificados";
+"new_order.create_order" = "Crear Orden";
+
+// MARK: - IMEI Scanner
+"imei_scanner.title" = "Escanear IMEI";
+"imei_scanner.processing" = "Procesando...";
+"imei_scanner.barcode_hint" = "Apunta al codigo de barras del IMEI";
+"imei_scanner.ocr_hint" = "Apunta al texto del IMEI";
+"imei_scanner.imei_location" = "El IMEI suele estar en la caja o en Ajustes > General > Informacion";
+"imei_scanner.switch_ocr" = "Cambiar a OCR (texto)";
+"imei_scanner.switch_barcode" = "Volver a codigo de barras";
+"imei_scanner.invalid_format" = "Codigo no parece ser IMEI (%d digitos)";
+
+// MARK: - Print Label
+"print_label.title" = "Imprimir Label";
+"print_label.preview" = "Vista previa";
+"print_label.size" = "Tamano del label";
+"print_label.copies" = "Cantidad de copias";
+"print_label.print" = "Imprimir";
+"print_label.share_pdf" = "Compartir PDF";
+"print_label.size_small" = "Pequeno (40x30mm)";
+"print_label.size_medium" = "Mediano (50x30mm)";
+"print_label.error_generating" = "Error generando PDF";
+"print_label.error_saving" = "Error guardando PDF";
+
+// MARK: - Quote
+"quote.no_quote" = "Sin cotizacion";
+"quote.create_hint" = "Crea una cotizacion para esta orden";
+"quote.create" = "Crear Cotizacion";
+"quote.title" = "Cotizacion";
+"quote.items" = "Items";
+"quote.items_count" = "%d items";
+"quote.add_items_hint" = "Agrega items a la cotizacion";
+"quote.add_item" = "Agregar Item";
+"quote.edit_item" = "Editar Item";
+"quote.subtotal" = "Subtotal";
+"quote.discount" = "Descuento";
+"quote.total" = "Total";
+"quote.copy_link" = "Copiar Link";
+"quote.frequent_services" = "Servicios frecuentes";
+"quote.type" = "Tipo";
+"quote.description" = "Descripcion";
+"quote.price" = "Precio";
+"quote.quantity" = "Cantidad";
+"quote.unit_price" = "Precio unitario";
+"quote.status" = "Estado";
+
+// MARK: - Team
+"team.title" = "Equipo";
+"team.members_count" = "%d miembro(s)";
+"team.members" = "Miembros";
+"team.pending_invites" = "Invitaciones Pendientes";
+"team.you" = "(Tu)";
+"team.invite_code" = "Codigo: %@";
+"team.expires" = "Expira %@";
+
+// MARK: - Invite User
+"invite.title" = "Invitar Usuario";
+"invite.created_title" = "Invitacion Creada";
+"invite.add_to_team" = "Agregar al Equipo";
+"invite.subtitle" = "Genera un codigo de invitacion para que un nuevo miembro se una a tu taller.";
+"invite.role_label" = "Rol del nuevo miembro";
+"invite.technician" = "Tecnico";
+"invite.technician_desc" = "Puede ver y actualizar ordenes";
+"invite.admin" = "Admin";
+"invite.admin_desc" = "Control total del taller";
+"invite.generate" = "Generar Invitacion";
+"invite.ready_title" = "Invitacion Lista!";
+"invite.share_hint" = "Comparte este codigo con el nuevo miembro del equipo.";
+"invite.role_format" = "Rol: %@";
+"invite.expires_7_days" = "Expira en 7 dias";
+"invite.share" = "Compartir";
+"invite.copied" = "Copiado!";
+"invite.copy_code" = "Copiar codigo completo";
+
+// MARK: - Customers
+"customers.title" = "Clientes";
+"customers.new" = "Nuevo Cliente";
+"customers.search_placeholder" = "Buscar cliente...";
+"customers.empty_title" = "Sin clientes";
+"customers.empty_subtitle" = "Agrega tu primer cliente";
+"customers.detail_title" = "Detalle";
+"customers.edit_title" = "Editar Cliente";
+"customers.customer_since" = "Cliente desde %@";
+"customers.no_contact_info" = "Sin informacion de contacto";
+"customers.edit" = "Editar cliente";
+"customers.delete" = "Eliminar cliente";
+"customers.delete_confirm_title" = "Eliminar cliente?";
+"customers.delete_confirm_message" = "Esta accion no se puede deshacer";
+"customers.section_contact" = "Contacto";
+"customers.section_notes" = "Notas";
+"customers.section_info" = "Informacion";
+"customers.name_placeholder" = "Nombre *";
+"customers.phone_placeholder" = "Telefono";
+"customers.email_placeholder" = "Email";
+
+// MARK: - Settings
+"settings.title" = "Ajustes";
+"settings.workshop_section" = "Taller";
+"settings.name" = "Nombre";
+"settings.phone" = "Telefono";
+"settings.order_prefix" = "Prefijo ordenes";
+"settings.tax" = "Impuesto";
+"settings.currency" = "Moneda";
+"settings.fiscal_config" = "Configuracion Fiscal";
+"settings.tap_to_edit" = "Toca para editar la configuracion";
+"settings.services_section" = "Servicios";
+"settings.service_catalog" = "Catalogo de servicios";
+"settings.team_section" = "Equipo";
+"settings.manage_team" = "Administrar equipo";
+"settings.app_section" = "Aplicacion";
+"settings.version" = "Version";
+"settings.legal_section" = "Legal";
+"settings.privacy_policy" = "Politica de Privacidad";
+"settings.terms_of_service" = "Terminos de Servicio";
+"settings.contact_support" = "Contactar Soporte";
+"settings.logout" = "Cerrar Sesion";
+"settings.logout_confirm_title" = "Cerrar Sesion";
+"settings.logout_confirm_message" = "Estas seguro que quieres cerrar sesion?";
+"settings.logout_button" = "Salir";
+"settings.user" = "Usuario";
+"settings.delete_account" = "Eliminar Cuenta";
+"settings.delete_account_title" = "Eliminar Cuenta";
+"settings.delete_account_message" = "Esta accion es permanente y no se puede deshacer. Se eliminaran todos tus datos, incluyendo tu perfil y configuraciones.";
+"settings.delete_account_button" = "Eliminar Mi Cuenta";
+"settings.delete_account_footer" = "Al eliminar tu cuenta se borraran permanentemente todos tus datos personales.";
+
+// MARK: - Service Management (kept existing + new keys for empty states)
+"services.empty_search" = "Intenta con otro termino";
+
+// MARK: - Workshop Edit
+"workshop_edit.title" = "Editar Taller";
+"workshop_edit.info_section" = "Informacion del Taller";
+"workshop_edit.workshop_name" = "Nombre del taller";
+"workshop_edit.phone" = "Telefono";
+"workshop_edit.address" = "Direccion";
+"workshop_edit.order_prefix" = "Prefijo de ordenes";
+"workshop_edit.fiscal_section" = "Configuracion Fiscal";
+"workshop_edit.tax_name" = "Nombre del impuesto";
+"workshop_edit.tax_name_placeholder" = "Ej: IVA, ITBIS";
+"workshop_edit.tax_rate" = "Tasa de impuesto (%)";
+"workshop_edit.tax_rate_placeholder" = "Ej: 18";
+"workshop_edit.currency_section" = "Moneda";
+"workshop_edit.currency_symbol" = "Simbolo";
+"workshop_edit.currency_symbol_placeholder" = "Ej: $, RD$";
+"workshop_edit.currency_code" = "Codigo";
+"workshop_edit.currency_code_placeholder" = "Ej: USD, DOP";
+"workshop_edit.presets_section" = "Presets Regionales";
+"workshop_edit.presets_footer" = "Selecciona un preset para aplicar la configuracion fiscal de tu region";
+"workshop_edit.preset_dr" = "Rep. Dominicana (ITBIS 18%)";
+"workshop_edit.preset_mx" = "Mexico (IVA 16%)";
+"workshop_edit.preset_us" = "Estados Unidos (Sin IVA)";
+
+// MARK: - Service Management
+"services.title" = "Servicios";
+"services.add" = "Agregar Servicio";
+"services.new_title" = "Nuevo Servicio";
+"services.edit_title" = "Editar Servicio";
+"services.used_count" = "Usado %dx";
+"services.times_used" = "Veces usado";
+"services.last_used" = "Ultimo uso";
+"services.inactive_hint" = "Los servicios inactivos no aparecen en las sugerencias";
+"services.delete_confirm" = "Este servicio se eliminara del catalogo";
+"services.info_section" = "Informacion";
+"services.default_price" = "Precio predeterminado";
+"services.name_placeholder" = "Nombre del servicio";
+"services.price_placeholder" = "0.00";
+
+// MARK: - Onboarding
+"onboarding.created_title" = "Taller Creado!";
+"onboarding.created_subtitle" = "Tu taller %@ esta listo. Vamos a configurar algunas cosas basicas.";
+"onboarding.basic_config" = "Configuracion Basica";
+"onboarding.change_later" = "Puedes cambiar esto despues";
+"onboarding.currency" = "Moneda";
+"onboarding.order_prefix" = "Prefijo de Ordenes";
+"onboarding.prefix_preview" = "Las ordenes se veran como: %@-001";
+"onboarding.prefix_placeholder" = "Ej: ORD, REP, SRV";
+"onboarding.all_set_title" = "Todo Listo!";
+"onboarding.all_set_subtitle" = "Tu taller esta configurado y listo para comenzar a recibir ordenes.";
+"onboarding.start" = "Comenzar";
+
+// MARK: - Offline Banner
+"offline.no_connection" = "Sin conexion a internet";
+
+// MARK: - Order Status
+"status.received" = "Recibido";
+"status.diagnosing" = "Diagnosticando";
+"status.quoted" = "Cotizado";
+"status.approved" = "Aprobado";
+"status.in_repair" = "En Reparacion";
+"status.ready" = "Listo";
+"status.delivered" = "Entregado";
+
+// MARK: - Device Types
+"device.iphone" = "iPhone";
+"device.android" = "Android";
+"device.tablet" = "Tablet";
+"device.watch" = "Smartwatch";
+"device.laptop" = "Laptop";
+"device.other" = "Otro";
+
+// MARK: - User Roles
+"role.owner" = "Propietario";
+"role.admin" = "Administrador";
+"role.technician" = "Tecnico";
+
+// MARK: - Quote Item Types
+"quote_item.service" = "Servicio";
+"quote_item.part" = "Repuesto";
+
+// MARK: - Months
+"month.january" = "Enero";
+"month.february" = "Febrero";
+"month.march" = "Marzo";
+"month.april" = "Abril";
+"month.may" = "Mayo";
+"month.june" = "Junio";
+"month.july" = "Julio";
+"month.august" = "Agosto";
+"month.september" = "Septiembre";
+"month.october" = "Octubre";
+"month.november" = "Noviembre";
+"month.december" = "Diciembre";
+
+// MARK: - Errors
+"error.network" = "Sin conexion a internet";
+"error.server" = "Error del servidor";
+"error.server_with_code" = "Error del servidor (codigo %d)";
+"error.unauthorized" = "Sesion expirada";
+"error.not_found" = "No se encontro el recurso";
+"error.unknown" = "Ocurrio un error inesperado";
+"error.invalid_data" = "Datos invalidos";
+"error.timeout" = "La conexion tardo demasiado";
+"error.retry" = "Reintentar";
+"error.creating_account" = "No se pudo crear la cuenta";
+
+// Error suggestions
+"error.network_suggestion" = "Verifica tu conexion a internet e intenta de nuevo.";
+"error.server_suggestion" = "Intenta de nuevo mas tarde.";
+"error.unauthorized_suggestion" = "Inicia sesion nuevamente.";
+"error.timeout_suggestion" = "Verifica tu conexion e intenta de nuevo.";
+"error.retry_suggestion" = "Intenta de nuevo.";
+"orders.no_more_orders" = "No hay más órdenes";
+
+// MARK: - Accessibility
+"accessibility.new_order_hint" = "Crear una nueva orden de reparacion";
+"accessibility.profile_photo" = "Foto de perfil";
+"accessibility.profile_photo_hint" = "Toca para cambiar tu foto de perfil";
+"accessibility.active_orders_card" = "%d ordenes activas. %d listas para entregar.";
+"accessibility.today_quotes_card" = "%d cotizaciones aprobadas hoy por %@";
+"accessibility.month_summary_card" = "Resumen de %@. %d recibidas, %d aprobadas, %d entregadas.";
+"accessibility.view_order_details" = "Toca para ver detalles de la orden";
+"accessibility.go_back" = "Volver";
+"accessibility.close_sheet" = "Cerrar";
+"accessibility.required_field" = "Campo requerido";
+"accessibility.share_order" = "Compartir orden";
+"accessibility.print_label" = "Imprimir etiqueta";
+"accessibility.change_status" = "Cambiar estado";
+"accessibility.call_customer" = "Llamar al cliente";
+"accessibility.whatsapp_customer" = "Enviar WhatsApp al cliente";

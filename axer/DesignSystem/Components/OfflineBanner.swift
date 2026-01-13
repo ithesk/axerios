@@ -7,10 +7,10 @@ struct OfflineBanner: View {
         if !networkMonitor.isConnected {
             HStack(spacing: AxerSpacing.xs) {
                 Image(systemName: "wifi.slash")
-                Text("Sin conexion a internet")
+                Text(L10n.Offline.noConnection)
                     .font(AxerTypography.footnote)
             }
-            .foregroundColor(.white)
+            .foregroundColor(AxerColors.textInverse)
             .frame(maxWidth: .infinity)
             .padding(.vertical, AxerSpacing.xs)
             .background(AxerColors.warning)

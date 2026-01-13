@@ -80,7 +80,7 @@ struct MainTabView: View {
             }
             .tag(Tab.settings)
         }
-        .tint(Color(hex: "0D47A1"))
+        .tint(AxerColors.primary)
         .fullScreenCover(isPresented: $sessionStore.shouldShowOnboarding) {
             OnboardingView()
         }

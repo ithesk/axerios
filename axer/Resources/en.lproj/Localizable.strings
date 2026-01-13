@@ -1,0 +1,435 @@
+/*
+  Localizable.strings (English)
+  axer
+
+  English localization
+*/
+
+// MARK: - Common
+"common.cancel" = "Cancel";
+"common.save" = "Save";
+"common.close" = "Close";
+"common.delete" = "Delete";
+"common.edit" = "Edit";
+"common.add" = "Add";
+"common.done" = "Done";
+"common.next" = "Next";
+"common.back" = "Back";
+"common.continue" = "Continue";
+"common.loading" = "Loading...";
+"common.error" = "Error";
+"common.ok" = "OK";
+"common.yes" = "Yes";
+"common.no" = "No";
+"common.search" = "Search";
+"common.required_field" = "* Required field";
+
+// MARK: - Auth - Login
+"login.title" = "Sign In";
+"login.subtitle" = "Enter your credentials to continue";
+"login.email_placeholder" = "Email";
+"login.password_placeholder" = "Password";
+"login.button" = "Sign In";
+"login.error_invalid_credentials" = "Invalid credentials. Please try again.";
+
+// MARK: - Auth - Sign Up
+"signup.title" = "Create Account";
+"signup.subtitle" = "Complete your information to get started";
+"signup.fullname_placeholder" = "Full name";
+"signup.email_placeholder" = "Email";
+"signup.password_placeholder" = "Password";
+"signup.terms_text" = "By creating an account, you agree to our Terms of Service and Privacy Policy";
+"signup.password_hint" = "Password must be at least 6 characters";
+"signup.button" = "Create Account";
+
+// MARK: - Auth - Workshop Sign Up
+"workshop_signup.step1_title" = "Workshop Information";
+"workshop_signup.step1_subtitle" = "Enter your business information";
+"workshop_signup.step2_title" = "Your Account";
+"workshop_signup.step2_subtitle" = "Create your admin account";
+"workshop_signup.workshop_name" = "Workshop name";
+"workshop_signup.phone_optional" = "Phone (optional)";
+"workshop_signup.create_button" = "Create Workshop";
+
+// MARK: - Auth - Welcome
+"welcome.app_name" = "axer";
+"welcome.tagline" = "Let's organize\nyour workshop together";
+"welcome.create_workshop" = "Create my Workshop";
+"welcome.have_invite" = "I have an invite code";
+"welcome.have_account" = "I already have an account";
+
+// MARK: - Auth - Email Verification
+"email_verification.title" = "Verify your Email";
+"email_verification.sent_to" = "We've sent a verification link to:";
+"email_verification.check_inbox" = "Check your inbox and click the link to continue.";
+"email_verification.resend" = "Resend Email";
+"email_verification.back_home" = "Back to Home";
+"email_verification.resent_success" = "We've resent the verification email.";
+"email_verification.resent_title" = "Email Sent";
+
+// MARK: - Auth - Join Workshop
+"join_workshop.title" = "Join Workshop";
+"join_workshop.code_title" = "Invite Code";
+"join_workshop.code_subtitle" = "Enter the code shared by the workshop admin.";
+"join_workshop.verify_button" = "Verify Code";
+"join_workshop.valid_title" = "Valid Invitation!";
+"join_workshop.joining_to" = "You'll join:";
+"join_workshop.as_member" = "as %@";
+"join_workshop.create_account_title" = "Create your Account";
+"join_workshop.create_account_subtitle" = "Enter your information to join the workshop";
+"join_workshop.create_and_join" = "Create Account & Join";
+"join_workshop.invalid_code" = "Invalid or expired code";
+"join_workshop.verify_error" = "Could not verify the code";
+"join_workshop.accept_error" = "Could not accept the invitation";
+"join_workshop.create_error" = "Error creating account";
+
+// MARK: - Home
+"home.greeting" = "Hello, %@";
+"home.new_order" = "New Order";
+"home.active_orders" = "Active Orders";
+"home.ready_delivery" = "ready for delivery";
+"home.none_ready" = "None ready for delivery";
+"home.approved_today" = "Approved Today";
+"home.quotes_approved" = "quote(s) approved";
+"home.month_summary" = "%@ Summary";
+"home.recent_orders" = "Recent Orders";
+"home.view_all" = "View all";
+"home.no_orders_yet" = "No orders yet";
+"home.create_first" = "Create your first order";
+
+// MARK: - Orders List
+"orders.title" = "Orders";
+"orders.loading" = "Loading orders...";
+"orders.search_placeholder" = "Search order...";
+"orders.new_order" = "New Order";
+"orders.scan_qr" = "Scan order";
+"orders.all_statuses" = "All statuses";
+"orders.qr_not_found" = "No order found with that QR code. Make sure the order has a tracking link generated.";
+"orders.scan_qr_accessibility" = "Scan QR code";
+"orders.scan_qr_hint" = "Opens the scanner to find an order by its QR code";
+
+// MARK: - Order Detail
+"order_detail.not_found" = "Order not found";
+"order_detail.progress" = "Progress";
+"order_detail.current_status" = "Current status";
+"order_detail.next_status" = "Next:";
+"order_detail.client" = "Client";
+"order_detail.responsible" = "Responsible";
+"order_detail.mine" = "Mine";
+"order_detail.unassigned" = "Unassigned";
+"order_detail.take_order_hint" = "Take this order to become responsible";
+"order_detail.take_order" = "Take order";
+"order_detail.assign" = "Assign";
+"order_detail.take_order_confirm" = "Do you want to be responsible for this order?";
+"order_detail.device" = "Device";
+"order_detail.initial_diagnosis" = "Initial Diagnosis";
+"order_detail.reported_problem" = "Reported Problem";
+"order_detail.quote" = "Quote";
+"order_detail.items_count" = "%d items";
+"order_detail.create_quote" = "Create Quote";
+"order_detail.note" = "Note";
+"order_detail.no_activity" = "No activity recorded";
+"order_detail.change_status" = "Change Status";
+"order_detail.print_label" = "Print Label";
+"order_detail.share_tracking" = "Share Tracking";
+"order_detail.generate_link" = "Generate Tracking Link";
+"order_detail.internal_notes_hint" = "Internal notes are only visible to the workshop team";
+"order_detail.current" = "Current";
+"order_detail.preview" = "Preview";
+"order_detail.new_note" = "New Note";
+"order_detail.assign_to" = "Assign to";
+"order_detail.share_order" = "Share order";
+"order_detail.whatsapp" = "WhatsApp";
+"order_detail.email" = "Email";
+"order_detail.take" = "Take";
+
+// MARK: - New Order
+"new_order.title" = "New Order";
+"new_order.select_customer" = "Select customer";
+"new_order.customer_not_found" = "Customer not found";
+"new_order.create_customer" = "Create new customer";
+"new_order.new_customer" = "New Customer";
+"new_order.create_customer_button" = "Create Customer";
+"new_order.device_data" = "Device information";
+"new_order.device_type" = "Device type";
+"new_order.brand" = "Brand";
+"new_order.model" = "Model";
+"new_order.device_status" = "Device status";
+"new_order.turns_on" = "Turns on";
+"new_order.doesnt_turn_on" = "Doesn't turn on";
+"new_order.quick_checklist" = "Quick checklist";
+"new_order.additional_info" = "Additional information";
+"new_order.password_pattern" = "Password/Pattern";
+"new_order.describe_problem" = "Describe the problem";
+"new_order.problem_placeholder" = "What's wrong with the device?";
+"new_order.photos_optional" = "Device photos (optional)";
+"new_order.camera" = "Camera";
+"new_order.gallery" = "Gallery";
+"new_order.summary" = "Summary";
+"new_order.select_brand" = "Select Brand";
+"new_order.select_model" = "Select Model";
+"new_order.add_brand" = "Add \"%@\"";
+"new_order.brand_will_save" = "This brand will be saved for future orders";
+"new_order.no_models_saved" = "No models saved";
+"new_order.type_to_add" = "Type to add a new one";
+"new_order.model_will_save" = "This model will be saved for %@";
+"new_order.fullname_placeholder" = "Full name";
+"new_order.phone_placeholder" = "Phone";
+"new_order.email_optional_placeholder" = "Email (optional)";
+"new_order.imei" = "IMEI";
+"new_order.imei_placeholder" = "15 digits";
+
+// MARK: - IMEI Scanner
+"imei_scanner.title" = "Scan IMEI";
+"imei_scanner.processing" = "Processing...";
+"imei_scanner.barcode_hint" = "Point at the IMEI barcode";
+"imei_scanner.ocr_hint" = "Point at the IMEI text";
+"imei_scanner.imei_location" = "The IMEI is usually on the box or in Settings > General > About";
+"imei_scanner.switch_ocr" = "Switch to OCR (text)";
+"imei_scanner.switch_barcode" = "Back to barcode";
+"imei_scanner.invalid_format" = "Code doesn't appear to be IMEI (%d digits)";
+
+// MARK: - Print Label
+"print_label.title" = "Print Label";
+"print_label.preview" = "Preview";
+"print_label.size" = "Label size";
+"print_label.copies" = "Number of copies";
+"print_label.print" = "Print";
+"print_label.share_pdf" = "Share PDF";
+"print_label.size_small" = "Small (40x30mm)";
+"print_label.size_medium" = "Medium (50x30mm)";
+"print_label.error_generating" = "Error generating PDF";
+"print_label.error_saving" = "Error saving PDF";
+
+// MARK: - Quote
+"quote.no_quote" = "No quote";
+"quote.create_hint" = "Create a quote for this order";
+"quote.create" = "Create Quote";
+"quote.title" = "Quote";
+"quote.items" = "Items";
+"quote.items_count" = "%d items";
+"quote.add_items_hint" = "Add items to the quote";
+"quote.add_item" = "Add Item";
+"quote.edit_item" = "Edit Item";
+"quote.subtotal" = "Subtotal";
+"quote.discount" = "Discount";
+"quote.total" = "Total";
+"quote.copy_link" = "Copy Link";
+"quote.frequent_services" = "Frequent services";
+"quote.type" = "Type";
+"quote.description" = "Description";
+"quote.price" = "Price";
+"quote.quantity" = "Quantity";
+"quote.unit_price" = "Unit price";
+"quote.status" = "Status";
+
+// MARK: - Team
+"team.title" = "Team";
+"team.members_count" = "%d member(s)";
+"team.members" = "Members";
+"team.pending_invites" = "Pending Invitations";
+"team.you" = "(You)";
+"team.invite_code" = "Code: %@";
+"team.expires" = "Expires %@";
+
+// MARK: - Invite User
+"invite.title" = "Invite User";
+"invite.created_title" = "Invitation Created";
+"invite.add_to_team" = "Add to Team";
+"invite.subtitle" = "Generate an invite code for a new team member to join your workshop.";
+"invite.role_label" = "New member's role";
+"invite.technician" = "Technician";
+"invite.technician_desc" = "Can view and update orders";
+"invite.admin" = "Admin";
+"invite.admin_desc" = "Full workshop control";
+"invite.generate" = "Generate Invitation";
+"invite.ready_title" = "Invitation Ready!";
+"invite.share_hint" = "Share this code with the new team member.";
+"invite.role_format" = "Role: %@";
+"invite.expires_7_days" = "Expires in 7 days";
+"invite.share" = "Share";
+"invite.copied" = "Copied!";
+"invite.copy_code" = "Copy full code";
+
+// MARK: - Customers
+"customers.title" = "Customers";
+"customers.new" = "New Customer";
+"customers.search_placeholder" = "Search customer...";
+"customers.empty_title" = "No customers";
+"customers.empty_subtitle" = "Add your first customer";
+"customers.detail_title" = "Details";
+"customers.edit_title" = "Edit Customer";
+"customers.customer_since" = "Customer since %@";
+"customers.no_contact_info" = "No contact information";
+"customers.edit" = "Edit customer";
+"customers.delete" = "Delete customer";
+"customers.delete_confirm_title" = "Delete customer?";
+"customers.delete_confirm_message" = "This action cannot be undone";
+"customers.section_contact" = "Contact";
+"customers.section_notes" = "Notes";
+"customers.section_info" = "Information";
+"customers.name_placeholder" = "Name *";
+"customers.phone_placeholder" = "Phone";
+"customers.email_placeholder" = "Email";
+
+// MARK: - Settings
+"settings.title" = "Settings";
+"settings.workshop_section" = "Workshop";
+"settings.name" = "Name";
+"settings.phone" = "Phone";
+"settings.order_prefix" = "Order prefix";
+"settings.tax" = "Tax";
+"settings.currency" = "Currency";
+"settings.fiscal_config" = "Tax Configuration";
+"settings.tap_to_edit" = "Tap to edit configuration";
+"settings.services_section" = "Services";
+"settings.service_catalog" = "Service catalog";
+"settings.team_section" = "Team";
+"settings.manage_team" = "Manage team";
+"settings.app_section" = "App";
+"settings.version" = "Version";
+"settings.legal_section" = "Legal";
+"settings.privacy_policy" = "Privacy Policy";
+"settings.terms_of_service" = "Terms of Service";
+"settings.contact_support" = "Contact Support";
+"settings.logout" = "Sign Out";
+"settings.logout_confirm_title" = "Sign Out";
+"settings.logout_confirm_message" = "Are you sure you want to sign out?";
+"settings.logout_button" = "Sign Out";
+"settings.user" = "User";
+"settings.delete_account" = "Delete Account";
+"settings.delete_account_title" = "Delete Account";
+"settings.delete_account_message" = "This action is permanent and cannot be undone. All your data will be deleted, including your profile and settings.";
+"settings.delete_account_button" = "Delete My Account";
+"settings.delete_account_footer" = "Deleting your account will permanently erase all your personal data.";
+
+// MARK: - Workshop Edit
+"workshop_edit.title" = "Edit Workshop";
+"workshop_edit.info_section" = "Workshop Information";
+"workshop_edit.workshop_name" = "Workshop name";
+"workshop_edit.phone" = "Phone";
+"workshop_edit.address" = "Address";
+"workshop_edit.order_prefix" = "Order prefix";
+"workshop_edit.fiscal_section" = "Tax Configuration";
+"workshop_edit.tax_name" = "Tax name";
+"workshop_edit.tax_name_placeholder" = "e.g.: VAT, GST";
+"workshop_edit.tax_rate" = "Tax rate (%)";
+"workshop_edit.tax_rate_placeholder" = "e.g.: 18";
+"workshop_edit.currency_section" = "Currency";
+"workshop_edit.currency_symbol" = "Symbol";
+"workshop_edit.currency_symbol_placeholder" = "e.g.: $, €";
+"workshop_edit.currency_code" = "Code";
+"workshop_edit.currency_code_placeholder" = "e.g.: USD, EUR";
+"workshop_edit.presets_section" = "Regional Presets";
+"workshop_edit.presets_footer" = "Select a preset to apply your region's tax configuration";
+"workshop_edit.preset_dr" = "Dominican Rep. (ITBIS 18%)";
+"workshop_edit.preset_mx" = "Mexico (VAT 16%)";
+"workshop_edit.preset_us" = "United States (No VAT)";
+
+// MARK: - Service Management
+"services.title" = "Services";
+"services.add" = "Add Service";
+"services.new_title" = "New Service";
+"services.edit_title" = "Edit Service";
+"services.used_count" = "Used %dx";
+"services.times_used" = "Times used";
+"services.last_used" = "Last used";
+"services.inactive_hint" = "Inactive services don't appear in suggestions";
+"services.delete_confirm" = "This service will be removed from the catalog";
+"services.info_section" = "Information";
+"services.default_price" = "Default price";
+"services.name_placeholder" = "Service name";
+"services.price_placeholder" = "0.00";
+
+// MARK: - Onboarding
+"onboarding.created_title" = "Workshop Created!";
+"onboarding.created_subtitle" = "Your workshop %@ is ready. Let's set up some basic things.";
+"onboarding.basic_config" = "Basic Configuration";
+"onboarding.change_later" = "You can change this later";
+"onboarding.currency" = "Currency";
+"onboarding.order_prefix" = "Order Prefix";
+"onboarding.prefix_preview" = "Orders will look like: %@-001";
+"onboarding.prefix_placeholder" = "e.g.: ORD, REP, SRV";
+"onboarding.all_set_title" = "All Set!";
+"onboarding.all_set_subtitle" = "Your workshop is configured and ready to start receiving orders.";
+"onboarding.start" = "Get Started";
+
+// MARK: - Offline Banner
+"offline.no_connection" = "No internet connection";
+
+// MARK: - Order Status
+"status.received" = "Received";
+"status.diagnosing" = "Diagnosing";
+"status.quoted" = "Quoted";
+"status.approved" = "Approved";
+"status.in_repair" = "In Repair";
+"status.ready" = "Ready";
+"status.delivered" = "Delivered";
+
+// MARK: - Device Types
+"device.iphone" = "iPhone";
+"device.android" = "Android";
+"device.tablet" = "Tablet";
+"device.watch" = "Smartwatch";
+"device.laptop" = "Laptop";
+"device.other" = "Other";
+
+// MARK: - User Roles
+"role.owner" = "Owner";
+"role.admin" = "Administrator";
+"role.technician" = "Technician";
+
+// MARK: - Quote Item Types
+"quote_item.service" = "Service";
+"quote_item.part" = "Part";
+
+// MARK: - Months
+"month.january" = "January";
+"month.february" = "February";
+"month.march" = "March";
+"month.april" = "April";
+"month.may" = "May";
+"month.june" = "June";
+"month.july" = "July";
+"month.august" = "August";
+"month.september" = "September";
+"month.october" = "October";
+"month.november" = "November";
+"month.december" = "December";
+
+// MARK: - Errors
+"error.network" = "No internet connection";
+"error.server" = "Server error";
+"error.server_with_code" = "Server error (code %d)";
+"error.unauthorized" = "Session expired";
+"error.not_found" = "Resource not found";
+"error.unknown" = "An unexpected error occurred";
+"error.invalid_data" = "Invalid data";
+"error.timeout" = "Connection timed out";
+"error.retry" = "Retry";
+"error.creating_account" = "Could not create account";
+
+// Error suggestions
+"error.network_suggestion" = "Check your internet connection and try again.";
+"error.server_suggestion" = "Please try again later.";
+"error.unauthorized_suggestion" = "Please sign in again.";
+"error.timeout_suggestion" = "Check your connection and try again.";
+"error.retry_suggestion" = "Please try again.";
+"orders.no_more_orders" = "No more orders";
+
+// MARK: - Accessibility
+"accessibility.new_order_hint" = "Create a new repair order";
+"accessibility.profile_photo" = "Profile photo";
+"accessibility.profile_photo_hint" = "Tap to change your profile photo";
+"accessibility.active_orders_card" = "%d active orders. %d ready for delivery.";
+"accessibility.today_quotes_card" = "%d quotes approved today for %@";
+"accessibility.month_summary_card" = "%@ summary. %d received, %d approved, %d delivered.";
+"accessibility.view_order_details" = "Tap to view order details";
+"accessibility.go_back" = "Go back";
+"accessibility.close_sheet" = "Close";
+"accessibility.required_field" = "Required field";
+"accessibility.share_order" = "Share order";
+"accessibility.print_label" = "Print label";
+"accessibility.change_status" = "Change status";
+"accessibility.call_customer" = "Call customer";
+"accessibility.whatsapp_customer" = "Send WhatsApp to customer";

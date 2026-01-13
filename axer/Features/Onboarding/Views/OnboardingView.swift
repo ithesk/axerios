@@ -13,7 +13,7 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            Color.white
+            AxerColors.surface
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -30,7 +30,7 @@ struct OnboardingView: View {
                 HStack(spacing: 8) {
                     ForEach(0..<3) { index in
                         Circle()
-                            .fill(index == currentPage ? Color(hex: "0D47A1") : Color(hex: "E2E8F0"))
+                            .fill(index == currentPage ? AxerColors.primary : AxerColors.border)
                             .frame(width: 8, height: 8)
                     }
                 }
@@ -43,15 +43,15 @@ struct OnboardingView: View {
                     HStack {
                         if isLoading {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "00BCD4")))
+                                .progressViewStyle(CircularProgressViewStyle(tint: AxerColors.accent))
                         }
                         Text(buttonTitle)
                             .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundColor(Color(hex: "00BCD4"))
+                    .foregroundColor(AxerColors.accent)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Color(hex: "0D2137"))
+                    .background(AxerColors.textPrimary)
                     .cornerRadius(28)
                 }
                 .padding(.horizontal, 24)
@@ -67,16 +67,16 @@ struct OnboardingView: View {
 
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 80))
-                .foregroundColor(Color(hex: "22C55E"))
+                .foregroundColor(AxerColors.success)
 
             VStack(spacing: 12) {
-                Text("Taller Creado!")
+                Text(L10n.Onboarding.createdTitle)
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
-                Text("Tu taller \(sessionStore.workshop?.name ?? "") esta listo. Vamos a configurar algunas cosas basicas.")
+                Text(L10n.Onboarding.createdSubtitle(sessionStore.workshop?.name ?? ""))
                     .font(.system(size: 16))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
@@ -93,51 +93,51 @@ struct OnboardingView: View {
             VStack(spacing: 12) {
                 Image(systemName: "gearshape.fill")
                     .font(.system(size: 50))
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
 
-                Text("Configuracion Basica")
+                Text(L10n.Onboarding.basicConfig)
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
-                Text("Puedes cambiar esto despues")
+                Text(L10n.Onboarding.changeLater)
                     .font(.system(size: 16))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
             }
 
             VStack(spacing: 20) {
                 // Currency picker
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Moneda")
+                    Text(L10n.Onboarding.currency)
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
 
                     HStack {
                         Image(systemName: "dollarsign.circle")
-                            .foregroundColor(Color(hex: "64748B"))
+                            .foregroundColor(AxerColors.textSecondary)
                         Picker("Moneda", selection: $currency) {
                             ForEach(currencies, id: \.self) { curr in
                                 Text(curr).tag(curr)
                             }
                         }
                         .pickerStyle(.menu)
-                        .tint(Color(hex: "0D2137"))
+                        .tint(AxerColors.textPrimary)
                         Spacer()
                     }
                     .padding(.horizontal, 16)
                     .frame(height: 56)
-                    .background(Color(hex: "F8FAFC"))
+                    .background(AxerColors.background)
                     .cornerRadius(12)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color(hex: "E2E8F0"), lineWidth: 1)
+                            .stroke(AxerColors.border, lineWidth: 1)
                     )
                 }
 
                 // Order prefix
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Prefijo de Ordenes")
+                    Text(L10n.Onboarding.orderPrefix)
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
 
                     AxerTextField(
                         placeholder: "Ej: ORD, REP, SRV",
@@ -146,9 +146,9 @@ struct OnboardingView: View {
                         autocapitalization: .characters
                     )
 
-                    Text("Las ordenes se veran como: \(orderPrefix)-001")
+                    Text(L10n.Onboarding.prefixPreview(orderPrefix))
                         .font(.system(size: 13))
-                        .foregroundColor(Color(hex: "94A3B8"))
+                        .foregroundColor(AxerColors.textTertiary)
                 }
             }
             .padding(.horizontal, 24)
@@ -164,16 +164,16 @@ struct OnboardingView: View {
 
             Image(systemName: "rocket.fill")
                 .font(.system(size: 80))
-                .foregroundColor(Color(hex: "0D47A1"))
+                .foregroundColor(AxerColors.primary)
 
             VStack(spacing: 12) {
-                Text("Todo Listo!")
+                Text(L10n.Onboarding.allSetTitle)
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
-                Text("Tu taller esta configurado y listo para comenzar a recibir ordenes.")
+                Text(L10n.Onboarding.allSetSubtitle)
                     .font(.system(size: 16))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
@@ -185,10 +185,10 @@ struct OnboardingView: View {
     // MARK: - Button
     private var buttonTitle: String {
         switch currentPage {
-        case 0: return "Continuar"
-        case 1: return "Guardar"
-        case 2: return "Comenzar"
-        default: return "Continuar"
+        case 0: return L10n.Common.continue
+        case 1: return L10n.Common.save
+        case 2: return L10n.Onboarding.start
+        default: return L10n.Common.continue
         }
     }
 

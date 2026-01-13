@@ -72,25 +72,27 @@ struct HomeView: View {
             HStack(spacing: 8) {
                 Image(systemName: "plus")
                     .font(.system(size: 18, weight: .semibold))
-                Text("Nueva Orden")
+                Text(L10n.Home.newOrder)
                     .font(.system(size: 16, weight: .semibold))
             }
-            .foregroundColor(.white)
+            .foregroundColor(AxerColors.textInverse)
             .padding(.horizontal, 20)
             .padding(.vertical, 14)
-            .background(Color(hex: "0D47A1"))
+            .background(AxerColors.buttonPrimary)
             .cornerRadius(28)
-            .shadow(color: Color(hex: "0D47A1").opacity(0.3), radius: 8, x: 0, y: 4)
+            .shadow(color: AxerColors.primary.opacity(0.3), radius: 8, x: 0, y: 4)
         }
+        .accessibilityLabel(L10n.Home.newOrder)
+        .accessibilityHint(L10n.Accessibility.newOrderHint)
     }
 
     private var welcomeHeader: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
-                    Text("Hola \(sessionStore.profile?.firstName ?? "Usuario")")
+                    Text(L10n.Home.greeting(sessionStore.profile?.firstName ?? "Usuario"))
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(Color(hex: "0F172A"))
+                        .foregroundColor(AxerColors.textPrimary)
                     Text("👋")
                         .font(.system(size: 26))
                 }
@@ -98,7 +100,7 @@ struct HomeView: View {
                 if let workshop = sessionStore.workshop {
                     Text(workshop.name)
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color(hex: "0D47A1"))
+                        .foregroundColor(AxerColors.primary)
                 }
             }
             Spacer()
@@ -145,17 +147,19 @@ struct HomeView: View {
                     await handlePhotoSelection(newItem)
                 }
             }
+            .accessibilityLabel(L10n.Accessibility.profilePhoto)
+            .accessibilityHint(L10n.Accessibility.profilePhotoHint)
         }
     }
 
     private var avatarPlaceholder: some View {
         Circle()
-            .fill(Color(hex: "E3F2FD"))
+            .fill(AxerColors.primaryLight)
             .frame(width: 52, height: 52)
             .overlay(
                 Text(initials)
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
             )
     }
 
@@ -220,7 +224,7 @@ struct HomeView: View {
             HStack(spacing: 8) {
                 ForEach(0..<3, id: \.self) { index in
                     Circle()
-                        .fill(currentStatsPage == index ? Color(hex: "0D47A1") : Color(hex: "CBD5E1"))
+                        .fill(currentStatsPage == index ? AxerColors.primary : AxerColors.textTertiary)
                         .frame(width: 8, height: 8)
                         .animation(.easeInOut(duration: 0.2), value: currentStatsPage)
                 }
@@ -230,69 +234,174 @@ struct HomeView: View {
 
     // MARK: - Slide 1: Active Orders
     private var activeOrdersCard: some View {
-        let activeOrders = ordersViewModel.activeOrders.count
-        let diagnosingCount = ordersViewModel.orders.filter { $0.status == .diagnosing }.count
-        let inRepairCount = ordersViewModel.orders.filter { $0.status == .inRepair }.count
-        let readyCount = ordersViewModel.orders.filter { $0.status == .ready }.count
-        let totalActive = max(activeOrders, 1)
-        let progress = Double(inRepairCount + readyCount) / Double(totalActive)
+        // Count each status from active orders (not delivered)
+        // Order flow: received → diagnosing → quoted → approved → inRepair → ready → delivered
+        let allOrders = ordersViewModel.orders
+        let active = ordersViewModel.activeOrders
 
-        return HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("\(activeOrders) Órdenes Activas")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(Color(hex: "0F172A"))
+        let receivedCount = active.filter { $0.status == .received }.count
+        let diagnosingCount = active.filter { $0.status == .diagnosing }.count
+        let quotedCount = active.filter { $0.status == .quoted }.count
+        let approvedCount = active.filter { $0.status == .approved }.count
+        let inRepairCount = active.filter { $0.status == .inRepair }.count
+        let readyCount = active.filter { $0.status == .ready }.count
 
-                Text("\(readyCount) listas para entrega")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color(hex: "64748B"))
+        // Total is the sum of all active statuses
+        let totalActive = receivedCount + diagnosingCount + quotedCount + approvedCount + inRepairCount + readyCount
+        let total = max(totalActive, 1) // Avoid division by zero
 
-                // Progress bar
-                GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color(hex: "E2E8F0"))
-                            .frame(height: 8)
+        // Debug log
+        let _ = print("📊 [HomeView] orders.count=\(allOrders.count), activeOrders.count=\(active.count), totalActive=\(totalActive)")
+        let _ = print("📊 [HomeView] received=\(receivedCount), diagnosing=\(diagnosingCount), quoted=\(quotedCount), approved=\(approvedCount), inRepair=\(inRepairCount), ready=\(readyCount)")
 
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color(hex: "0D47A1"))
-                            .frame(width: geometry.size.width * progress, height: 8)
-                    }
+        // Calculate percentages for segmented bar
+        let receivedPct = Double(receivedCount) / Double(total)
+        let diagnosingPct = Double(diagnosingCount) / Double(total)
+        let quotedPct = Double(quotedCount) / Double(total)
+        let approvedPct = Double(approvedCount) / Double(total)
+        let inRepairPct = Double(inRepairCount) / Double(total)
+        let readyPct = Double(readyCount) / Double(total)
+
+        return VStack(alignment: .leading, spacing: 12) {
+            // Header
+            HStack {
+                HStack(spacing: 4) {
+                    AnimatedNumber(
+                        value: totalActive,
+                        font: .system(size: 24, weight: .bold),
+                        color: AxerColors.textPrimary
+                    )
+                    Text(L10n.Home.activeOrders)
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(AxerColors.textPrimary)
                 }
-                .frame(height: 8)
-                .padding(.top, 4)
-
-                // Status chips
-                HStack(spacing: 12) {
-                    StatusChip(icon: "wrench.fill", label: "Reparando", count: inRepairCount, color: Color(hex: "F59E0B"))
-                    StatusChip(icon: "magnifyingglass", label: "Diagnóstico", count: diagnosingCount, color: Color(hex: "0D47A1"))
-                }
-                .padding(.top, 8)
+                Spacer()
             }
 
-            Spacer()
+            // Segmented progress bar (follows order flow)
+            GeometryReader { geometry in
+                HStack(spacing: 2) {
+                    // 1. Received (gray slate)
+                    if receivedCount > 0 {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AxerColors.textSecondary)
+                            .frame(width: max(geometry.size.width * receivedPct - 1, 0))
+                    }
+                    // 2. Diagnosing (amber)
+                    if diagnosingCount > 0 {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AxerColors.statusDiagnosing)
+                            .frame(width: max(geometry.size.width * diagnosingPct - 1, 0))
+                    }
+                    // 3. Quoted (violet) - waiting for customer
+                    if quotedCount > 0 {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AxerColors.statusQuoted)
+                            .frame(width: max(geometry.size.width * quotedPct - 1, 0))
+                    }
+                    // 4. Approved (blue) - ready to start repair
+                    if approvedCount > 0 {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AxerColors.statusApproved)
+                            .frame(width: max(geometry.size.width * approvedPct - 1, 0))
+                    }
+                    // 5. In Repair (orange)
+                    if inRepairCount > 0 {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AxerColors.statusInRepair)
+                            .frame(width: max(geometry.size.width * inRepairPct - 1, 0))
+                    }
+                    // 6. Ready (green) - ready for delivery
+                    if readyCount > 0 {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AxerColors.success)
+                            .frame(width: max(geometry.size.width * readyPct - 1, 0))
+                    }
+                    // Empty space if no orders
+                    if totalActive == 0 {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(AxerColors.border)
+                    }
+                }
+            }
+            .frame(height: 10)
 
-            // Circular indicator
-            ZStack {
-                Circle()
-                    .stroke(Color(hex: "E2E8F0"), lineWidth: 4)
-                    .frame(width: 52, height: 52)
+            // Legend with counts and percentages (scrollable for many states)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    if receivedCount > 0 {
+                        SegmentLabel(
+                            color: AxerColors.textSecondary,
+                            label: L10n.Status.received,
+                            count: receivedCount,
+                            percentage: Int(receivedPct * 100)
+                        )
+                    }
+                    if diagnosingCount > 0 {
+                        SegmentLabel(
+                            color: AxerColors.statusDiagnosing,
+                            label: L10n.Status.diagnosing,
+                            count: diagnosingCount,
+                            percentage: Int(diagnosingPct * 100)
+                        )
+                    }
+                    if quotedCount > 0 {
+                        SegmentLabel(
+                            color: AxerColors.statusQuoted,
+                            label: L10n.Status.quoted,
+                            count: quotedCount,
+                            percentage: Int(quotedPct * 100)
+                        )
+                    }
+                    if approvedCount > 0 {
+                        SegmentLabel(
+                            color: AxerColors.statusApproved,
+                            label: L10n.Status.approved,
+                            count: approvedCount,
+                            percentage: Int(approvedPct * 100)
+                        )
+                    }
+                    if inRepairCount > 0 {
+                        SegmentLabel(
+                            color: AxerColors.statusInRepair,
+                            label: L10n.Status.inRepair,
+                            count: inRepairCount,
+                            percentage: Int(inRepairPct * 100)
+                        )
+                    }
+                    if readyCount > 0 {
+                        SegmentLabel(
+                            color: AxerColors.success,
+                            label: L10n.Status.ready,
+                            count: readyCount,
+                            percentage: Int(readyPct * 100)
+                        )
+                    }
+                }
+            }
 
-                Circle()
-                    .trim(from: 0, to: progress)
-                    .stroke(Color(hex: "0D47A1"), style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                    .frame(width: 52, height: 52)
-                    .rotationEffect(.degrees(-90))
-
-                Text("\(readyCount)")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(Color(hex: "0D47A1"))
+            // Ready for delivery message
+            if readyCount > 0 {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(AxerColors.success)
+                        .font(.system(size: 14))
+                    Text(L10n.Home.readyDelivery)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(AxerColors.success)
+                }
+            } else {
+                Text(L10n.Home.noneReady)
+                    .font(.system(size: 13))
+                    .foregroundColor(AxerColors.textTertiary)
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(L10n.Accessibility.activeOrdersCard(totalActive, readyCount))
     }
 
     // MARK: - Slide 2: Today's Approved Quotes
@@ -305,19 +414,22 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 6) {
                     Image(systemName: "checkmark.seal.fill")
-                        .foregroundColor(Color(hex: "16A34A"))
-                    Text("Aprobadas Hoy")
+                        .foregroundColor(AxerColors.success)
+                    Text(L10n.Home.approvedToday)
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
                 }
 
-                Text("\(currencySymbol)\(formatAmount(todayAmount))")
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(Color(hex: "0F172A"))
+                AnimatedNumber(
+                    value: todayAmount,
+                    format: .currency(symbol: currencySymbol),
+                    font: .system(size: 32, weight: .bold),
+                    color: AxerColors.textPrimary
+                )
 
-                Text("\(todayCount) cotización\(todayCount == 1 ? "" : "es") aprobada\(todayCount == 1 ? "" : "s")")
+                Text(L10n.Home.quotesApproved)
                     .font(.system(size: 14))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
 
                 Spacer()
             }
@@ -327,18 +439,20 @@ struct HomeView: View {
             // Icon
             ZStack {
                 Circle()
-                    .fill(Color(hex: "DCFCE7"))
+                    .fill(AxerColors.successLight)
                     .frame(width: 52, height: 52)
 
                 Image(systemName: "dollarsign.circle.fill")
                     .font(.system(size: 28))
-                    .foregroundColor(Color(hex: "16A34A"))
+                    .foregroundColor(AxerColors.success)
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(L10n.Accessibility.todayQuotesCard(todayCount, "\(currencySymbol) \(todayAmount)"))
     }
 
     // MARK: - Slide 3: Month Summary
@@ -360,31 +474,36 @@ struct HomeView: View {
             HStack {
                 HStack(spacing: 6) {
                     Image(systemName: "calendar")
-                        .foregroundColor(Color(hex: "0D47A1"))
-                    Text("Resumen de \(monthName)")
+                        .foregroundColor(AxerColors.primary)
+                    Text(L10n.Home.monthSummary(monthName))
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
                 }
 
                 Spacer()
 
-                Text("\(currencySymbol)\(formatAmount(monthAmount))")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundColor(Color(hex: "16A34A"))
+                AnimatedNumber(
+                    value: monthAmount,
+                    format: .currency(symbol: currencySymbol),
+                    font: .system(size: 20, weight: .bold),
+                    color: AxerColors.success
+                )
             }
 
             Divider()
 
             HStack(spacing: 16) {
-                MonthStatItem(icon: "tray.and.arrow.down.fill", label: "Recibidas", value: "\(monthReceived)", color: Color(hex: "3B82F6"))
-                MonthStatItem(icon: "checkmark.seal.fill", label: "Aprobadas", value: "\(monthQuotes)", color: Color(hex: "16A34A"))
-                MonthStatItem(icon: "shippingbox.fill", label: "Entregadas", value: "\(monthDelivered)", color: Color(hex: "8B5CF6"))
+                MonthStatItem(icon: "tray.and.arrow.down.fill", label: "Recibidas", value: "\(monthReceived)", color: AxerColors.info)
+                MonthStatItem(icon: "checkmark.seal.fill", label: "Aprobadas", value: "\(monthQuotes)", color: AxerColors.success)
+                MonthStatItem(icon: "shippingbox.fill", label: "Entregadas", value: "\(monthDelivered)", color: AxerColors.statusQuoted)
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(L10n.Accessibility.monthSummaryCard(monthName, monthReceived, monthQuotes, monthDelivered))
     }
 
     private func formatAmount(_ amount: Decimal) -> String {
@@ -399,7 +518,7 @@ struct HomeView: View {
     private var recentOrdersSection: some View {
         VStack(alignment: .leading, spacing: AxerSpacing.sm) {
             HStack {
-                Text("Ordenes Recientes")
+                Text(L10n.Home.recentOrders)
                     .font(AxerTypography.headline)
                     .foregroundColor(AxerColors.textPrimary)
 
@@ -409,7 +528,7 @@ struct HomeView: View {
                     Button {
                         router.navigate(to: .orders)
                     } label: {
-                        Text("Ver todas")
+                        Text(L10n.Home.viewAll)
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(AxerColors.primary)
                     }
@@ -420,19 +539,19 @@ struct HomeView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "tray.fill")
                         .font(.system(size: 44))
-                        .foregroundColor(Color(hex: "CBD5E1"))
+                        .foregroundColor(AxerColors.textTertiary)
 
-                    Text("Sin ordenes aun")
+                    Text(L10n.Home.noOrdersYet)
                         .font(.system(size: 15, weight: .medium))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
 
-                    Text("Crea tu primera orden")
+                    Text(L10n.Home.createFirst)
                         .font(.system(size: 13))
-                        .foregroundColor(Color(hex: "94A3B8"))
+                        .foregroundColor(AxerColors.textTertiary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 32)
-                .background(Color.white)
+                .background(AxerColors.surface)
                 .cornerRadius(12)
             } else {
                 VStack(spacing: 12) {
@@ -479,13 +598,38 @@ struct MonthStatItem: View {
 
             Text(value)
                 .font(.system(size: 18, weight: .bold))
-                .foregroundColor(Color(hex: "0F172A"))
+                .foregroundColor(AxerColors.textPrimary)
 
             Text(label)
                 .font(.system(size: 11))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
         }
         .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - Segment Label
+
+struct SegmentLabel: View {
+    let color: Color
+    let label: String
+    let count: Int
+    let percentage: Int
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+
+            Text("\(count)")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(AxerColors.textPrimary)
+
+            Text("(\(percentage)%)")
+                .font(.system(size: 11))
+                .foregroundColor(AxerColors.textTertiary)
+        }
     }
 }
 
@@ -505,7 +649,7 @@ struct StatusChip: View {
 
             Text(label)
                 .font(.system(size: 13, weight: .medium))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
 
             if count > 0 {
                 Text("\(count)")
@@ -517,6 +661,122 @@ struct StatusChip: View {
         .padding(.vertical, 6)
         .background(color.opacity(0.1))
         .cornerRadius(8)
+    }
+}
+
+// MARK: - Animated Number
+
+struct AnimatedNumber: View {
+    let value: Double
+    let duration: Double
+    let format: NumberFormat
+    let font: Font
+    let color: Color
+
+    @State private var displayValue: Double = 0
+
+    enum NumberFormat {
+        case integer
+        case decimal(places: Int)
+        case currency(symbol: String)
+        case percentage
+    }
+
+    init(
+        value: Double,
+        duration: Double = 0.6,
+        format: NumberFormat = .integer,
+        font: Font = .system(size: 24, weight: .bold),
+        color: Color = AxerColors.textPrimary
+    ) {
+        self.value = value
+        self.duration = duration
+        self.format = format
+        self.font = font
+        self.color = color
+    }
+
+    init(
+        value: Decimal,
+        duration: Double = 0.6,
+        format: NumberFormat = .decimal(places: 2),
+        font: Font = .system(size: 24, weight: .bold),
+        color: Color = AxerColors.textPrimary
+    ) {
+        self.value = NSDecimalNumber(decimal: value).doubleValue
+        self.duration = duration
+        self.format = format
+        self.font = font
+        self.color = color
+    }
+
+    init(
+        value: Int,
+        duration: Double = 0.6,
+        font: Font = .system(size: 24, weight: .bold),
+        color: Color = AxerColors.textPrimary
+    ) {
+        self.value = Double(value)
+        self.duration = duration
+        self.format = .integer
+        self.font = font
+        self.color = color
+    }
+
+    var body: some View {
+        Text(formattedValue)
+            .font(font)
+            .foregroundColor(color)
+            .contentTransition(.numericText())
+            .onAppear {
+                // Animate on first appear
+                animateValue(to: value)
+            }
+            .onChange(of: value) { oldValue, newValue in
+                // Re-animate when value changes
+                if oldValue != newValue {
+                    animateValue(to: newValue)
+                }
+            }
+    }
+
+    private var formattedValue: String {
+        switch format {
+        case .integer:
+            return "\(Int(displayValue))"
+        case .decimal(let places):
+            return String(format: "%.\(places)f", displayValue)
+        case .currency(let symbol):
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.minimumFractionDigits = 2
+            formatter.maximumFractionDigits = 2
+            formatter.groupingSeparator = ","
+            let formatted = formatter.string(from: NSNumber(value: displayValue)) ?? "0.00"
+            return "\(symbol) \(formatted)"
+        case .percentage:
+            return String(format: "%.0f%%", displayValue)
+        }
+    }
+
+    private func animateValue(to targetValue: Double) {
+        // If target is 0 or very small, just set it directly
+        guard targetValue > 0.01 else {
+            displayValue = targetValue
+            return
+        }
+
+        let steps = 20
+        let stepDuration = duration / Double(steps)
+        let startValue = displayValue
+
+        for step in 0...steps {
+            DispatchQueue.main.asyncAfter(deadline: .now() + stepDuration * Double(step)) {
+                let progress = Double(step) / Double(steps)
+                let easedProgress = 1 - pow(1 - progress, 3) // Cubic ease out
+                displayValue = startValue + (targetValue - startValue) * easedProgress
+            }
+        }
     }
 }
 

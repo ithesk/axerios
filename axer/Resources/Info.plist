@@ -41,6 +41,23 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+    <key>NSCameraUsageDescription</key>
+    <string>Axer necesita acceso a la cámara para escanear códigos QR, códigos de barras y tomar fotos de dispositivos</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Axer necesita acceso a tu galería para agregar fotos de dispositivos a las órdenes</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Axer necesita permiso para guardar fotos de dispositivos en tu galería</string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>arm64</string>
+    </array>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>whatsapp</string>
+        <string>mailto</string>
+    </array>
     <key>SUPABASE_URL</key>
     <string>$(SUPABASE_URL)</string>
     <key>SUPABASE_ANON_KEY</key>

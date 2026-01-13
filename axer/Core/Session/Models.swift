@@ -559,7 +559,12 @@ struct Order: Codable, Identifiable {
     // Tracking
     let publicToken: String?
 
-    // Assignment
+    // Owner (responsable actual)
+    var ownerUserId: UUID?
+    var closedByUserId: UUID?
+    var closedAt: Date?
+
+    // Legacy assignment field (deprecated, use ownerUserId)
     var assignedTo: UUID?
 
     // Dates
@@ -574,6 +579,7 @@ struct Order: Codable, Identifiable {
 
     // Joined data (optional)
     var customer: Customer?
+    var owner: Profile?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -591,6 +597,9 @@ struct Order: Codable, Identifiable {
         case problemDescription = "problem_description"
         case status
         case publicToken = "public_token"
+        case ownerUserId = "owner_user_id"
+        case closedByUserId = "closed_by_user_id"
+        case closedAt = "closed_at"
         case assignedTo = "assigned_to"
         case receivedAt = "received_at"
         case estimatedCompletion = "estimated_completion"
@@ -600,6 +609,7 @@ struct Order: Codable, Identifiable {
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case customer
+        case owner
     }
 }
 
@@ -735,6 +745,102 @@ struct OrderActivity: Identifiable {
     }
 }
 
+// MARK: - Order Event (Auditoría)
+
+enum OrderEventType: String, Codable {
+    case created = "created"
+    case statusChanged = "status_changed"
+    case assigned = "assigned"
+    case taken = "taken"
+    case noteAdded = "note_added"
+    case photoAdded = "photo_added"
+    case quoteSent = "quote_sent"
+    case quoteApproved = "quote_approved"
+    case quoteRejected = "quote_rejected"
+    case delivered = "delivered"
+    case reopened = "reopened"
+
+    var displayName: String {
+        switch self {
+        case .created: return "Creada"
+        case .statusChanged: return "Estado cambiado"
+        case .assigned: return "Asignada"
+        case .taken: return "Tomada"
+        case .noteAdded: return "Nota agregada"
+        case .photoAdded: return "Foto agregada"
+        case .quoteSent: return "Cotización enviada"
+        case .quoteApproved: return "Cotización aprobada"
+        case .quoteRejected: return "Cotización rechazada"
+        case .delivered: return "Entregada"
+        case .reopened: return "Reabierta"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .created: return "plus.circle.fill"
+        case .statusChanged: return "arrow.right.circle.fill"
+        case .assigned: return "person.badge.plus"
+        case .taken: return "hand.raised.fill"
+        case .noteAdded: return "note.text"
+        case .photoAdded: return "photo"
+        case .quoteSent: return "paperplane.fill"
+        case .quoteApproved: return "checkmark.circle.fill"
+        case .quoteRejected: return "xmark.circle.fill"
+        case .delivered: return "shippingbox.fill"
+        case .reopened: return "arrow.counterclockwise"
+        }
+    }
+}
+
+struct OrderEvent: Codable, Identifiable {
+    let id: UUID
+    let workshopId: UUID
+    let orderId: UUID
+    let type: OrderEventType
+    let actorUserId: UUID?
+    let fromUserId: UUID?
+    let toUserId: UUID?
+    let fromStatus: String?
+    let toStatus: String?
+    let note: String?
+    let metadata: [String: String]?
+    let createdAt: Date
+
+    // Joined data
+    var actor: Profile?
+    var fromUser: Profile?
+    var toUser: Profile?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case workshopId = "workshop_id"
+        case orderId = "order_id"
+        case type
+        case actorUserId = "actor_user_id"
+        case fromUserId = "from_user_id"
+        case toUserId = "to_user_id"
+        case fromStatus = "from_status"
+        case toStatus = "to_status"
+        case note
+        case metadata
+        case createdAt = "created_at"
+        case actor
+        case fromUser = "from_user"
+        case toUser = "to_user"
+    }
+
+    var fromOrderStatus: OrderStatus? {
+        guard let status = fromStatus else { return nil }
+        return OrderStatus(rawValue: status)
+    }
+
+    var toOrderStatus: OrderStatus? {
+        guard let status = toStatus else { return nil }
+        return OrderStatus(rawValue: status)
+    }
+}
+
 // MARK: - Quote
 
 enum QuoteStatus: String, Codable, CaseIterable {
@@ -857,8 +963,7 @@ struct Quote: Codable, Identifiable {
     /// URL publica para compartir la cotizacion
     var publicURL: String? {
         guard let token = publicToken else { return nil }
-        // TODO: Cambiar por URL real de produccion
-        return "https://tu-dominio.com/quote/\(token)"
+        return "https://axer-tracking.vercel.app/quote/\(token)"
     }
 }
 

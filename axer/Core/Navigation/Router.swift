@@ -7,23 +7,53 @@ enum Route: Hashable {
     case team
     case orders
     case orderDetail(UUID)
+    case customers
 }
 
 @MainActor
 final class Router: ObservableObject {
-    @Published var path = NavigationPath()
+    // Separate navigation paths for each tab
+    @Published var homePath = NavigationPath()
+    @Published var ordersPath = NavigationPath()
+    @Published var customersPath = NavigationPath()
+    @Published var settingsPath = NavigationPath()
+
+    // For programmatic tab switching
+    @Published var selectedTab: Tab?
+
+    // Legacy support - maps to homePath
+    var path: NavigationPath {
+        get { homePath }
+        set { homePath = newValue }
+    }
 
     func navigate(to route: Route) {
-        path.append(route)
+        homePath.append(route)
+    }
+
+    func navigateInOrders(to route: Route) {
+        ordersPath.append(route)
+    }
+
+    func navigateInCustomers(to route: Route) {
+        customersPath.append(route)
+    }
+
+    func navigateInSettings(to route: Route) {
+        settingsPath.append(route)
     }
 
     func pop() {
-        guard !path.isEmpty else { return }
-        path.removeLast()
+        guard !homePath.isEmpty else { return }
+        homePath.removeLast()
     }
 
     func popToRoot() {
-        path = NavigationPath()
+        homePath = NavigationPath()
+    }
+
+    func switchToTab(_ tab: Tab) {
+        selectedTab = tab
     }
 
     @ViewBuilder
@@ -32,15 +62,17 @@ final class Router: ObservableObject {
         case .home:
             HomeView()
         case .profile:
-            Text("Profile View") // Placeholder for future implementation
+            Text("Profile View")
         case .settings:
-            Text("Settings View") // Placeholder for future implementation
+            SettingsView()
         case .team:
             TeamView()
         case .orders:
             OrdersListView()
         case .orderDetail(let orderId):
             OrderDetailView(orderId: orderId)
+        case .customers:
+            CustomersView()
         }
     }
 }

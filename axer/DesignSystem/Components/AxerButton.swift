@@ -53,9 +53,9 @@ struct AxerButton: View {
     private var backgroundColor: Color {
         switch style {
         case .primary:
-            return AxerColors.primary
+            return AxerColors.buttonPrimary
         case .secondary:
-            return AxerColors.primaryLight.opacity(0.1)
+            return AxerColors.buttonSecondary
         case .outline, .text:
             return .clear
         }
@@ -64,7 +64,7 @@ struct AxerButton: View {
     private var textColor: Color {
         switch style {
         case .primary:
-            return .white
+            return AxerColors.textInverse
         case .secondary, .outline, .text:
             return AxerColors.primary
         }

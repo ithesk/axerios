@@ -25,7 +25,7 @@ build/
 *.dSYM
 
 # Secrets - Never commit
-*.xcconfig
+Secrets.xcconfig
 Secrets.swift
 
 # Supabase

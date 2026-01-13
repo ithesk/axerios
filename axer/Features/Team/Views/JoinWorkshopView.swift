@@ -20,7 +20,7 @@ struct JoinWorkshopView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.white
+                AxerColors.surface
                     .ignoresSafeArea()
 
                 if showCreateAccount {
@@ -46,7 +46,7 @@ struct JoinWorkshopView: View {
                         }
                     } label: {
                         Image(systemName: showCreateAccount || validation != nil ? "arrow.left" : "xmark")
-                            .foregroundColor(Color(hex: "0D2137"))
+                            .foregroundColor(AxerColors.textPrimary)
                     }
                 }
             }
@@ -60,11 +60,11 @@ struct JoinWorkshopView: View {
 
     private var navigationTitle: String {
         if showCreateAccount {
-            return "Crear Cuenta"
+            return L10n.JoinWorkshop.createAccount
         } else if validation != nil {
-            return "Confirmar"
+            return L10n.JoinWorkshop.confirm
         }
-        return "Unirse a Taller"
+        return L10n.JoinWorkshop.title
     }
 
     // MARK: - Enter Code View
@@ -75,23 +75,23 @@ struct JoinWorkshopView: View {
             // Icon
             ZStack {
                 Circle()
-                    .fill(Color(hex: "E3F2FD"))
+                    .fill(AxerColors.primaryLight)
                     .frame(width: 100, height: 100)
 
                 Image(systemName: "ticket")
                     .font(.system(size: 40))
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
             }
 
             // Text
             VStack(spacing: 8) {
-                Text("Codigo de Invitacion")
+                Text(L10n.JoinWorkshop.codeTitle)
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
-                Text("Ingresa el codigo que te compartio el administrador del taller.")
+                Text(L10n.JoinWorkshop.codeSubtitle)
                     .font(.system(size: 16))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
@@ -104,11 +104,11 @@ struct JoinWorkshopView: View {
                 .autocorrectionDisabled()
                 .padding()
                 .frame(height: 64)
-                .background(Color(hex: "F8FAFC"))
+                .background(AxerColors.background)
                 .cornerRadius(12)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color(hex: "E2E8F0"), lineWidth: 1)
+                        .stroke(AxerColors.border, lineWidth: 1)
                 )
                 .padding(.horizontal, 48)
 
@@ -121,15 +121,15 @@ struct JoinWorkshopView: View {
                 HStack {
                     if isValidating {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "00BCD4")))
+                            .progressViewStyle(CircularProgressViewStyle(tint: AxerColors.accent))
                     }
-                    Text("Verificar Codigo")
+                    Text(L10n.JoinWorkshop.verifyButton)
                         .font(.system(size: 17, weight: .semibold))
                 }
-                .foregroundColor(Color(hex: "00BCD4"))
+                .foregroundColor(AxerColors.accent)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(inviteCode.count >= 8 ? Color(hex: "0D2137") : Color(hex: "CBD5E1"))
+                .background(inviteCode.count >= 8 ? AxerColors.textPrimary : AxerColors.disabled)
                 .cornerRadius(28)
             }
             .disabled(inviteCode.count < 8 || isValidating)
@@ -146,32 +146,32 @@ struct JoinWorkshopView: View {
             // Success icon
             ZStack {
                 Circle()
-                    .fill(Color(hex: "D1FAE5"))
+                    .fill(AxerColors.successLight)
                     .frame(width: 100, height: 100)
 
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 50))
-                    .foregroundColor(Color(hex: "22C55E"))
+                    .foregroundColor(AxerColors.success)
             }
 
             // Info
             VStack(spacing: 16) {
-                Text("Invitacion Valida!")
+                Text(L10n.JoinWorkshop.validTitle)
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
                 VStack(spacing: 8) {
-                    Text("Te uniras a:")
+                    Text(L10n.JoinWorkshop.joiningTo)
                         .font(.system(size: 15))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
 
                     Text(validation.workshopName ?? "Taller")
                         .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(Color(hex: "0D47A1"))
+                        .foregroundColor(AxerColors.primary)
 
-                    Text("como \(validation.role ?? "miembro")")
+                    Text(L10n.JoinWorkshop.asMember(validation.role ?? "miembro"))
                         .font(.system(size: 15))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
                 }
             }
 
@@ -181,12 +181,12 @@ struct JoinWorkshopView: View {
             Button {
                 showCreateAccount = true
             } label: {
-                Text("Continuar")
+                Text(L10n.Common.continue)
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(Color(hex: "00BCD4"))
+                    .foregroundColor(AxerColors.accent)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Color(hex: "0D2137"))
+                    .background(AxerColors.textPrimary)
                     .cornerRadius(28)
             }
             .padding(.horizontal, 24)
@@ -199,27 +199,27 @@ struct JoinWorkshopView: View {
         ScrollView {
             VStack(spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Crea tu Cuenta")
+                    Text(L10n.JoinWorkshop.createAccountTitle)
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(Color(hex: "0D2137"))
+                        .foregroundColor(AxerColors.textPrimary)
 
-                    Text("Ingresa tus datos para unirte al taller")
+                    Text(L10n.JoinWorkshop.createAccountSubtitle)
                         .font(.system(size: 16))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 16)
 
                 VStack(spacing: 16) {
                     AxerTextField(
-                        placeholder: "Nombre completo",
+                        placeholder: L10n.SignUp.fullnamePlaceholder,
                         text: $fullName,
                         icon: "person",
                         autocapitalization: .words
                     )
 
                     AxerTextField(
-                        placeholder: "Email",
+                        placeholder: L10n.SignUp.emailPlaceholder,
                         text: $email,
                         icon: "envelope",
                         keyboardType: .emailAddress,
@@ -227,16 +227,16 @@ struct JoinWorkshopView: View {
                     )
 
                     AxerTextField(
-                        placeholder: "Contrasena",
+                        placeholder: L10n.SignUp.passwordPlaceholder,
                         text: $password,
                         isSecure: true,
                         icon: "lock"
                     )
                 }
 
-                Text("La contrasena debe tener al menos 6 caracteres")
+                Text(L10n.SignUp.passwordHint)
                     .font(.system(size: 13))
-                    .foregroundColor(Color(hex: "94A3B8"))
+                    .foregroundColor(AxerColors.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Spacer()
@@ -249,15 +249,15 @@ struct JoinWorkshopView: View {
                     HStack {
                         if isCreatingAccount {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "00BCD4")))
+                                .progressViewStyle(CircularProgressViewStyle(tint: AxerColors.accent))
                         }
-                        Text("Crear Cuenta y Unirme")
+                        Text(L10n.JoinWorkshop.createAndJoin)
                             .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundColor(Color(hex: "00BCD4"))
+                    .foregroundColor(AxerColors.accent)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(isFormValid ? Color(hex: "0D2137") : Color(hex: "CBD5E1"))
+                    .background(isFormValid ? AxerColors.textPrimary : AxerColors.disabled)
                     .cornerRadius(28)
                 }
                 .disabled(!isFormValid || isCreatingAccount)
@@ -280,11 +280,11 @@ struct JoinWorkshopView: View {
                     validation = result
                 }
             } else {
-                errorMessage = "Codigo invalido o expirado"
+                errorMessage = L10n.JoinWorkshop.invalidCode
                 showError = true
             }
         } else {
-            errorMessage = "No se pudo verificar el codigo"
+            errorMessage = L10n.JoinWorkshop.verifyError
             showError = true
         }
 
@@ -313,12 +313,12 @@ struct JoinWorkshopView: View {
                 await sessionStore.loadUserData()
                 dismiss()
             } else {
-                errorMessage = "No se pudo aceptar la invitacion"
+                errorMessage = L10n.JoinWorkshop.acceptError
                 showError = true
             }
 
         } catch {
-            errorMessage = "Error creando cuenta: \(error.localizedDescription)"
+            errorMessage = L10n.JoinWorkshop.createError
             showError = true
         }
 

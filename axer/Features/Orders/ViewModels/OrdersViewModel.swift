@@ -9,8 +9,38 @@ final class OrdersViewModel: ObservableObject {
     @Published var customers: [Customer] = []
     @Published var quotes: [Quote] = []
     @Published var isLoading = false
-    @Published var error: String?
+    @Published var isLoadingMore = false
+    @Published var errorState: ErrorState?
     @Published var searchText = ""
+
+    // MARK: - Pagination
+    private let pageSize = 20
+    private var currentPage = 0
+    @Published var hasMorePages = true
+
+    // Computed property for backward compatibility
+    var error: String? {
+        get { errorState?.message }
+        set {
+            if let msg = newValue {
+                errorState = ErrorState(error: .unknown(msg))
+            } else {
+                errorState = nil
+            }
+        }
+    }
+
+    func clearError() {
+        errorState = nil
+    }
+
+    func setError(_ error: Error) {
+        errorState = ErrorState(from: error)
+    }
+
+    func setError(_ appError: AppError) {
+        errorState = ErrorState(error: appError)
+    }
 
     private let supabase = SupabaseClient.shared
 
@@ -38,34 +68,72 @@ final class OrdersViewModel: ObservableObject {
 
     // MARK: - Load Orders
 
-    func loadOrders(workshopId: UUID) async {
-        print("🔄 [Orders] ========== CARGANDO ORDENES ==========")
-        print("🔄 [Orders] Workshop ID: \(workshopId)")
+    func loadOrders(workshopId: UUID, refresh: Bool = false) async {
+        if refresh {
+            currentPage = 0
+            hasMorePages = true
+        }
 
         isLoading = true
-        error = nil
+        clearError()
 
         do {
             let response: [Order] = try await supabase.client
                 .from("orders")
-                .select("*, customer:customers(*)")
+                .select("*, customer:customers(*), owner:profiles!owner_user_id(id, full_name, role, avatar_url)")
                 .eq("workshop_id", value: workshopId.uuidString)
                 .order("created_at", ascending: false)
+                .range(from: 0, to: pageSize - 1)
                 .execute()
                 .value
 
             self.orders = response
-            print("✅ [Orders] Órdenes cargadas: \(response.count)")
-            for order in response {
-                print("   - \(order.orderNumber): \(order.status.rawValue) - createdAt: \(String(describing: order.createdAt))")
-            }
+            self.hasMorePages = response.count >= pageSize
+            self.currentPage = 0
         } catch {
-            self.error = "Error cargando ordenes: \(error.localizedDescription)"
-            print("❌ [Orders] Error loading orders: \(error)")
+            setError(error)
         }
 
         isLoading = false
-        print("🔄 [Orders] =====================================")
+    }
+
+    /// Load more orders for infinite scroll
+    func loadMoreOrders(workshopId: UUID) async {
+        guard !isLoadingMore && hasMorePages else { return }
+
+        isLoadingMore = true
+        let nextPage = currentPage + 1
+        let from = nextPage * pageSize
+        let to = from + pageSize - 1
+
+        do {
+            let response: [Order] = try await supabase.client
+                .from("orders")
+                .select("*, customer:customers(*), owner:profiles!owner_user_id(id, full_name, role, avatar_url)")
+                .eq("workshop_id", value: workshopId.uuidString)
+                .order("created_at", ascending: false)
+                .range(from: from, to: to)
+                .execute()
+                .value
+
+            if response.isEmpty {
+                hasMorePages = false
+            } else {
+                orders.append(contentsOf: response)
+                currentPage = nextPage
+                hasMorePages = response.count >= pageSize
+            }
+        } catch {
+            // Silent fail for load more - don't show error
+            print("Error loading more orders: \(error)")
+        }
+
+        isLoadingMore = false
+    }
+
+    /// Órdenes donde el usuario actual es el owner
+    func myOrders(userId: UUID) -> [Order] {
+        orders.filter { $0.ownerUserId == userId && $0.status != .delivered }
     }
 
     // MARK: - Load Customers
@@ -121,11 +189,6 @@ final class OrdersViewModel: ObservableObject {
             let email: String?
         }
 
-        print("🔵 [DEBUG] Intentando crear cliente...")
-        print("🔵 [DEBUG] workshopId: \(workshopId)")
-        print("🔵 [DEBUG] name: \(name)")
-        print("🔵 [DEBUG] phone: \(phone ?? "nil")")
-
         do {
             let data = CustomerInsert(
                 workshop_id: workshopId,
@@ -134,8 +197,6 @@ final class OrdersViewModel: ObservableObject {
                 email: email?.isEmpty == true ? nil : email
             )
 
-            print("🔵 [DEBUG] Enviando insert a Supabase...")
-
             let response: [Customer] = try await supabase.client
                 .from("customers")
                 .insert(data)
@@ -143,18 +204,12 @@ final class OrdersViewModel: ObservableObject {
                 .execute()
                 .value
 
-            print("🟢 [DEBUG] Respuesta recibida: \(response.count) clientes")
-
             if let customer = response.first {
-                print("🟢 [DEBUG] Cliente creado: \(customer.name) - ID: \(customer.id)")
                 customers.append(customer)
                 return customer
-            } else {
-                print("🟡 [DEBUG] Respuesta vacía - no se creó el cliente")
             }
         } catch {
-            self.error = "Error creando cliente: \(error.localizedDescription)"
-            print("🔴 [ERROR] Error creating customer: \(error)")
+            setError(error)
         }
 
         return nil
@@ -235,11 +290,14 @@ final class OrdersViewModel: ObservableObject {
             // 4. Add to local list
             orders.insert(newOrder, at: 0)
 
+            // Haptic feedback for success
+            HapticManager.success()
+
             return newOrder
 
         } catch {
-            self.error = "Error creando orden"
-            print("Error creating order: \(error)")
+            setError(error)
+            HapticManager.error()
             return nil
         }
     }
@@ -297,10 +355,11 @@ final class OrdersViewModel: ObservableObject {
                 orders[index].status = newStatus
             }
 
+            HapticManager.success()
             return true
         } catch {
-            self.error = "Error actualizando estado"
-            print("Error updating status: \(error)")
+            setError(error)
+            HapticManager.error()
             return false
         }
     }
@@ -327,8 +386,7 @@ final class OrdersViewModel: ObservableObject {
             print("✅ [Tracking] Token generado: \(token)")
             return token
         } catch {
-            self.error = "Error generando link de seguimiento"
-            print("❌ [Tracking] Error: \(error)")
+            setError(error)
             return nil
         }
     }
@@ -541,8 +599,7 @@ final class OrdersViewModel: ObservableObject {
 
             return response.first
         } catch {
-            self.error = "Error agregando nota"
-            print("Error adding note: \(error)")
+            setError(error)
             return nil
         }
     }
@@ -562,5 +619,253 @@ final class OrdersViewModel: ObservableObject {
 
         // Sort by date descending
         return activities.sorted { $0.createdAt > $1.createdAt }
+    }
+
+    // MARK: - Owner Management (RPCs)
+
+    /// Cambiar estado de orden con validación de permisos
+    func changeOrderStatus(
+        orderId: UUID,
+        newStatus: OrderStatus,
+        note: String? = nil,
+        assignToUserId: UUID? = nil
+    ) async -> Result<Bool, Error> {
+        struct Params: Encodable {
+            let p_order_id: UUID
+            let p_new_status: String
+            let p_note: String?
+            let p_assign_to_user_id: UUID?
+        }
+
+        struct RPCResponse: Decodable {
+            let success: Bool
+            let error: String?
+            let order_id: UUID?
+            let new_owner_id: UUID?
+        }
+
+        do {
+            let response: RPCResponse = try await supabase.client
+                .rpc("change_order_status", params: Params(
+                    p_order_id: orderId,
+                    p_new_status: newStatus.rawValue,
+                    p_note: note,
+                    p_assign_to_user_id: assignToUserId
+                ))
+                .execute()
+                .value
+
+            if response.success {
+                // Actualizar orden local
+                if let index = orders.firstIndex(where: { $0.id == orderId }) {
+                    orders[index].status = newStatus
+                    if let newOwnerId = response.new_owner_id {
+                        orders[index].ownerUserId = newOwnerId
+                    }
+                }
+                print("✅ [Orders] Estado cambiado a \(newStatus.rawValue)")
+                return .success(true)
+            } else {
+                let errorMsg = response.error ?? L10n.Error.unknown
+                print("❌ [Orders] Error cambiando estado: \(errorMsg)")
+                setError(.unknown(errorMsg))
+                return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: errorMsg]))
+            }
+        } catch {
+            print("❌ [Orders] Error RPC change_order_status: \(error)")
+            setError(error)
+            return .failure(error)
+        }
+    }
+
+    /// Tomar una orden (convertirse en owner)
+    func takeOrder(orderId: UUID) async -> Result<Bool, Error> {
+        struct Params: Encodable {
+            let p_order_id: UUID
+        }
+
+        struct RPCResponse: Decodable {
+            let success: Bool
+            let error: String?
+            let new_owner_id: UUID?
+        }
+
+        do {
+            let response: RPCResponse = try await supabase.client
+                .rpc("take_order", params: Params(p_order_id: orderId))
+                .execute()
+                .value
+
+            if response.success {
+                // Actualizar orden local
+                if let index = orders.firstIndex(where: { $0.id == orderId }),
+                   let newOwnerId = response.new_owner_id {
+                    orders[index].ownerUserId = newOwnerId
+                }
+                print("✅ [Orders] Orden tomada")
+                return .success(true)
+            } else {
+                let errorMsg = response.error ?? L10n.Error.unknown
+                print("❌ [Orders] Error tomando orden: \(errorMsg)")
+                setError(.unknown(errorMsg))
+                return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: errorMsg]))
+            }
+        } catch {
+            print("❌ [Orders] Error RPC take_order: \(error)")
+            setError(error)
+            return .failure(error)
+        }
+    }
+
+    /// Asignar orden a otro usuario (solo admin)
+    func assignOrder(orderId: UUID, toUserId: UUID, note: String? = nil) async -> Result<Bool, Error> {
+        struct Params: Encodable {
+            let p_order_id: UUID
+            let p_to_user_id: UUID
+            let p_note: String?
+        }
+
+        struct RPCResponse: Decodable {
+            let success: Bool
+            let error: String?
+            let new_owner_id: UUID?
+        }
+
+        do {
+            let response: RPCResponse = try await supabase.client
+                .rpc("assign_order", params: Params(
+                    p_order_id: orderId,
+                    p_to_user_id: toUserId,
+                    p_note: note
+                ))
+                .execute()
+                .value
+
+            if response.success {
+                // Actualizar orden local
+                if let index = orders.firstIndex(where: { $0.id == orderId }),
+                   let newOwnerId = response.new_owner_id {
+                    orders[index].ownerUserId = newOwnerId
+                }
+                print("✅ [Orders] Orden asignada")
+                return .success(true)
+            } else {
+                let errorMsg = response.error ?? L10n.Error.unknown
+                print("❌ [Orders] Error asignando orden: \(errorMsg)")
+                setError(.unknown(errorMsg))
+                return .failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: errorMsg]))
+            }
+        } catch {
+            print("❌ [Orders] Error RPC assign_order: \(error)")
+            setError(error)
+            return .failure(error)
+        }
+    }
+
+    /// Cargar usuarios del workshop para selector de técnicos
+    func loadWorkshopUsers(workshopId: UUID) async -> [Profile] {
+        struct Params: Encodable {
+            let p_workshop_id: UUID
+        }
+
+        do {
+            let response: [Profile] = try await supabase.client
+                .rpc("get_workshop_users", params: Params(p_workshop_id: workshopId))
+                .execute()
+                .value
+
+            print("✅ [Orders] Usuarios del workshop: \(response.count)")
+            return response
+        } catch {
+            print("❌ [Orders] Error cargando usuarios: \(error)")
+            return []
+        }
+    }
+
+    /// Verificar si el usuario puede modificar la orden
+    func canModifyOrder(_ order: Order, currentUserId: UUID, isAdmin: Bool) -> Bool {
+        // Admin siempre puede
+        if isAdmin { return true }
+        // Owner puede
+        if order.ownerUserId == currentUserId { return true }
+        // Si no tiene owner asignado, cualquiera puede (backwards compatibility)
+        if order.ownerUserId == nil { return true }
+        return false
+    }
+
+    // MARK: - QR Scanner - Find Order by Token
+
+    /// Buscar orden por public_token (extraído de URL o directo)
+    func findOrderByToken(_ input: String, workshopId: UUID) async -> Order? {
+        // Extraer token de URL si es necesario
+        let token = extractToken(from: input)
+
+        guard !token.isEmpty else {
+            print("❌ [Scanner] Token vacío")
+            return nil
+        }
+
+        print("🔍 [Scanner] Buscando orden con token: \(token)")
+
+        do {
+            let response: [Order] = try await supabase.client
+                .from("orders")
+                .select("*, customer:customers(*), owner:profiles!owner_user_id(id, full_name, role, avatar_url)")
+                .eq("workshop_id", value: workshopId.uuidString)
+                .eq("public_token", value: token)
+                .execute()
+                .value
+
+            if let order = response.first {
+                print("✅ [Scanner] Orden encontrada: \(order.orderNumber)")
+                return order
+            } else {
+                print("❌ [Scanner] No se encontró orden con token: \(token)")
+                return nil
+            }
+        } catch {
+            print("❌ [Scanner] Error buscando orden: \(error)")
+            return nil
+        }
+    }
+
+    /// Extraer token de URL o devolver input directo
+    private func extractToken(from input: String) -> String {
+        // Si es URL: https://axer-tracking.vercel.app/abc123 -> abc123
+        if input.contains("axer-tracking.vercel.app/") {
+            return input.components(separatedBy: "axer-tracking.vercel.app/").last ?? input
+        }
+        // Si es URL con / al final
+        if input.hasPrefix("http") && input.contains("/") {
+            return input.components(separatedBy: "/").last ?? input
+        }
+        // Devolver input directo (ya es token)
+        return input
+    }
+
+    /// Buscar orden por número de orden (fallback)
+    func findOrderByNumber(_ orderNumber: String, workshopId: UUID) async -> Order? {
+        print("🔍 [Scanner] Buscando orden por número: \(orderNumber)")
+
+        do {
+            let response: [Order] = try await supabase.client
+                .from("orders")
+                .select("*, customer:customers(*), owner:profiles!owner_user_id(id, full_name, role, avatar_url)")
+                .eq("workshop_id", value: workshopId.uuidString)
+                .ilike("order_number", pattern: orderNumber)
+                .execute()
+                .value
+
+            if let order = response.first {
+                print("✅ [Scanner] Orden encontrada: \(order.orderNumber)")
+                return order
+            } else {
+                print("❌ [Scanner] No se encontró orden con número: \(orderNumber)")
+                return nil
+            }
+        } catch {
+            print("❌ [Scanner] Error buscando orden: \(error)")
+            return nil
+        }
     }
 }

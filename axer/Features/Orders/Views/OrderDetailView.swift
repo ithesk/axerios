@@ -16,10 +16,14 @@ struct OrderDetailView: View {
     @State private var isLoadingActivity = false
     @State private var isGeneratingToken = false
     @State private var showPrintLabel = false
+    @State private var showTechnicianPicker = false
+    @State private var workshopUsers: [Profile] = []
+    @State private var isTakingOrder = false
+    @State private var showTakeOrderConfirm = false
 
     var body: some View {
         ZStack {
-            Color(hex: "F8FAFC")
+            AxerColors.background
                 .ignoresSafeArea()
 
             if isLoading {
@@ -35,6 +39,9 @@ struct OrderDetailView: View {
 
                         // Customer card
                         customerCard(order)
+
+                        // Owner card (responsable)
+                        ownerCard(order)
 
                         // Device card
                         deviceCard(order)
@@ -59,11 +66,11 @@ struct OrderDetailView: View {
                     .padding(16)
                 }
             } else {
-                Text("Orden no encontrada")
-                    .foregroundColor(Color(hex: "64748B"))
+                Text(L10n.OrderDetail.notFound)
+                    .foregroundColor(AxerColors.textSecondary)
             }
         }
-        .navigationTitle(order?.orderNumber ?? "Orden")
+        .navigationTitle(order?.orderNumber ?? L10n.Orders.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -72,8 +79,9 @@ struct OrderDetailView: View {
                         showShareSheet = true
                     } label: {
                         Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(Color(hex: "0D47A1"))
+                            .foregroundColor(AxerColors.primary)
                     }
+                    .accessibilityLabel(L10n.Accessibility.shareOrder)
                 }
             }
         }
@@ -110,6 +118,14 @@ struct OrderDetailView: View {
                 PrintLabelView(order: order)
             }
         }
+        .sheet(isPresented: $showShareSheet) {
+            if let order = order {
+                ShareOrderSheet(
+                    order: order,
+                    workshopName: sessionStore.workshop?.name
+                )
+            }
+        }
         .task {
             await loadOrder()
             await loadActivity()
@@ -125,12 +141,12 @@ struct OrderDetailView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(order.orderNumber)
                         .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(Color(hex: "0D2137"))
+                        .foregroundColor(AxerColors.textPrimary)
 
                     if let date = order.receivedAt {
-                        Text("Recibido \(date.formatted(.relative(presentation: .named)))")
+                        Text("\(L10n.Status.received) \(date.formatted(.relative(presentation: .named)))")
                             .font(.system(size: 14))
-                            .foregroundColor(Color(hex: "64748B"))
+                            .foregroundColor(AxerColors.textSecondary)
                     }
                 }
 
@@ -144,7 +160,7 @@ struct OrderDetailView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
     }
 
@@ -155,9 +171,9 @@ struct OrderDetailView: View {
         let currentIndex = allStatuses.firstIndex(of: order.status) ?? 0
 
         return VStack(alignment: .leading, spacing: 16) {
-            Text("Progreso")
+            Text(L10n.OrderDetail.progress)
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
 
             // Horizontal timeline
             HStack(spacing: 0) {
@@ -187,7 +203,7 @@ struct OrderDetailView: View {
                         if shouldShowLabel(index: index, currentIndex: currentIndex, total: allStatuses.count) {
                             Text(status.shortName)
                                 .font(.system(size: 9, weight: state == .current ? .semibold : .regular))
-                                .foregroundColor(state == .current ? Color(hex: status.color) : Color(hex: "94A3B8"))
+                                .foregroundColor(state == .current ? Color(hex: status.color) : AxerColors.textTertiary)
                                 .lineLimit(1)
                                 .frame(width: 50)
                         } else {
@@ -200,7 +216,7 @@ struct OrderDetailView: View {
                     // Connector line (except for last item)
                     if index < allStatuses.count - 1 {
                         Rectangle()
-                            .fill(index < currentIndex ? Color(hex: "22C55E") : Color(hex: "E2E8F0"))
+                            .fill(index < currentIndex ? AxerColors.success : AxerColors.border)
                             .frame(height: 3)
                             .frame(maxWidth: .infinity)
                             .offset(y: -12)
@@ -216,9 +232,9 @@ struct OrderDetailView: View {
                     .frame(width: 24)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Estado actual")
+                    Text(L10n.OrderDetail.currentStatus)
                         .font(.system(size: 12))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
 
                     Text(order.status.displayName)
                         .font(.system(size: 15, weight: .semibold))
@@ -233,15 +249,15 @@ struct OrderDetailView: View {
                         showStatusPicker = true
                     } label: {
                         HStack(spacing: 4) {
-                            Text("Siguiente:")
+                            Text(L10n.OrderDetail.nextStatus)
                                 .font(.system(size: 11))
-                                .foregroundColor(Color(hex: "94A3B8"))
+                                .foregroundColor(AxerColors.textTertiary)
                             Text(nextStatus.shortName)
                                 .font(.system(size: 11, weight: .medium))
-                                .foregroundColor(Color(hex: "0D47A1"))
+                                .foregroundColor(AxerColors.primary)
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 10))
-                                .foregroundColor(Color(hex: "0D47A1"))
+                                .foregroundColor(AxerColors.primary)
                         }
                     }
                 }
@@ -251,7 +267,7 @@ struct OrderDetailView: View {
             .cornerRadius(10)
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
     }
 
@@ -260,9 +276,9 @@ struct OrderDetailView: View {
 
         var backgroundColor: Color {
             switch self {
-            case .completed: return Color(hex: "22C55E")
-            case .current: return Color(hex: "0D47A1")
-            case .pending: return Color(hex: "E2E8F0")
+            case .completed: return AxerColors.success
+            case .current: return AxerColors.primary
+            case .pending: return AxerColors.border
             }
         }
 
@@ -270,7 +286,7 @@ struct OrderDetailView: View {
             switch self {
             case .completed: return .white
             case .current: return .white
-            case .pending: return Color(hex: "94A3B8")
+            case .pending: return AxerColors.textTertiary
             }
         }
     }
@@ -306,25 +322,25 @@ struct OrderDetailView: View {
 
     private func customerCard(_ order: Order) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Cliente", systemImage: "person.fill")
+            Label(L10n.OrderDetail.client, systemImage: "person.fill")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
 
             if let customer = order.customer {
                 HStack(spacing: 12) {
                     Circle()
-                        .fill(Color(hex: "E3F2FD"))
+                        .fill(AxerColors.primaryLight)
                         .frame(width: 48, height: 48)
                         .overlay(
                             Text(customer.initials)
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(Color(hex: "0D47A1"))
+                                .foregroundColor(AxerColors.primary)
                         )
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(customer.name)
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(hex: "0D2137"))
+                            .foregroundColor(AxerColors.textPrimary)
 
                         if let phone = customer.phone {
                             Button {
@@ -338,8 +354,9 @@ struct OrderDetailView: View {
                                     Text(phone)
                                 }
                                 .font(.system(size: 14))
-                                .foregroundColor(Color(hex: "0D47A1"))
+                                .foregroundColor(AxerColors.primary)
                             }
+                            .accessibilityLabel(L10n.Accessibility.callCustomer)
                         }
                     }
 
@@ -348,17 +365,198 @@ struct OrderDetailView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
+    }
+
+    // MARK: - Owner Card (Responsable)
+
+    private func ownerCard(_ order: Order) -> some View {
+        let currentUserId = sessionStore.profile?.id
+        let isOwner = order.ownerUserId == currentUserId
+        let isAdmin = sessionStore.profile?.role == .admin
+        let canTakeOrder = !isOwner && order.ownerUserId != nil
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label(L10n.OrderDetail.responsible, systemImage: "person.badge.key.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(AxerColors.textSecondary)
+
+                Spacer()
+
+                // Badge "Mía" si soy el owner
+                if isOwner {
+                    Text(L10n.OrderDetail.mine)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(AxerColors.success)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(AxerColors.successLight)
+                        .cornerRadius(8)
+                }
+            }
+
+            HStack(spacing: 12) {
+                // Avatar del owner
+                if let owner = order.owner {
+                    if let avatarUrl = owner.avatarUrl, let url = URL(string: avatarUrl) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            default:
+                                ownerAvatarPlaceholder(owner)
+                            }
+                        }
+                        .frame(width: 48, height: 48)
+                        .clipShape(Circle())
+                    } else {
+                        ownerAvatarPlaceholder(owner)
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(owner.fullName ?? "Usuario")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(AxerColors.textPrimary)
+
+                        Text(owner.role.displayName)
+                            .font(.system(size: 13))
+                            .foregroundColor(AxerColors.textSecondary)
+                    }
+                } else {
+                    // Sin owner asignado
+                    Circle()
+                        .fill(AxerColors.border)
+                        .frame(width: 48, height: 48)
+                        .overlay(
+                            Image(systemName: "person.fill.questionmark")
+                                .foregroundColor(AxerColors.textTertiary)
+                        )
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(L10n.OrderDetail.unassigned)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(AxerColors.textSecondary)
+
+                        Text(L10n.OrderDetail.takeOrderHint)
+                            .font(.system(size: 13))
+                            .foregroundColor(AxerColors.textTertiary)
+                    }
+                }
+
+                Spacer()
+            }
+
+            // Botones de acción
+            if canTakeOrder || order.ownerUserId == nil {
+                HStack(spacing: 12) {
+                    // Botón Tomar Orden
+                    Button {
+                        showTakeOrderConfirm = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            if isTakingOrder {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                            } else {
+                                Image(systemName: "hand.raised.fill")
+                            }
+                            Text(L10n.OrderDetail.takeOrder)
+                        }
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(AxerColors.primary)
+                        .cornerRadius(10)
+                    }
+                    .disabled(isTakingOrder)
+
+                    // Botón Asignar (solo admin)
+                    if isAdmin {
+                        Button {
+                            Task {
+                                workshopUsers = await viewModel.loadWorkshopUsers(workshopId: sessionStore.workshop?.id ?? UUID())
+                            }
+                            showTechnicianPicker = true
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "person.badge.plus")
+                                Text(L10n.OrderDetail.assign)
+                            }
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(AxerColors.primary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(AxerColors.primaryLight)
+                            .cornerRadius(10)
+                        }
+                    }
+                }
+                .padding(.top, 4)
+            }
+        }
+        .padding(20)
+        .background(AxerColors.surface)
+        .cornerRadius(16)
+        .alert(L10n.OrderDetail.takeOrder, isPresented: $showTakeOrderConfirm) {
+            Button(L10n.Common.cancel, role: .cancel) {}
+            Button(L10n.OrderDetail.take) {
+                Task {
+                    isTakingOrder = true
+                    let result = await viewModel.takeOrder(orderId: order.id)
+                    if case .success = result {
+                        await loadOrder()
+                    }
+                    isTakingOrder = false
+                }
+            }
+        } message: {
+            Text(L10n.OrderDetail.takeOrderConfirm)
+        }
+        .sheet(isPresented: $showTechnicianPicker) {
+            TechnicianPickerSheet(
+                users: workshopUsers,
+                currentOwnerId: order.ownerUserId
+            ) { selectedUser in
+                Task {
+                    let result = await viewModel.assignOrder(orderId: order.id, toUserId: selectedUser.id)
+                    if case .success = result {
+                        await loadOrder()
+                    }
+                }
+            }
+        }
+    }
+
+    private func ownerAvatarPlaceholder(_ owner: Profile) -> some View {
+        Circle()
+            .fill(AxerColors.primaryLight)
+            .frame(width: 48, height: 48)
+            .overlay(
+                Text(ownerInitials(owner))
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(AxerColors.primary)
+            )
+    }
+
+    private func ownerInitials(_ owner: Profile) -> String {
+        guard let name = owner.fullName else { return "?" }
+        let components = name.split(separator: " ")
+        let initials = components.prefix(2).compactMap { $0.first }.map { String($0) }
+        return initials.joined().uppercased()
     }
 
     // MARK: - Device Card
 
     private func deviceCard(_ order: Order) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Dispositivo", systemImage: order.deviceType.icon)
+            Label(L10n.OrderDetail.device, systemImage: order.deviceType.icon)
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
 
             VStack(spacing: 10) {
                 if let brand = order.deviceBrand, let model = order.deviceModel {
@@ -377,7 +575,7 @@ struct OrderDetailView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
     }
 
@@ -385,25 +583,25 @@ struct OrderDetailView: View {
 
     private func diagnosticsCard(_ order: Order) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Diagnóstico Inicial", systemImage: "checklist")
+            Label(L10n.OrderDetail.initialDiagnosis, systemImage: "checklist")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
 
             // Power status
             if let powersOn = order.devicePowersOn {
                 HStack(spacing: 12) {
                     Image(systemName: powersOn ? "power.circle.fill" : "power.circle")
                         .font(.system(size: 20))
-                        .foregroundColor(powersOn ? Color(hex: "22C55E") : Color(hex: "EF4444"))
+                        .foregroundColor(powersOn ? AxerColors.success : AxerColors.error)
 
                     Text(powersOn ? "El equipo enciende" : "El equipo NO enciende")
                         .font(.system(size: 15, weight: .medium))
-                        .foregroundColor(Color(hex: "0D2137"))
+                        .foregroundColor(AxerColors.textPrimary)
 
                     Spacer()
                 }
                 .padding(12)
-                .background(powersOn ? Color(hex: "22C55E").opacity(0.1) : Color(hex: "EF4444").opacity(0.1))
+                .background(powersOn ? AxerColors.success.opacity(0.1) : AxerColors.error.opacity(0.1))
                 .cornerRadius(10)
             }
 
@@ -427,7 +625,7 @@ struct OrderDetailView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
     }
 
@@ -480,17 +678,17 @@ struct OrderDetailView: View {
 
     private func problemCard(_ order: Order) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Problema Reportado", systemImage: "exclamationmark.triangle.fill")
+            Label(L10n.OrderDetail.reportedProblem, systemImage: "exclamationmark.triangle.fill")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
 
             Text(order.problemDescription)
                 .font(.system(size: 15))
-                .foregroundColor(Color(hex: "0D2137"))
+                .foregroundColor(AxerColors.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
     }
 
@@ -499,9 +697,9 @@ struct OrderDetailView: View {
     private func quoteSection(_ order: Order) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label("Cotizacion", systemImage: "doc.text")
+                Label(L10n.OrderDetail.quote, systemImage: "doc.text")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
 
                 Spacer()
 
@@ -528,21 +726,21 @@ struct OrderDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("\(quote.items?.count ?? 0) items")
                                 .font(.system(size: 14))
-                                .foregroundColor(Color(hex: "64748B"))
+                                .foregroundColor(AxerColors.textSecondary)
 
                             Text(quoteViewModel.formatCurrency(quote.total))
                                 .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(Color(hex: "0D47A1"))
+                                .foregroundColor(AxerColors.primary)
                         }
 
                         Spacer()
 
                         Image(systemName: "chevron.right")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(Color(hex: "94A3B8"))
+                            .foregroundColor(AxerColors.textTertiary)
                     }
                     .padding(16)
-                    .background(Color(hex: "F8FAFC"))
+                    .background(AxerColors.background)
                     .cornerRadius(12)
                 }
                 .buttonStyle(.plain)
@@ -553,21 +751,21 @@ struct OrderDetailView: View {
                 } label: {
                     HStack {
                         Image(systemName: "plus.circle.fill")
-                            .foregroundColor(Color(hex: "0D47A1"))
-                        Text("Crear Cotizacion")
+                            .foregroundColor(AxerColors.primary)
+                        Text(L10n.OrderDetail.createQuote)
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(Color(hex: "0D47A1"))
+                            .foregroundColor(AxerColors.primary)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color(hex: "E3F2FD"))
+                    .background(AxerColors.primaryLight)
                     .cornerRadius(12)
                 }
                 .buttonStyle(.plain)
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
     }
 
@@ -578,7 +776,7 @@ struct OrderDetailView: View {
             HStack {
                 Label("Actividad", systemImage: "clock.arrow.circlepath")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
 
                 Spacer()
 
@@ -587,10 +785,10 @@ struct OrderDetailView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "plus.circle.fill")
-                        Text("Nota")
+                        Text(L10n.OrderDetail.note)
                     }
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
                 }
             }
 
@@ -603,9 +801,9 @@ struct OrderDetailView: View {
                 }
                 .padding(.vertical, 20)
             } else if activities.isEmpty {
-                Text("Sin actividad registrada")
+                Text(L10n.OrderDetail.noActivity)
                     .font(.system(size: 14))
-                    .foregroundColor(Color(hex: "94A3B8"))
+                    .foregroundColor(AxerColors.textTertiary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
             } else {
@@ -617,7 +815,7 @@ struct OrderDetailView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(AxerColors.surface)
         .cornerRadius(16)
     }
 
@@ -632,15 +830,16 @@ struct OrderDetailView: View {
                 } label: {
                     HStack {
                         Image(systemName: "arrow.right.circle.fill")
-                        Text("Cambiar Estado")
+                        Text(L10n.OrderDetail.changeStatus)
                     }
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(Color(hex: "0D47A1"))
+                    .background(AxerColors.primary)
                     .cornerRadius(26)
                 }
+                .accessibilityLabel(L10n.Accessibility.changeStatus)
             }
 
             // Print label button
@@ -649,15 +848,16 @@ struct OrderDetailView: View {
             } label: {
                 HStack {
                     Image(systemName: "qrcode.viewfinder")
-                    Text("Imprimir Label")
+                    Text(L10n.OrderDetail.printLabel)
                 }
                 .font(.system(size: 16, weight: .medium))
-                .foregroundColor(Color(hex: "0D47A1"))
+                .foregroundColor(AxerColors.primary)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
-                .background(Color(hex: "E3F2FD"))
+                .background(AxerColors.primaryLight)
                 .cornerRadius(26)
             }
+            .accessibilityLabel(L10n.Accessibility.printLabel)
 
             // Share tracking link
             if let token = order.publicToken {
@@ -666,13 +866,13 @@ struct OrderDetailView: View {
                 } label: {
                     HStack {
                         Image(systemName: "link.circle.fill")
-                        Text("Compartir Seguimiento")
+                        Text(L10n.OrderDetail.shareTracking)
                     }
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(Color(hex: "E3F2FD"))
+                    .background(AxerColors.primaryLight)
                     .cornerRadius(26)
                 }
             } else {
@@ -686,17 +886,17 @@ struct OrderDetailView: View {
                         if isGeneratingToken {
                             ProgressView()
                                 .scaleEffect(0.8)
-                                .tint(Color(hex: "0D47A1"))
+                                .tint(AxerColors.primary)
                         } else {
                             Image(systemName: "link.badge.plus")
                         }
-                        Text("Generar Link de Seguimiento")
+                        Text(L10n.OrderDetail.generateLink)
                     }
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(Color(hex: "E3F2FD"))
+                    .background(AxerColors.primaryLight)
                     .cornerRadius(26)
                 }
                 .disabled(isGeneratingToken)
@@ -718,7 +918,7 @@ struct OrderDetailView: View {
         do {
             let response: [Order] = try await SupabaseClient.shared.client
                 .from("orders")
-                .select("*, customer:customers(*)")
+                .select("*, customer:customers(*), owner:profiles!owner_user_id(id, full_name, role, avatar_url)")
                 .eq("id", value: orderId.uuidString)
                 .eq("workshop_id", value: workshopId.uuidString)
                 .execute()
@@ -790,7 +990,7 @@ struct DetailRow: View {
         HStack {
             Text(label)
                 .font(.system(size: 14))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
 
             Spacer()
 
@@ -798,20 +998,20 @@ struct DetailRow: View {
                 HStack(spacing: 8) {
                     Text(showValue ? value : "••••••")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(Color(hex: "0D2137"))
+                        .foregroundColor(AxerColors.textPrimary)
 
                     Button {
                         showValue.toggle()
                     } label: {
                         Image(systemName: showValue ? "eye.slash" : "eye")
                             .font(.system(size: 14))
-                            .foregroundColor(Color(hex: "94A3B8"))
+                            .foregroundColor(AxerColors.textTertiary)
                     }
                 }
             } else {
                 Text(value)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
             }
         }
     }
@@ -841,24 +1041,24 @@ struct StatusPickerView: View {
 
                             Text(status.displayName)
                                 .font(.system(size: 16))
-                                .foregroundColor(Color(hex: "0D2137"))
+                                .foregroundColor(AxerColors.textPrimary)
 
                             Spacer()
 
                             if status == currentStatus {
                                 Image(systemName: "checkmark")
-                                    .foregroundColor(Color(hex: "0D47A1"))
+                                    .foregroundColor(AxerColors.primary)
                             }
                         }
                         .padding(.vertical, 8)
                     }
                 }
             }
-            .navigationTitle("Cambiar Estado")
+            .navigationTitle(L10n.OrderDetail.changeStatus)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cerrar") {
+                    Button(L10n.Common.close) {
                         dismiss()
                     }
                 }
@@ -889,7 +1089,7 @@ struct ActivityRow: View {
 
                 if !isLast {
                     Rectangle()
-                        .fill(Color(hex: "E2E8F0"))
+                        .fill(AxerColors.border)
                         .frame(width: 2)
                         .frame(maxHeight: .infinity)
                 }
@@ -899,12 +1099,12 @@ struct ActivityRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
                 if let content = activity.noteContent, !content.isEmpty {
                     Text(content)
                         .font(.system(size: 13))
-                        .foregroundColor(Color(hex: "64748B"))
+                        .foregroundColor(AxerColors.textSecondary)
                         .lineLimit(2)
                 }
 
@@ -912,12 +1112,12 @@ struct ActivityRow: View {
                     if let authorName = activity.authorName {
                         Text(authorName)
                             .font(.system(size: 12))
-                            .foregroundColor(Color(hex: "94A3B8"))
+                            .foregroundColor(AxerColors.textTertiary)
                     }
 
                     Text(activity.createdAt.formatted(.relative(presentation: .named)))
                         .font(.system(size: 12))
-                        .foregroundColor(Color(hex: "94A3B8"))
+                        .foregroundColor(AxerColors.textTertiary)
                 }
             }
 
@@ -943,11 +1143,11 @@ struct ActivityRow: View {
             if let status = activity.newStatus {
                 return Color(hex: status.color)
             }
-            return Color(hex: "64748B")
+            return AxerColors.textSecondary
         case .note:
-            return Color(hex: "8B5CF6")
+            return AxerColors.statusQuoted
         case .photo:
-            return Color(hex: "3B82F6")
+            return AxerColors.info
         }
     }
 
@@ -983,36 +1183,36 @@ struct AddNoteSheet: View {
                 TextEditor(text: $noteContent)
                     .font(.system(size: 16))
                     .padding(12)
-                    .background(Color(hex: "F8FAFC"))
+                    .background(AxerColors.background)
                     .cornerRadius(12)
                     .frame(minHeight: 120)
                     .focused($isFocused)
 
-                Text("Las notas internas solo son visibles para el equipo del taller")
+                Text(L10n.OrderDetail.internalNotesHint)
                     .font(.system(size: 13))
-                    .foregroundColor(Color(hex: "94A3B8"))
+                    .foregroundColor(AxerColors.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Spacer()
             }
             .padding(20)
-            .navigationTitle("Nueva Nota")
+            .navigationTitle(L10n.OrderDetail.newNote)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancelar") {
+                    Button(L10n.Common.cancel) {
                         dismiss()
                     }
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Guardar") {
+                    Button(L10n.Common.save) {
                         onSave(noteContent)
                         dismiss()
                     }
                     .fontWeight(.semibold)
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
                     .disabled(noteContent.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
@@ -1038,7 +1238,7 @@ struct DiagnosticDetailRow: View {
 
             Text(field.displayName)
                 .font(.system(size: 13))
-                .foregroundColor(Color(hex: "0D2137"))
+                .foregroundColor(AxerColors.textPrimary)
                 .lineLimit(1)
 
             Spacer()
@@ -1047,6 +1247,308 @@ struct DiagnosticDetailRow: View {
         .padding(.vertical, 8)
         .background(Color(hex: status.color).opacity(0.08))
         .cornerRadius(8)
+    }
+}
+
+// MARK: - Technician Picker Sheet
+
+struct TechnicianPickerSheet: View {
+    @Environment(\.dismiss) var dismiss
+
+    let users: [Profile]
+    let currentOwnerId: UUID?
+    let onSelect: (Profile) -> Void
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(users) { user in
+                    Button {
+                        onSelect(user)
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 12) {
+                            // Avatar
+                            if let avatarUrl = user.avatarUrl, let url = URL(string: avatarUrl) {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                    default:
+                                        userAvatarPlaceholder(user)
+                                    }
+                                }
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                            } else {
+                                userAvatarPlaceholder(user)
+                            }
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(user.fullName ?? "Usuario")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(AxerColors.textPrimary)
+
+                                Text(user.role.displayName)
+                                    .font(.system(size: 13))
+                                    .foregroundColor(AxerColors.textSecondary)
+                            }
+
+                            Spacer()
+
+                            // Current owner indicator
+                            if user.id == currentOwnerId {
+                                Text(L10n.OrderDetail.current)
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundColor(AxerColors.primary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(AxerColors.primaryLight)
+                                    .cornerRadius(8)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+            .navigationTitle(L10n.OrderDetail.assignTo)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(L10n.Common.cancel) {
+                        dismiss()
+                    }
+                    .foregroundColor(AxerColors.textSecondary)
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+
+    private func userAvatarPlaceholder(_ user: Profile) -> some View {
+        Circle()
+            .fill(AxerColors.primaryLight)
+            .frame(width: 40, height: 40)
+            .overlay(
+                Text(userInitials(user))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(AxerColors.primary)
+            )
+    }
+
+    private func userInitials(_ user: Profile) -> String {
+        guard let name = user.fullName else { return "?" }
+        let components = name.split(separator: " ")
+        let initials = components.prefix(2).compactMap { $0.first }.map { String($0) }
+        return initials.joined().uppercased()
+    }
+}
+
+// MARK: - Share Order Sheet
+
+struct ShareOrderSheet: View {
+    @Environment(\.dismiss) var dismiss
+    let order: Order
+    let workshopName: String?
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Preview del mensaje
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(L10n.OrderDetail.preview)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(AxerColors.textSecondary)
+
+                    Text(shareMessage)
+                        .font(.system(size: 14))
+                        .foregroundColor(AxerColors.textPrimary)
+                        .padding(16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(AxerColors.background)
+                        .cornerRadius(12)
+                }
+                .padding(20)
+
+                Divider()
+
+                // Opciones de compartir
+                VStack(spacing: 12) {
+                    // WhatsApp
+                    ShareOptionButton(
+                        icon: "message.fill",
+                        title: L10n.OrderDetail.whatsapp,
+                        subtitle: order.customer?.phone ?? "Seleccionar contacto",
+                        color: AxerColors.whatsapp
+                    ) {
+                        if let phone = order.customer?.phone, !phone.isEmpty {
+                            shareViaWhatsApp(phone: phone)
+                        } else {
+                            shareViaWhatsAppGeneral()
+                        }
+                    }
+
+                    // Email
+                    ShareOptionButton(
+                        icon: "envelope.fill",
+                        title: L10n.OrderDetail.email,
+                        subtitle: order.customer?.email ?? "Abrir correo",
+                        color: AxerColors.primary
+                    ) {
+                        if let email = order.customer?.email, !email.isEmpty {
+                            shareViaEmail(email: email)
+                        } else {
+                            shareViaEmailGeneral()
+                        }
+                    }
+                }
+                .padding(20)
+
+                Spacer()
+            }
+            .navigationTitle(L10n.OrderDetail.shareOrder)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(L10n.Common.close) {
+                        dismiss()
+                    }
+                    .foregroundColor(AxerColors.textSecondary)
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+
+    // MARK: - Share Message
+
+    private var shareMessage: String {
+        var message = ""
+
+        if let workshop = workshopName {
+            message += "*\(workshop)*\n\n"
+        }
+
+        message += "Orden: *\(order.orderNumber)*\n"
+        message += "Estado: \(order.status.displayName)\n\n"
+
+        if let customer = order.customer {
+            message += "Cliente: \(customer.name)\n"
+        }
+
+        if let brand = order.deviceBrand, let model = order.deviceModel {
+            message += "Equipo: \(brand) \(model)\n"
+        } else {
+            message += "Equipo: \(order.deviceType.displayName)\n"
+        }
+
+        message += "Problema: \(order.problemDescription)\n"
+
+        if let token = order.publicToken {
+            message += "\nSeguimiento: https://axer-tracking.vercel.app/\(token)"
+        }
+
+        return message
+    }
+
+    private var shareMessagePlain: String {
+        shareMessage
+            .replacingOccurrences(of: "*", with: "")
+    }
+
+    // MARK: - Share Actions
+
+    private func shareViaWhatsApp(phone: String) {
+        let cleanPhone = phone.replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "-", with: "")
+            .replacingOccurrences(of: "(", with: "")
+            .replacingOccurrences(of: ")", with: "")
+
+        let encodedMessage = shareMessage.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+        if let url = URL(string: "whatsapp://send?phone=\(cleanPhone)&text=\(encodedMessage)") {
+            UIApplication.shared.open(url)
+        }
+        dismiss()
+    }
+
+    private func shareViaWhatsAppGeneral() {
+        let encodedMessage = shareMessage.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+        if let url = URL(string: "whatsapp://send?text=\(encodedMessage)") {
+            UIApplication.shared.open(url)
+        }
+        dismiss()
+    }
+
+    private func shareViaEmail(email: String) {
+        let subject = "Orden \(order.orderNumber) - \(order.status.displayName)"
+        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let encodedBody = shareMessagePlain.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+        if let url = URL(string: "mailto:\(email)?subject=\(encodedSubject)&body=\(encodedBody)") {
+            UIApplication.shared.open(url)
+        }
+        dismiss()
+    }
+
+    private func shareViaEmailGeneral() {
+        let subject = "Orden \(order.orderNumber) - \(order.status.displayName)"
+        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let encodedBody = shareMessagePlain.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+        if let url = URL(string: "mailto:?subject=\(encodedSubject)&body=\(encodedBody)") {
+            UIApplication.shared.open(url)
+        }
+        dismiss()
+    }
+}
+
+// MARK: - Share Option Button
+
+struct ShareOptionButton: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .font(.system(size: 20))
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(color)
+                    .cornerRadius(12)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(AxerColors.textPrimary)
+
+                    Text(subtitle)
+                        .font(.system(size: 13))
+                        .foregroundColor(AxerColors.textSecondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14))
+                    .foregroundColor(AxerColors.textTertiary)
+            }
+            .padding(12)
+            .background(AxerColors.surface)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(AxerColors.border, lineWidth: 1)
+            )
+        }
     }
 }
 

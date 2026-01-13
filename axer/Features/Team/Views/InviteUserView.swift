@@ -19,15 +19,15 @@ struct InviteUserView: View {
                     createInviteView
                 }
             }
-            .background(Color(hex: "F8FAFC"))
-            .navigationTitle(createdInvite == nil ? "Invitar Usuario" : "Invitacion Creada")
+            .background(AxerColors.background)
+            .navigationTitle(createdInvite == nil ? L10n.Invite.title : L10n.Invite.createdTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cerrar") {
+                    Button(L10n.Common.close) {
                         dismiss()
                     }
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
                 }
             }
         }
@@ -41,37 +41,37 @@ struct InviteUserView: View {
             // Icon
             ZStack {
                 Circle()
-                    .fill(Color(hex: "E3F2FD"))
+                    .fill(AxerColors.primaryLight)
                     .frame(width: 100, height: 100)
 
                 Image(systemName: "person.badge.plus")
                     .font(.system(size: 40))
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
             }
 
             // Text
             VStack(spacing: 8) {
-                Text("Agregar al Equipo")
+                Text(L10n.Invite.addToTeam)
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
-                Text("Genera un codigo de invitacion para que un nuevo miembro se una a tu taller.")
+                Text(L10n.Invite.subtitle)
                     .font(.system(size: 16))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
 
             // Role selector
             VStack(alignment: .leading, spacing: 12) {
-                Text("Rol del nuevo miembro")
+                Text(L10n.Invite.roleLabel)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
 
                 HStack(spacing: 12) {
                     RoleButton(
-                        title: "Tecnico",
-                        description: "Puede ver y actualizar ordenes",
+                        title: L10n.Invite.technician,
+                        description: L10n.Invite.technicianDesc,
                         icon: "wrench.and.screwdriver",
                         isSelected: selectedRole == .technician
                     ) {
@@ -79,8 +79,8 @@ struct InviteUserView: View {
                     }
 
                     RoleButton(
-                        title: "Admin",
-                        description: "Control total del taller",
+                        title: L10n.Invite.admin,
+                        description: L10n.Invite.adminDesc,
                         icon: "person.badge.key",
                         isSelected: selectedRole == .admin
                     ) {
@@ -99,15 +99,15 @@ struct InviteUserView: View {
                 HStack {
                     if isCreating {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "00BCD4")))
+                            .progressViewStyle(CircularProgressViewStyle(tint: AxerColors.accent))
                     }
-                    Text("Generar Invitacion")
+                    Text(L10n.Invite.generate)
                         .font(.system(size: 17, weight: .semibold))
                 }
-                .foregroundColor(Color(hex: "00BCD4"))
+                .foregroundColor(AxerColors.accent)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(Color(hex: "0D2137"))
+                .background(AxerColors.textPrimary)
                 .cornerRadius(28)
             }
             .disabled(isCreating)
@@ -124,23 +124,23 @@ struct InviteUserView: View {
             // Success icon
             ZStack {
                 Circle()
-                    .fill(Color(hex: "D1FAE5"))
+                    .fill(AxerColors.successLight)
                     .frame(width: 100, height: 100)
 
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 50))
-                    .foregroundColor(Color(hex: "22C55E"))
+                    .foregroundColor(AxerColors.success)
             }
 
             // Text
             VStack(spacing: 8) {
-                Text("Invitacion Lista!")
+                Text(L10n.Invite.readyTitle)
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
-                Text("Comparte este codigo con el nuevo miembro del equipo.")
+                Text(L10n.Invite.shareHint)
                     .font(.system(size: 16))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
@@ -149,7 +149,7 @@ struct InviteUserView: View {
             VStack(spacing: 16) {
                 Text(invite.inviteCode)
                     .font(.system(size: 36, weight: .bold, design: .monospaced))
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
                     .tracking(4)
 
                 Button {
@@ -163,25 +163,25 @@ struct InviteUserView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: showCopiedAlert ? "checkmark" : "doc.on.doc")
-                        Text(showCopiedAlert ? "Copiado!" : "Copiar codigo completo")
+                        Text(showCopiedAlert ? L10n.Invite.copied : L10n.Invite.copyCode)
                     }
                     .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(Color(hex: "0D47A1"))
+                    .foregroundColor(AxerColors.primary)
                 }
             }
             .padding(24)
             .frame(maxWidth: .infinity)
-            .background(Color(hex: "E3F2FD"))
+            .background(AxerColors.primaryLight)
             .cornerRadius(16)
             .padding(.horizontal, 24)
 
             // Info
             VStack(spacing: 8) {
-                Label("Rol: \(invite.role.displayName)", systemImage: "person.fill")
-                Label("Expira en 7 dias", systemImage: "clock")
+                Label(L10n.Invite.roleFormat(invite.role.displayName), systemImage: "person.fill")
+                Label(L10n.Invite.expires7Days, systemImage: "clock")
             }
             .font(.system(size: 14))
-            .foregroundColor(Color(hex: "64748B"))
+            .foregroundColor(AxerColors.textSecondary)
 
             Spacer()
 
@@ -191,13 +191,13 @@ struct InviteUserView: View {
             } label: {
                 HStack {
                     Image(systemName: "square.and.arrow.up")
-                    Text("Compartir")
+                    Text(L10n.Invite.share)
                 }
                 .font(.system(size: 17, weight: .semibold))
-                .foregroundColor(Color(hex: "00BCD4"))
+                .foregroundColor(AxerColors.accent)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(Color(hex: "0D2137"))
+                .background(AxerColors.textPrimary)
                 .cornerRadius(28)
             }
             .padding(.horizontal, 24)
@@ -252,26 +252,26 @@ struct RoleButton: View {
             VStack(spacing: 8) {
                 Image(systemName: icon)
                     .font(.system(size: 28))
-                    .foregroundColor(isSelected ? Color(hex: "0D47A1") : Color(hex: "94A3B8"))
+                    .foregroundColor(isSelected ? AxerColors.primary : AxerColors.textTertiary)
 
                 Text(title)
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(isSelected ? Color(hex: "0D2137") : Color(hex: "64748B"))
+                    .foregroundColor(isSelected ? AxerColors.textPrimary : AxerColors.textSecondary)
 
                 Text(description)
                     .font(.system(size: 12))
-                    .foregroundColor(Color(hex: "94A3B8"))
+                    .foregroundColor(AxerColors.textTertiary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .padding(.horizontal, 12)
-            .background(isSelected ? Color(hex: "E3F2FD") : Color.white)
+            .background(isSelected ? AxerColors.primaryLight : AxerColors.surface)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color(hex: "0D47A1") : Color(hex: "E2E8F0"), lineWidth: isSelected ? 2 : 1)
+                    .stroke(isSelected ? AxerColors.primary : AxerColors.border, lineWidth: isSelected ? 2 : 1)
             )
         }
     }

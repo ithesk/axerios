@@ -7,8 +7,31 @@ final class QuoteViewModel: ObservableObject {
     @Published var items: [QuoteItem] = []
     @Published var isLoading = false
     @Published var error: String?
+    @Published var workshop: Workshop?
 
     private let supabase = SupabaseClient.shared
+
+    // MARK: - Workshop Configuration
+
+    func setWorkshop(_ workshop: Workshop?) {
+        self.workshop = workshop
+    }
+
+    var taxName: String {
+        workshop?.displayTaxName ?? "IVA"
+    }
+
+    var defaultTaxRate: Decimal {
+        workshop?.displayTaxRate ?? 0
+    }
+
+    var currencySymbol: String {
+        workshop?.displayCurrencySymbol ?? "$"
+    }
+
+    var currencyCode: String {
+        workshop?.displayCurrencyCode ?? "USD"
+    }
 
     // MARK: - Load Quote for Order
 
@@ -56,7 +79,7 @@ final class QuoteViewModel: ObservableObject {
                 order_id: orderId,
                 workshop_id: workshopId,
                 status: QuoteStatus.draft.rawValue,
-                tax_rate: 18.00  // ITBIS default
+                tax_rate: defaultTaxRate  // Usa configuracion del workshop
             )
 
             let response: [Quote] = try await supabase.client
@@ -321,8 +344,53 @@ final class QuoteViewModel: ObservableObject {
     func formatCurrency(_ value: Decimal) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = "DOP"
-        formatter.currencySymbol = "RD$"
-        return formatter.string(from: value as NSDecimalNumber) ?? "RD$0.00"
+        formatter.currencyCode = currencyCode
+        formatter.currencySymbol = currencySymbol
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 2
+        return formatter.string(from: value as NSDecimalNumber) ?? "\(currencySymbol)0.00"
+    }
+
+    // MARK: - Share Quote
+
+    func getShareURL() -> URL? {
+        guard let token = quote?.publicToken else { return nil }
+        // TODO: Configurar URL base desde settings
+        let baseURL = "https://tu-dominio.com/quote"
+        return URL(string: "\(baseURL)/\(token)")
+    }
+
+    func shareViaWhatsApp(customerPhone: String?, message: String) -> URL? {
+        var phone = customerPhone?.replacingOccurrences(of: " ", with: "") ?? ""
+        phone = phone.replacingOccurrences(of: "-", with: "")
+        phone = phone.replacingOccurrences(of: "+", with: "")
+
+        // Si no tiene codigo de pais, agregar uno por defecto
+        if phone.count <= 10 {
+            phone = "1" + phone  // Default US, cambiar segun workshop.countryCode
+        }
+
+        let encodedMessage = message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        return URL(string: "https://wa.me/\(phone)?text=\(encodedMessage)")
+    }
+
+    func generateShareMessage(orderNumber: String, customerName: String) -> String {
+        guard let quote = quote else { return "" }
+
+        let total = formatCurrency(quote.total)
+        let url = quote.publicURL ?? ""
+
+        return """
+        Hola \(customerName),
+
+        Tu cotizacion para la orden \(orderNumber) esta lista.
+
+        Total: \(total)
+
+        Puedes ver los detalles y aprobarla aqui:
+        \(url)
+
+        Gracias por tu preferencia.
+        """
     }
 }

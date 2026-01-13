@@ -10,9 +10,9 @@ struct WelcomeView: View {
             // Fondo gradiente azul
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(hex: "0D47A1"),
-                    Color(hex: "1565C0"),
-                    Color(hex: "1976D2")
+                    AxerColors.gradientStart,
+                    AxerColors.gradientMiddle,
+                    AxerColors.gradientEnd
                 ]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -26,14 +26,14 @@ struct WelcomeView: View {
                 // Card blanco inferior
                 VStack(alignment: .leading, spacing: 16) {
                     // Nombre
-                    Text("axer")
+                    Text(L10n.Welcome.appName)
                         .font(.system(size: 36, weight: .bold, design: .rounded))
-                        .foregroundColor(Color(hex: "0D47A1"))
+                        .foregroundColor(AxerColors.primary)
 
                     // Slogan
-                    Text("Juntos vamos a\norganizar tu taller")
+                    Text(L10n.Welcome.tagline)
                         .font(.system(size: 24, weight: .semibold))
-                        .foregroundColor(Color(hex: "1A237E"))
+                        .foregroundColor(AxerColors.primaryDark)
                         .lineSpacing(4)
 
                     Spacer()
@@ -43,12 +43,12 @@ struct WelcomeView: View {
                     Button {
                         showSignUp = true
                     } label: {
-                        Text("Crear mi Taller")
+                        Text(L10n.Welcome.createWorkshop)
                             .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(Color(hex: "00BCD4"))
+                            .foregroundColor(AxerColors.accent)
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
-                            .background(Color(hex: "0D2137"))
+                            .background(AxerColors.textPrimary)
                             .cornerRadius(28)
                     }
 
@@ -56,12 +56,12 @@ struct WelcomeView: View {
                     Button {
                         showJoinWorkshop = true
                     } label: {
-                        Text("Tengo un codigo de invitacion")
+                        Text(L10n.Welcome.haveInvite)
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(hex: "0D47A1"))
+                            .foregroundColor(AxerColors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
-                            .background(Color(hex: "E3F2FD"))
+                            .background(AxerColors.primaryLight)
                             .cornerRadius(24)
                     }
 
@@ -69,9 +69,9 @@ struct WelcomeView: View {
                     Button {
                         showLogin = true
                     } label: {
-                        Text("Ya tengo cuenta")
+                        Text(L10n.Welcome.haveAccount)
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(hex: "64748B"))
+                            .foregroundColor(AxerColors.textSecondary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 40)
                     }
@@ -84,8 +84,8 @@ struct WelcomeView: View {
                 .background(
                     VStack(spacing: 0) {
                         RoundedCorner(radius: 32, corners: [.topLeft, .topRight])
-                            .fill(Color.white)
-                        Color.white
+                            .fill(AxerColors.surface)
+                        AxerColors.surface
                             .ignoresSafeArea(edges: .bottom)
                     }
                 )

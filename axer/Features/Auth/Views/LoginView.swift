@@ -13,7 +13,7 @@ struct LoginView: View {
 
     var body: some View {
         ZStack {
-            Color.white
+            AxerColors.background
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -24,7 +24,7 @@ struct LoginView: View {
                     } label: {
                         Image(systemName: "arrow.left")
                             .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(Color(hex: "0D2137"))
+                            .foregroundColor(AxerColors.textPrimary)
                     }
                     Spacer()
                 }
@@ -35,13 +35,13 @@ struct LoginView: View {
                     VStack(spacing: 32) {
                         // Titulo
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Iniciar Sesion")
+                            Text(L10n.Login.title)
                                 .font(.system(size: 28, weight: .bold))
-                                .foregroundColor(Color(hex: "0D2137"))
+                                .foregroundColor(AxerColors.textPrimary)
 
-                            Text("Ingresa tus datos para continuar")
+                            Text(L10n.Login.subtitle)
                                 .font(.system(size: 16))
-                                .foregroundColor(Color(hex: "64748B"))
+                                .foregroundColor(AxerColors.textSecondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 32)
@@ -49,7 +49,7 @@ struct LoginView: View {
                         // Formulario
                         VStack(spacing: 16) {
                             AxerTextField(
-                                placeholder: "Email",
+                                placeholder: L10n.Login.emailPlaceholder,
                                 text: $email,
                                 icon: "envelope",
                                 keyboardType: .emailAddress,
@@ -57,7 +57,7 @@ struct LoginView: View {
                             )
 
                             AxerTextField(
-                                placeholder: "Contrasena",
+                                placeholder: L10n.Login.passwordPlaceholder,
                                 text: $password,
                                 isSecure: true,
                                 icon: "lock"
@@ -71,15 +71,15 @@ struct LoginView: View {
                             HStack {
                                 if isLoading {
                                     ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: "00BCD4")))
+                                        .progressViewStyle(CircularProgressViewStyle(tint: AxerColors.textInverse))
                                 }
-                                Text("Iniciar Sesion")
+                                Text(L10n.Login.button)
                                     .font(.system(size: 17, weight: .semibold))
                             }
-                            .foregroundColor(Color(hex: "00BCD4"))
+                            .foregroundColor(AxerColors.textInverse)
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
-                            .background(Color(hex: "0D2137"))
+                            .background(AxerColors.buttonPrimary)
                             .cornerRadius(28)
                         }
                         .disabled(!isFormValid || isLoading)
@@ -89,8 +89,8 @@ struct LoginView: View {
                 }
             }
         }
-        .alert("Error", isPresented: $showError) {
-            Button("OK", role: .cancel) {}
+        .alert(L10n.Common.error, isPresented: $showError) {
+            Button(L10n.Common.ok, role: .cancel) {}
         } message: {
             Text(errorMessage)
         }
@@ -106,7 +106,7 @@ struct LoginView: View {
             try await sessionStore.signIn(email: email, password: password)
             dismiss()
         } catch {
-            errorMessage = "Credenciales incorrectas. Intenta de nuevo."
+            errorMessage = L10n.Login.errorInvalidCredentials
             showError = true
         }
         isLoading = false

@@ -22,8 +22,8 @@ struct TeamView: View {
             .padding(.horizontal, 20)
             .padding(.top, 16)
         }
-        .background(Color(hex: "F8FAFC"))
-        .navigationTitle("Equipo")
+        .background(AxerColors.background)
+        .navigationTitle(L10n.Team.title)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -33,7 +33,7 @@ struct TeamView: View {
                     } label: {
                         Image(systemName: "person.badge.plus")
                             .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(Color(hex: "0D47A1"))
+                            .foregroundColor(AxerColors.primary)
                     }
                 }
             }
@@ -58,11 +58,11 @@ struct TeamView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(sessionStore.workshop?.name ?? "Tu Taller")
                 .font(.system(size: 24, weight: .bold))
-                .foregroundColor(Color(hex: "0D2137"))
+                .foregroundColor(AxerColors.textPrimary)
 
-            Text("\(viewModel.members.count) miembro\(viewModel.members.count == 1 ? "" : "s")")
+            Text(L10n.Team.membersCount(viewModel.members.count))
                 .font(.system(size: 15))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -70,9 +70,9 @@ struct TeamView: View {
     // MARK: - Members Section
     private var membersSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Miembros")
+            Text(L10n.Team.members)
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
                 .textCase(.uppercase)
 
             VStack(spacing: 0) {
@@ -91,7 +91,7 @@ struct TeamView: View {
                     }
                 }
             }
-            .background(Color.white)
+            .background(AxerColors.surface)
             .cornerRadius(12)
         }
     }
@@ -99,9 +99,9 @@ struct TeamView: View {
     // MARK: - Invites Section
     private var invitesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Invitaciones Pendientes")
+            Text(L10n.Team.pendingInvites)
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color(hex: "64748B"))
+                .foregroundColor(AxerColors.textSecondary)
                 .textCase(.uppercase)
 
             VStack(spacing: 0) {
@@ -118,7 +118,7 @@ struct TeamView: View {
                     }
                 }
             }
-            .background(Color.white)
+            .background(AxerColors.surface)
             .cornerRadius(12)
         }
     }
@@ -133,12 +133,12 @@ struct MemberRow: View {
         HStack(spacing: 12) {
             // Avatar
             Circle()
-                .fill(Color(hex: "E3F2FD"))
+                .fill(AxerColors.primaryLight)
                 .frame(width: 44, height: 44)
                 .overlay(
                     Text(initials)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(Color(hex: "0D47A1"))
+                        .foregroundColor(AxerColors.primary)
                 )
 
             // Info
@@ -146,29 +146,29 @@ struct MemberRow: View {
                 HStack(spacing: 6) {
                     Text(member.fullName ?? "Sin nombre")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color(hex: "0D2137"))
+                        .foregroundColor(AxerColors.textPrimary)
 
                     if isCurrentUser {
-                        Text("(Tú)")
+                        Text(L10n.Team.you)
                             .font(.system(size: 14))
-                            .foregroundColor(Color(hex: "64748B"))
+                            .foregroundColor(AxerColors.textSecondary)
                     }
                 }
 
                 Text(member.role.displayName)
                     .font(.system(size: 14))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
             }
 
             Spacer()
 
             // Role badge
-            Text(member.role == .admin ? "Admin" : "Técnico")
+            Text(member.role == .admin ? L10n.Role.admin : L10n.Role.technician)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundColor(member.role == .admin ? Color(hex: "0D47A1") : Color(hex: "64748B"))
+                .foregroundColor(member.role == .admin ? AxerColors.primary : AxerColors.textSecondary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
-                .background(member.role == .admin ? Color(hex: "E3F2FD") : Color(hex: "F1F5F9"))
+                .background(member.role == .admin ? AxerColors.primaryLight : AxerColors.surfaceSecondary)
                 .cornerRadius(12)
         }
         .padding(.horizontal, 16)
@@ -194,23 +194,23 @@ struct InviteRow: View {
         HStack(spacing: 12) {
             // Icon
             Circle()
-                .fill(Color(hex: "FEF3C7"))
+                .fill(AxerColors.warningLight)
                 .frame(width: 44, height: 44)
                 .overlay(
                     Image(systemName: "envelope")
                         .font(.system(size: 18))
-                        .foregroundColor(Color(hex: "D97706"))
+                        .foregroundColor(AxerColors.warning)
                 )
 
             // Info
             VStack(alignment: .leading, spacing: 2) {
-                Text("Código: \(invite.inviteCode)")
+                Text(L10n.Team.inviteCode(invite.inviteCode))
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(Color(hex: "0D2137"))
+                    .foregroundColor(AxerColors.textPrimary)
 
-                Text("Expira \(expiresText)")
+                Text(L10n.Team.expires(expiresText))
                     .font(.system(size: 14))
-                    .foregroundColor(Color(hex: "64748B"))
+                    .foregroundColor(AxerColors.textSecondary)
             }
 
             Spacer()
@@ -221,7 +221,7 @@ struct InviteRow: View {
             } label: {
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: 22))
-                    .foregroundColor(Color(hex: "CBD5E1"))
+                    .foregroundColor(AxerColors.textTertiary)
             }
         }
         .padding(.horizontal, 16)

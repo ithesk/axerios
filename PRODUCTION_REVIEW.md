@@ -141,39 +141,22 @@ Text(L10n.Home.greeting(userName))
 
 ---
 
-### 1.5 🔴 Info.plist Incompleto
+### 1.5 ✅ Info.plist — COMPLETADO
 
-**Faltan claves requeridas:**
+**Estado:** Info.plist configurado con todas las claves necesarias.
 
-```xml
-<!-- Agregar a Info.plist -->
-
-<!-- Requerido para exportación de apps con criptografía -->
-<key>ITSAppUsesNonExemptEncryption</key>
-<false/>
-
-<!-- URL de política de privacidad -->
-<key>NSPrivacyPolicyURL</key>
-<string>https://axer.app/privacy</string>
-
-<!-- Descripción de uso de fotos (guardar) -->
-<key>NSPhotoLibraryAddUsageDescription</key>
-<string>Axer necesita guardar fotos de dispositivos en tu galería</string>
-
-<!-- Orientaciones soportadas -->
-<key>UISupportedInterfaceOrientations</key>
-<array>
-    <string>UIInterfaceOrientationPortrait</string>
-</array>
-
-<!-- Para iPad -->
-<key>UISupportedInterfaceOrientations~ipad</key>
-<array>
-    <string>UIInterfaceOrientationPortrait</string>
-    <string>UIInterfaceOrientationLandscapeLeft</string>
-    <string>UIInterfaceOrientationLandscapeRight</string>
-</array>
-```
+**Claves configuradas:**
+- ✅ `ITSAppUsesNonExemptEncryption` - false (no usa criptografía exenta)
+- ✅ `NSPrivacyPolicyURL` - https://axer.app/privacy
+- ✅ `NSCameraUsageDescription` - Descripción de uso de cámara
+- ✅ `NSPhotoLibraryUsageDescription` - Acceso a galería
+- ✅ `NSPhotoLibraryAddUsageDescription` - Guardar en galería
+- ✅ `CFBundleDisplayName` - "Axer"
+- ✅ `UIStatusBarStyle` - Configurado
+- ✅ `UIBackgroundModes` - remote-notification (para push futuro)
+- ✅ `UISupportedInterfaceOrientations` - Portrait
+- ✅ `LSApplicationQueriesSchemes` - whatsapp, mailto
+- ✅ `CFBundleURLTypes` - Deep linking con scheme "axer"
 
 ---
 
@@ -481,9 +464,9 @@ HapticManager.selection()
 - [ ] **Bundle ID registrado** en Apple Developer Portal
 - [ ] **Provisioning Profile** de distribución
 - [ ] **Code Signing Certificate** de distribución
-- [ ] **ITSAppUsesNonExemptEncryption** en Info.plist
-- [ ] **NSPrivacyPolicyURL** en Info.plist
-- [ ] **Versión y Build Number** correctos
+- [x] **ITSAppUsesNonExemptEncryption** en Info.plist ✅
+- [x] **NSPrivacyPolicyURL** en Info.plist ✅
+- [x] **Versión y Build Number** correctos ✅ (1.0 Build 1)
 
 ### Código
 
@@ -515,7 +498,7 @@ HapticManager.selection()
 | ~~Eliminar print statements~~ | ~~SessionStore.swift~~ | ✅ Completado |
 | Crear Privacy Policy | Web externa | 🔴 Crítica |
 | Crear Terms of Service | Web externa | 🔴 Crítica |
-| Completar Info.plist | Info.plist | 🔴 Crítica |
+| ~~Completar Info.plist~~ | ~~Info.plist~~ | ✅ Completado |
 | ~~Corregir URL hardcodeada~~ | ~~Models.swift~~ | ✅ Completado |
 | ~~Agregar accessibility labels básicos~~ | ~~Todas las vistas~~ | ✅ Completado |
 | ~~Implementar Localización~~ | ~~Todas las vistas~~ | ✅ Completado |
@@ -558,7 +541,7 @@ HapticManager.selection()
 | Archivo | Cambios Necesarios | Líneas |
 |---------|-------------------|--------|
 | ~~`SessionStore.swift`~~ | ~~Eliminar prints, usar Keychain~~ | ✅ Completado |
-| `Info.plist` | Agregar claves faltantes | 5-6 nuevas |
+| ~~`Info.plist`~~ | ~~Agregar claves faltantes~~ | ✅ Completado |
 | ~~`Models.swift`~~ | ~~Corregir URL de cotizaciones~~ | ✅ Completado |
 | ~~`OrdersListView.swift`~~ | ~~Accesibilidad, paginación~~ | ✅ Completado |
 | `NewOrderView.swift` | Accesibilidad adicional | Opcional |
@@ -611,8 +594,9 @@ Sin embargo, **no está lista para App Store** debido a:
 - ✅ Haptic Feedback — COMPLETADO (HapticManager)
 - ✅ Eliminación de Cuenta — COMPLETADO (requerido por Apple)
 - ✅ Accesibilidad — COMPLETADO (VoiceOver básico)
+- ✅ Info.plist — COMPLETADO (todas las claves requeridas)
 
-**Recomendación:** Dedicar 3-4 semanas enfocadas en resolver los problemas críticos antes de enviar a revisión. La probabilidad de rechazo es alta si se envía en estado actual.
+**Recomendación:** Solo falta crear las páginas web de Privacy Policy y Terms of Service en axer.app. Una vez creadas, la app estará lista para enviar a App Store.
 
 ---
 

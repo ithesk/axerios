@@ -57,13 +57,13 @@
 		C8748B6C4FF9CB48D15DC0C9 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A87F5F3E55680E29F81FE3 /* CameraView.swift */; };
 		CD8C5563A352F473DA57E9D1 /* QuoteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54C0684880C495BE6DCE907 /* QuoteDetailView.swift */; };
 		E7737929D80B7BB5CCBDE5FF /* NewOrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D38C3B0F8BD5B64F74C0484D /* NewOrderView.swift */; };
+		HAPT001284567890 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = HAPT002284567890 /* HapticManager.swift */; };
+		KYCH001284567890 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = KYCH002284567890 /* KeychainManager.swift */; };
 		L10N0002284567890 /* String+Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = L10N0001284567890 /* String+Localization.swift */; };
 		LOC00001284567890 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = LOC00002284567890 /* Localizable.strings */; };
 		SC001001284567890 /* ServiceCatalogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = SC002001284567890 /* ServiceCatalogStore.swift */; };
 		SM001001284567890 /* ServiceManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SM002001284567890 /* ServiceManagementView.swift */; };
 		WE001001284567890 /* WorkshopEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = WE002001284567890 /* WorkshopEditView.swift */; };
-		HAPT001284567890 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = HAPT002284567890 /* HapticManager.swift */; };
-		KYCH001284567890 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = KYCH002284567890 /* KeychainManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -103,6 +103,8 @@
 		4E9622DFCB2E8198CF9F6A04 /* ScannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScannerView.swift; path = Components/ScannerView.swift; sourceTree = "<group>"; };
 		744EBB380EF16B2CAE381FF3 /* JoinWorkshopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinWorkshopView.swift; sourceTree = "<group>"; };
 		769CF0C2B49E9B3B59D3E773 /* OrdersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersViewModel.swift; sourceTree = "<group>"; };
+		991A745B2F180A42006B45A3 /* axerRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = axerRelease.entitlements; sourceTree = "<group>"; };
+		991A745C2F180BD1006B45A3 /* axer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = axer.entitlements; sourceTree = "<group>"; };
 		99C30D662F12C41D00211383 /* PrintLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintLabelView.swift; sourceTree = "<group>"; };
 		99C30D682F12C42500211383 /* LabelPDFRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelPDFRenderer.swift; sourceTree = "<group>"; };
 		9EFE5EBE2312DF6B28660BF2 /* OrdersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersListView.swift; sourceTree = "<group>"; };
@@ -113,14 +115,14 @@
 		E6287CFEDED24A848751F19A /* InviteUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteUserView.swift; sourceTree = "<group>"; };
 		E653CE74CD6AEB4B97A009A1 /* OrderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailView.swift; sourceTree = "<group>"; };
 		F54C0684880C495BE6DCE907 /* QuoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteDetailView.swift; sourceTree = "<group>"; };
+		HAPT002284567890 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		KYCH002284567890 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		L10N0001284567890 /* String+Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localization.swift"; sourceTree = "<group>"; };
 		LOC00003284567890 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		LOC00004284567890 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		SC002001284567890 /* ServiceCatalogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCatalogStore.swift; sourceTree = "<group>"; };
 		SM002001284567890 /* ServiceManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceManagementView.swift; sourceTree = "<group>"; };
 		WE002001284567890 /* WorkshopEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkshopEditView.swift; sourceTree = "<group>"; };
-		HAPT002284567890 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
-		KYCH002284567890 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +172,8 @@
 		6A000002284567890 /* axer */ = {
 			isa = PBXGroup;
 			children = (
+				991A745C2F180BD1006B45A3 /* axer.entitlements */,
+				991A745B2F180A42006B45A3 /* axerRelease.entitlements */,
 				6A000004284567890 /* App */,
 				6A000005284567890 /* Core */,
 				6A000006284567890 /* DesignSystem */,
@@ -753,17 +757,27 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = axer/axerRelease.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 43R9TJSE6S;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 43R9TJSE6S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = axer/Resources/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Axer;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Axer necesita acceso a la cámara para escanear códigos QR, códigos de barras y tomar fotos de dispositivos";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Axer necesita permiso para guardar fotos de dispositivos en tu galería";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Axer necesita acceso a tu galería para agregar fotos de dispositivos a las órdenes";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arm64;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -771,6 +785,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.axer.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = axerios4;
 				SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsbGVocmtpdHlodXRpYWx0enRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MDI3OTksImV4cCI6MjA4MzQ3ODc5OX0.9Li5jt7Ur5YoOZ9DZlQNMjsTcUZHsSehW2VumPH-R4o";
 				SUPABASE_URL = "https://sllehrkityhutialtztl.supabase.co";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -784,17 +800,27 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = axer/axerRelease.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 43R9TJSE6S;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 43R9TJSE6S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = axer/Resources/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Axer;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Axer necesita acceso a la cámara para escanear códigos QR, códigos de barras y tomar fotos de dispositivos";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Axer necesita permiso para guardar fotos de dispositivos en tu galería";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Axer necesita acceso a tu galería para agregar fotos de dispositivos a las órdenes";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arm64;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -802,6 +828,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.axer.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = axerios4;
 				SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsbGVocmtpdHlodXRpYWx0enRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MDI3OTksImV4cCI6MjA4MzQ3ODc5OX0.9Li5jt7Ur5YoOZ9DZlQNMjsTcUZHsSehW2VumPH-R4o";
 				SUPABASE_URL = "https://sllehrkityhutialtztl.supabase.co";
 				SWIFT_EMIT_LOC_STRINGS = YES;

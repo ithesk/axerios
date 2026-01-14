@@ -75,8 +75,15 @@ final class SessionStore: ObservableObject {
 
                 await loadUserData()
                 self.state = .authenticated
+
+                // Registrar device token para push notifications
+                await PushNotificationManager.shared.registerTokenForUser(userId: session.user.id)
             }
         case .signedOut:
+            // Eliminar device token antes de limpiar el usuario
+            if let userId = self.user?.id {
+                await PushNotificationManager.shared.unregisterTokenForUser(userId: userId)
+            }
             self.user = nil
             self.profile = nil
             self.workshop = nil

@@ -56,6 +56,15 @@ final class Router: ObservableObject {
         selectedTab = tab
     }
 
+    /// Navega directamente a una orden desde una notificación push
+    func navigateToOrder(orderId: UUID) {
+        // Cambiar al tab de órdenes
+        selectedTab = .orders
+        // Limpiar la navegación actual y navegar al detalle
+        ordersPath = NavigationPath()
+        ordersPath.append(Route.orderDetail(orderId))
+    }
+
     @ViewBuilder
     func destination(for route: Route) -> some View {
         switch route {

@@ -4,6 +4,7 @@ struct OrderDetailView: View {
     @EnvironmentObject var sessionStore: SessionStore
     @StateObject private var viewModel = OrdersViewModel()
     @StateObject private var quoteViewModel = QuoteViewModel()
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
     let orderId: UUID
     @State private var order: Order?
@@ -29,41 +30,12 @@ struct OrderDetailView: View {
             if isLoading {
                 ProgressView()
             } else if let order = order {
-                ScrollView {
-                    VStack(spacing: 16) {
-                        // Header card
-                        headerCard(order)
-
-                        // Status Timeline
-                        statusTimelineCard(order)
-
-                        // Customer card
-                        customerCard(order)
-
-                        // Owner card (responsable)
-                        ownerCard(order)
-
-                        // Device card
-                        deviceCard(order)
-
-                        // Diagnostics card (if available)
-                        if order.devicePowersOn != nil || order.deviceDiagnostics != nil {
-                            diagnosticsCard(order)
-                        }
-
-                        // Problem card
-                        problemCard(order)
-
-                        // Quote section
-                        quoteSection(order)
-
-                        // Activity Timeline
-                        activitySection
-
-                        // Actions
-                        actionsSection(order)
-                    }
-                    .padding(16)
+                if horizontalSizeClass == .regular {
+                    // iPad: 2 column layout
+                    iPadLayout(order)
+                } else {
+                    // iPhone: single column layout
+                    iPhoneLayout(order)
                 }
             } else {
                 Text(L10n.OrderDetail.notFound)
@@ -130,6 +102,63 @@ struct OrderDetailView: View {
             await loadOrder()
             await loadActivity()
             await quoteViewModel.loadQuote(orderId: orderId)
+        }
+    }
+
+    // MARK: - iPad Layout (2 columns)
+
+    private func iPadLayout(_ order: Order) -> some View {
+        ScrollView {
+            HStack(alignment: .top, spacing: 16) {
+                // Left column: General info
+                VStack(spacing: 16) {
+                    headerCard(order)
+                    statusTimelineCard(order)
+                    customerCard(order)
+                    ownerCard(order)
+                    actionsSection(order)
+                }
+                .frame(maxWidth: .infinity)
+
+                // Right column: Technical details
+                VStack(spacing: 16) {
+                    deviceCard(order)
+
+                    if order.devicePowersOn != nil || order.deviceDiagnostics != nil {
+                        diagnosticsCard(order)
+                    }
+
+                    problemCard(order)
+                    quoteSection(order)
+                    activitySection
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding(16)
+        }
+    }
+
+    // MARK: - iPhone Layout (single column)
+
+    private func iPhoneLayout(_ order: Order) -> some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                headerCard(order)
+                statusTimelineCard(order)
+                customerCard(order)
+                ownerCard(order)
+                deviceCard(order)
+
+                if order.devicePowersOn != nil || order.deviceDiagnostics != nil {
+                    diagnosticsCard(order)
+                }
+
+                problemCard(order)
+                quoteSection(order)
+                activitySection
+                actionsSection(order)
+            }
+            .padding(16)
         }
     }
 
@@ -610,9 +639,9 @@ struct OrderDetailView: View {
                 let checks = getDiagnosticChecks(diagnostics: diagnostics, deviceType: order.deviceType, powersOn: order.devicePowersOn)
 
                 if !checks.isEmpty {
+                    // Adaptive grid: more columns on iPad
                     LazyVGrid(columns: [
-                        GridItem(.flexible()),
-                        GridItem(.flexible())
+                        GridItem(.adaptive(minimum: horizontalSizeClass == .regular ? 150 : 140))
                     ], spacing: 8) {
                         ForEach(checks, id: \.field) { check in
                             DiagnosticDetailRow(
@@ -959,6 +988,17 @@ struct OrderDetailView: View {
 
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootVC = windowScene.windows.first?.rootViewController {
+            // Configure popover for iPad
+            if let popover = activityVC.popoverPresentationController {
+                popover.sourceView = rootVC.view
+                popover.sourceRect = CGRect(
+                    x: rootVC.view.bounds.midX,
+                    y: rootVC.view.bounds.midY,
+                    width: 0,
+                    height: 0
+                )
+                popover.permittedArrowDirections = []
+            }
             rootVC.present(activityVC, animated: true)
         }
     }

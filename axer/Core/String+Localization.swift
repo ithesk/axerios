@@ -109,6 +109,8 @@ enum L10n {
         static let tryAnother = "orders.try_another".localized
         static let searchHint = "orders.search_hint".localized
         static let noMoreOrders = "orders.no_more_orders".localized
+        static let selectOrder = "orders.select_order".localized
+        static let selectOrderHint = "orders.select_order_hint".localized
     }
 
     // MARK: - Order Detail
@@ -259,6 +261,8 @@ enum L10n {
         static let namePlaceholder = "customers.name_placeholder".localized
         static let phonePlaceholder = "customers.phone_placeholder".localized
         static let emailPlaceholder = "customers.email_placeholder".localized
+        static let selectCustomer = "customers.select_customer".localized
+        static let selectCustomerHint = "customers.select_customer_hint".localized
     }
 
     // MARK: - Settings

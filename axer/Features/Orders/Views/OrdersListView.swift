@@ -15,6 +15,7 @@ enum OwnershipFilter: String, CaseIterable {
 struct OrdersListView: View {
     @EnvironmentObject var sessionStore: SessionStore
     @StateObject private var viewModel = OrdersViewModel()
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @State private var showNewOrder = false
     @State private var selectedFilter: OrderStatus?
     @State private var ownershipFilter: OwnershipFilter = .mine
@@ -25,44 +26,18 @@ struct OrdersListView: View {
     @State private var scannedOrderId: UUID?
     @State private var showOrderNotFound = false
 
+    // iPad selection state
+    @State private var selectedOrderIdForIPad: UUID?
+
     var body: some View {
-        ZStack {
-            AxerColors.background
-                .ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                // Search bar
-                searchBar
-
-                // Filter chips
-                filterChips
-
-                // Orders list
-                if viewModel.isLoading {
-                    Spacer()
-                    VStack(spacing: 16) {
-                        AxerLoadingSpinner()
-                        Text(L10n.Orders.loading)
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(AxerColors.textSecondary)
-                    }
-                    Spacer()
-                } else if viewModel.filteredOrders.isEmpty {
-                    emptyState
-                } else {
-                    ordersList
-                }
+        Group {
+            if horizontalSizeClass == .regular {
+                // iPad: Split View
+                iPadLayout
+            } else {
+                // iPhone: Layout original
+                iPhoneLayout
             }
-
-            // Floating button
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    floatingButton
-                }
-            }
-            .padding(20)
         }
         .navigationTitle(L10n.Orders.title)
         .sheet(isPresented: $showNewOrder) {
@@ -101,6 +76,172 @@ struct OrdersListView: View {
             if let workshopId = sessionStore.workshop?.id {
                 await viewModel.loadOrders(workshopId: workshopId, refresh: true)
             }
+        }
+    }
+
+    // MARK: - iPad Layout (Split View)
+
+    private var iPadLayout: some View {
+        HStack(spacing: 0) {
+            // Left: Orders List
+            ordersListPanel
+                .frame(width: 380)
+                .background(AxerColors.background)
+
+            Divider()
+
+            // Right: Order Detail
+            if let selectedId = selectedOrderIdForIPad {
+                OrderDetailView(orderId: selectedId)
+                    .id(selectedId)
+                    .frame(maxWidth: .infinity)
+            } else {
+                // Placeholder when no order is selected
+                VStack(spacing: 16) {
+                    Image(systemName: "doc.text.magnifyingglass")
+                        .font(.system(size: 60))
+                        .foregroundColor(AxerColors.textTertiary)
+
+                    Text(L10n.Orders.selectOrder)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(AxerColors.textSecondary)
+
+                    Text(L10n.Orders.selectOrderHint)
+                        .font(.system(size: 14))
+                        .foregroundColor(AxerColors.textTertiary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(AxerColors.background)
+            }
+        }
+    }
+
+    private var ordersListPanel: some View {
+        ZStack {
+            VStack(spacing: 0) {
+                // Search bar
+                searchBar
+
+                // Filter chips
+                filterChips
+
+                // Orders list
+                if viewModel.isLoading {
+                    Spacer()
+                    VStack(spacing: 16) {
+                        AxerLoadingSpinner()
+                        Text(L10n.Orders.loading)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(AxerColors.textSecondary)
+                    }
+                    Spacer()
+                } else if viewModel.filteredOrders.isEmpty {
+                    emptyState
+                } else {
+                    ordersListForIPad
+                }
+            }
+
+            // Floating button
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    floatingButton
+                }
+            }
+            .padding(20)
+        }
+    }
+
+    private var ordersListForIPad: some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(filteredByStatus) { order in
+                    Button {
+                        selectedOrderIdForIPad = order.id
+                    } label: {
+                        OrderCard(order: order)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(
+                                        selectedOrderIdForIPad == order.id ? AxerColors.primary : Color.clear,
+                                        lineWidth: 2
+                                    )
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .onAppear {
+                        // Load more when reaching last items
+                        if order.id == filteredByStatus.last?.id {
+                            loadMoreIfNeeded()
+                        }
+                    }
+                }
+
+                // Loading more indicator
+                if viewModel.isLoadingMore {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .padding()
+                        Spacer()
+                    }
+                }
+
+                // "No more orders" indicator
+                if !viewModel.hasMorePages && !filteredByStatus.isEmpty {
+                    Text(L10n.Orders.noMoreOrders)
+                        .font(.system(size: 13))
+                        .foregroundColor(AxerColors.textTertiary)
+                        .padding(.vertical, 16)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 100)
+        }
+    }
+
+    // MARK: - iPhone Layout
+
+    private var iPhoneLayout: some View {
+        ZStack {
+            AxerColors.background
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // Search bar
+                searchBar
+
+                // Filter chips
+                filterChips
+
+                // Orders list
+                if viewModel.isLoading {
+                    Spacer()
+                    VStack(spacing: 16) {
+                        AxerLoadingSpinner()
+                        Text(L10n.Orders.loading)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(AxerColors.textSecondary)
+                    }
+                    Spacer()
+                } else if viewModel.filteredOrders.isEmpty {
+                    emptyState
+                } else {
+                    ordersList
+                }
+            }
+
+            // Floating button
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    floatingButton
+                }
+            }
+            .padding(20)
         }
     }
 

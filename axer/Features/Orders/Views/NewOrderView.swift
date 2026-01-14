@@ -4,6 +4,7 @@ import PhotosUI
 struct NewOrderView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var sessionStore: SessionStore
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @ObservedObject var viewModel: OrdersViewModel
 
     // Wizard state
@@ -63,21 +64,12 @@ struct NewOrderView: View {
                 AxerColors.background
                     .ignoresSafeArea()
 
-                VStack(spacing: 0) {
-                    // Progress
-                    progressIndicator
-
-                    // Content
-                    TabView(selection: $currentStep) {
-                        customerStep.tag(0)
-                        deviceStep.tag(1)
-                        problemStep.tag(2)
-                    }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
-                    .animation(.easeInOut, value: currentStep)
-
-                    // Bottom buttons
-                    bottomButtons
+                if horizontalSizeClass == .regular {
+                    // iPad: Multi-column layout
+                    iPadWizardLayout
+                } else {
+                    // iPhone: Stepped wizard
+                    iPhoneWizardLayout
                 }
             }
             .navigationTitle(L10n.NewOrder.title)
@@ -99,6 +91,112 @@ struct NewOrderView: View {
             .sheet(isPresented: $showImeiScanner) {
                 IMEIScannerView(scannedIMEI: $deviceImei)
             }
+        }
+    }
+
+    // MARK: - iPad Layout (Multi-column)
+
+    private var iPadWizardLayout: some View {
+        VStack(spacing: 0) {
+            // All 3 steps visible simultaneously
+            ScrollView {
+                HStack(alignment: .top, spacing: 16) {
+                    // Column 1: Customer
+                    VStack(alignment: .leading, spacing: 0) {
+                        stepHeader(title: "1. \(L10n.NewOrder.customer)", isCompleted: selectedCustomer != nil)
+                        customerStep
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    // Column 2: Device
+                    VStack(alignment: .leading, spacing: 0) {
+                        stepHeader(title: "2. \(L10n.NewOrder.device)", isCompleted: true)
+                        deviceStep
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    // Column 3: Problem
+                    VStack(alignment: .leading, spacing: 0) {
+                        stepHeader(title: "3. \(L10n.NewOrder.problem)", isCompleted: !problemDescription.isEmpty)
+                        problemStep
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(16)
+            }
+
+            // Single create button for iPad
+            iPadBottomButtons
+        }
+    }
+
+    private func stepHeader(title: String, isCompleted: Bool) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(AxerColors.textPrimary)
+
+            Spacer()
+
+            if isCompleted {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(AxerColors.success)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(AxerColors.surface)
+    }
+
+    private var iPadBottomButtons: some View {
+        HStack(spacing: 12) {
+            Button {
+                Task { await createOrder() }
+            } label: {
+                HStack {
+                    if isCreating {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    }
+                    Text(L10n.NewOrder.createOrder)
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: 300)
+                .frame(height: 52)
+                .background(canCreateOrder ? AxerColors.primary : AxerColors.textTertiary)
+                .cornerRadius(26)
+            }
+            .disabled(!canCreateOrder || isCreating)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 16)
+        .background(AxerColors.surface)
+    }
+
+    private var canCreateOrder: Bool {
+        selectedCustomer != nil && !problemDescription.isEmpty
+    }
+
+    // MARK: - iPhone Layout (Stepped wizard)
+
+    private var iPhoneWizardLayout: some View {
+        VStack(spacing: 0) {
+            // Progress
+            progressIndicator
+
+            // Content
+            TabView(selection: $currentStep) {
+                customerStep.tag(0)
+                deviceStep.tag(1)
+                problemStep.tag(2)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .animation(.easeInOut, value: currentStep)
+
+            // Bottom buttons
+            bottomButtons
         }
     }
 
@@ -371,10 +469,9 @@ struct NewOrderView: View {
                 .font(.system(size: 14, weight: .medium))
                 .foregroundColor(AxerColors.textSecondary)
 
+            // Adaptive grid: more columns on iPad
             LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible())
+                GridItem(.adaptive(minimum: horizontalSizeClass == .regular ? 100 : 90))
             ], spacing: 10) {
                 ForEach(DeviceType.allCases, id: \.self) { type in
                     DeviceTypeButton(
@@ -553,9 +650,9 @@ struct NewOrderView: View {
 
             let relevantFields = DeviceDiagnostics.relevantChecks(for: deviceType, powersOn: devicePowersOn)
 
+            // Adaptive grid: more columns on iPad
             LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible())
+                GridItem(.adaptive(minimum: horizontalSizeClass == .regular ? 150 : 140))
             ], spacing: 8) {
                 ForEach(relevantFields, id: \.self) { field in
                     DiagnosticCheckRow(

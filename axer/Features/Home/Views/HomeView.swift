@@ -6,6 +6,7 @@ struct HomeView: View {
     @EnvironmentObject var sessionStore: SessionStore
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @EnvironmentObject var router: Router
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
     @StateObject private var ordersViewModel = OrdersViewModel()
     @State private var showNewOrder = false
@@ -23,14 +24,13 @@ struct HomeView: View {
                 OfflineBanner()
 
                 ScrollView {
-                    VStack(spacing: 20) {
-                        welcomeHeader
-                        quickStatsSection
-                        recentOrdersSection
+                    if horizontalSizeClass == .regular {
+                        // iPad: Horizontal dashboard layout
+                        iPadDashboard
+                    } else {
+                        // iPhone: Vertical layout with carousel
+                        iPhoneDashboard
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 8)
-                    .padding(.bottom, 80)
                 }
             }
 
@@ -84,6 +84,39 @@ struct HomeView: View {
         }
         .accessibilityLabel(L10n.Home.newOrder)
         .accessibilityHint(L10n.Accessibility.newOrderHint)
+    }
+
+    // MARK: - iPad Dashboard Layout
+
+    private var iPadDashboard: some View {
+        VStack(spacing: 20) {
+            welcomeHeader
+
+            // Stats cards in horizontal row
+            HStack(alignment: .top, spacing: 16) {
+                activeOrdersCard
+                todayQuotesCard
+                monthSummaryCard
+            }
+
+            recentOrdersSection
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 8)
+        .padding(.bottom, 80)
+    }
+
+    // MARK: - iPhone Dashboard Layout
+
+    private var iPhoneDashboard: some View {
+        VStack(spacing: 20) {
+            welcomeHeader
+            quickStatsSection
+            recentOrdersSection
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 8)
+        .padding(.bottom, 80)
     }
 
     private var welcomeHeader: some View {

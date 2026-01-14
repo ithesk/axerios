@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum Tab: Int, CaseIterable {
+enum Tab: Int, CaseIterable, Hashable {
     case home
     case orders
     case customers
@@ -28,9 +28,80 @@ enum Tab: Int, CaseIterable {
 struct MainTabView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var sessionStore: SessionStore
-    @State private var selectedTab: Tab = .home
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @State private var selectedTab: Tab? = .home
 
     var body: some View {
+        Group {
+            if horizontalSizeClass == .regular {
+                // iPad: NavigationSplitView con Sidebar
+                iPadLayout
+            } else {
+                // iPhone: TabView tradicional
+                iPhoneLayout
+            }
+        }
+        .tint(AxerColors.primary)
+        .fullScreenCover(isPresented: $sessionStore.shouldShowOnboarding) {
+            OnboardingView()
+        }
+        .onChange(of: router.selectedTab) { _, newTab in
+            if let tab = newTab {
+                selectedTab = tab
+                router.selectedTab = nil
+            }
+        }
+    }
+
+    // MARK: - iPad Layout
+
+    private var iPadLayout: some View {
+        NavigationSplitView {
+            List(selection: $selectedTab) {
+                ForEach(Tab.allCases, id: \.self) { tab in
+                    Label(tab.title, systemImage: tab.icon)
+                        .tag(tab as Tab?)
+                }
+            }
+            .navigationTitle("Axer")
+            .listStyle(.sidebar)
+        } detail: {
+            switch selectedTab ?? .home {
+            case .home:
+                NavigationStack(path: $router.homePath) {
+                    HomeView()
+                        .navigationDestination(for: Route.self) { route in
+                            router.destination(for: route)
+                        }
+                }
+            case .orders:
+                NavigationStack(path: $router.ordersPath) {
+                    OrdersListView()
+                        .navigationDestination(for: Route.self) { route in
+                            router.destination(for: route)
+                        }
+                }
+            case .customers:
+                NavigationStack(path: $router.customersPath) {
+                    CustomersView()
+                        .navigationDestination(for: Route.self) { route in
+                            router.destination(for: route)
+                        }
+                }
+            case .settings:
+                NavigationStack(path: $router.settingsPath) {
+                    SettingsView()
+                        .navigationDestination(for: Route.self) { route in
+                            router.destination(for: route)
+                        }
+                }
+            }
+        }
+    }
+
+    // MARK: - iPhone Layout
+
+    private var iPhoneLayout: some View {
         TabView(selection: $selectedTab) {
             // Home Tab
             NavigationStack(path: $router.homePath) {
@@ -42,7 +113,7 @@ struct MainTabView: View {
             .tabItem {
                 Label(Tab.home.title, systemImage: Tab.home.icon)
             }
-            .tag(Tab.home)
+            .tag(Tab.home as Tab?)
 
             // Orders Tab
             NavigationStack(path: $router.ordersPath) {
@@ -54,7 +125,7 @@ struct MainTabView: View {
             .tabItem {
                 Label(Tab.orders.title, systemImage: Tab.orders.icon)
             }
-            .tag(Tab.orders)
+            .tag(Tab.orders as Tab?)
 
             // Customers Tab
             NavigationStack(path: $router.customersPath) {
@@ -66,7 +137,7 @@ struct MainTabView: View {
             .tabItem {
                 Label(Tab.customers.title, systemImage: Tab.customers.icon)
             }
-            .tag(Tab.customers)
+            .tag(Tab.customers as Tab?)
 
             // Settings Tab
             NavigationStack(path: $router.settingsPath) {
@@ -78,17 +149,7 @@ struct MainTabView: View {
             .tabItem {
                 Label(Tab.settings.title, systemImage: Tab.settings.icon)
             }
-            .tag(Tab.settings)
-        }
-        .tint(AxerColors.primary)
-        .fullScreenCover(isPresented: $sessionStore.shouldShowOnboarding) {
-            OnboardingView()
-        }
-        .onChange(of: router.selectedTab) { _, newTab in
-            if let tab = newTab {
-                selectedTab = tab
-                router.selectedTab = nil
-            }
+            .tag(Tab.settings as Tab?)
         }
     }
 }

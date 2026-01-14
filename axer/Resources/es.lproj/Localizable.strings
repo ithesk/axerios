@@ -116,6 +116,8 @@
 "orders.create_first" = "Crea tu primera orden";
 "orders.try_another" = "Intenta con otro termino";
 "orders.search_hint" = "Buscar orden, cliente, IMEI...";
+"orders.select_order" = "Selecciona una orden";
+"orders.select_order_hint" = "Elige una orden de la lista para ver sus detalles";
 
 // MARK: - Order Detail
 "order_detail.not_found" = "Orden no encontrada";
@@ -294,6 +296,8 @@
 "customers.name_placeholder" = "Nombre *";
 "customers.phone_placeholder" = "Telefono";
 "customers.email_placeholder" = "Email";
+"customers.select_customer" = "Selecciona un cliente";
+"customers.select_customer_hint" = "Elige un cliente de la lista para ver sus detalles";
 
 // MARK: - Settings
 "settings.title" = "Ajustes";

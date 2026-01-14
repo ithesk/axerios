@@ -64,6 +64,34 @@ class ScannerViewController: UIViewController {
         checkCameraPermission()
     }
 
+    // MARK: - Video Orientation (iPad fix)
+
+    private func updateVideoOrientation() {
+        guard let connection = previewLayer?.connection,
+              connection.isVideoOrientationSupported else { return }
+
+        let orientation: AVCaptureVideoOrientation
+
+        if let windowScene = view.window?.windowScene {
+            switch windowScene.interfaceOrientation {
+            case .portrait:
+                orientation = .portrait
+            case .portraitUpsideDown:
+                orientation = .portraitUpsideDown
+            case .landscapeLeft:
+                orientation = .landscapeLeft
+            case .landscapeRight:
+                orientation = .landscapeRight
+            @unknown default:
+                orientation = .portrait
+            }
+        } else {
+            orientation = .portrait
+        }
+
+        connection.videoOrientation = orientation
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         hasDetected = false
@@ -136,6 +164,9 @@ class ScannerViewController: UIViewController {
             view.layer.addSublayer(previewLayer)
             self.previewLayer = previewLayer
 
+            // Set correct orientation for iPad
+            updateVideoOrientation()
+
             // Agregar overlay
             setupOverlay()
 
@@ -164,6 +195,8 @@ class ScannerViewController: UIViewController {
         previewLayer?.frame = view.bounds
         overlayView?.frame = view.bounds
         overlayView?.setNeedsDisplay()
+        // Update orientation when layout changes (rotation)
+        updateVideoOrientation()
     }
 
     private func showPermissionDenied() {

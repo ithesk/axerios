@@ -217,6 +217,34 @@ class OCRScannerViewController: UIViewController {
         setupCamera()
     }
 
+    // MARK: - Video Orientation (iPad fix)
+
+    private func updateVideoOrientation() {
+        guard let connection = previewLayer?.connection,
+              connection.isVideoOrientationSupported else { return }
+
+        let orientation: AVCaptureVideoOrientation
+
+        if let windowScene = view.window?.windowScene {
+            switch windowScene.interfaceOrientation {
+            case .portrait:
+                orientation = .portrait
+            case .portraitUpsideDown:
+                orientation = .portraitUpsideDown
+            case .landscapeLeft:
+                orientation = .landscapeLeft
+            case .landscapeRight:
+                orientation = .landscapeRight
+            @unknown default:
+                orientation = .portrait
+            }
+        } else {
+            orientation = .portrait
+        }
+
+        connection.videoOrientation = orientation
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if let session = captureSession, !session.isRunning {
@@ -259,6 +287,9 @@ class OCRScannerViewController: UIViewController {
             previewLayer.videoGravity = .resizeAspectFill
             view.layer.addSublayer(previewLayer)
             self.previewLayer = previewLayer
+
+            // Set correct orientation for iPad
+            updateVideoOrientation()
 
             // Add scan area overlay
             addScanAreaOverlay()
@@ -312,6 +343,8 @@ class OCRScannerViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer?.frame = view.bounds
+        // Update orientation when layout changes (rotation)
+        updateVideoOrientation()
     }
 }
 

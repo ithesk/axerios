@@ -76,7 +76,11 @@ struct OrderDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showQuote) {
+        .sheet(isPresented: $showQuote, onDismiss: {
+            Task {
+                await quoteViewModel.loadQuote(orderId: orderId)
+            }
+        }) {
             if let order = order, let workshopId = sessionStore.workshop?.id {
                 QuoteDetailView(
                     orderId: order.id,

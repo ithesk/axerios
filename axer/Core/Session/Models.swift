@@ -937,6 +937,7 @@ struct Quote: Codable, Identifiable {
 
     // Joined data
     var items: [QuoteItem]?
+    var questions: [QuoteQuestion]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -958,6 +959,12 @@ struct Quote: Codable, Identifiable {
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case items
+        case questions
+    }
+
+    /// Numero de preguntas pendientes de respuesta
+    var pendingQuestionsCount: Int {
+        questions?.filter { $0.isPending }.count ?? 0
     }
 
     /// URL publica para compartir la cotizacion
@@ -990,5 +997,43 @@ struct QuoteItem: Codable, Identifiable {
         case totalPrice = "total_price"
         case sortOrder = "sort_order"
         case createdAt = "created_at"
+    }
+}
+
+struct QuoteQuestion: Codable, Identifiable {
+    let id: UUID
+    let quoteId: UUID
+    let orderId: UUID
+    let workshopId: UUID
+
+    var question: String
+    var answer: String?
+
+    var askedByCustomer: Bool
+    var answeredByUserId: UUID?
+    var answeredByName: String?
+
+    var isRead: Bool
+
+    let createdAt: Date?
+    var answeredAt: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case quoteId = "quote_id"
+        case orderId = "order_id"
+        case workshopId = "workshop_id"
+        case question
+        case answer
+        case askedByCustomer = "asked_by_customer"
+        case answeredByUserId = "answered_by_user_id"
+        case answeredByName = "answered_by"
+        case isRead = "is_read"
+        case createdAt = "created_at"
+        case answeredAt = "answered_at"
+    }
+
+    var isPending: Bool {
+        answer == nil || answer?.isEmpty == true
     }
 }

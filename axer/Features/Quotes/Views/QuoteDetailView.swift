@@ -15,6 +15,7 @@ struct QuoteDetailView: View {
     @State private var editingItem: QuoteItem?
     @State private var showStatusPicker = false
     @State private var showShareSheet = false
+    @State private var answeringQuestion: QuoteQuestion?
 
     var body: some View {
         NavigationStack {
@@ -29,6 +30,11 @@ struct QuoteDetailView: View {
                         VStack(spacing: 16) {
                             // Status header
                             statusHeader(quote)
+
+                            // Questions section (if any pending)
+                            if !viewModel.questions.isEmpty {
+                                questionsSection
+                            }
 
                             // Items list
                             itemsSection
@@ -156,6 +162,52 @@ struct QuoteDetailView: View {
         .padding(20)
         .background(AxerColors.surface)
         .cornerRadius(16)
+    }
+
+    // MARK: - Questions Section
+
+    private var questionsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "bubble.left.and.bubble.right.fill")
+                    .font(.system(size: 14))
+                    .foregroundColor(AxerColors.warning)
+
+                Text("Preguntas del cliente")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(AxerColors.textSecondary)
+
+                Spacer()
+
+                let pending = viewModel.pendingQuestionsCount
+                if pending > 0 {
+                    Text("\(pending) pendiente\(pending > 1 ? "s" : "")")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(AxerColors.warning)
+                        .cornerRadius(10)
+                }
+            }
+
+            VStack(spacing: 12) {
+                ForEach(viewModel.questions) { question in
+                    QuoteQuestionRow(
+                        question: question,
+                        onAnswer: {
+                            answeringQuestion = question
+                        }
+                    )
+                }
+            }
+        }
+        .padding(20)
+        .background(AxerColors.surface)
+        .cornerRadius(16)
+        .sheet(item: $answeringQuestion) { question in
+            AnswerQuestionSheet(question: question, viewModel: viewModel)
+        }
     }
 
     // MARK: - Items Section
@@ -822,6 +874,186 @@ struct QuickServiceChip: View {
             .padding(.vertical, 10)
             .background(isSelected ? AxerColors.primary : AxerColors.surfaceSecondary)
             .cornerRadius(10)
+        }
+    }
+}
+
+// MARK: - Quote Question Row
+
+struct QuoteQuestionRow: View {
+    let question: QuoteQuestion
+    let onAnswer: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            // Question
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: "person.circle.fill")
+                    .font(.system(size: 24))
+                    .foregroundColor(AxerColors.textTertiary)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Cliente")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(AxerColors.textTertiary)
+
+                    Text(question.question)
+                        .font(.system(size: 14))
+                        .foregroundColor(AxerColors.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    if let createdAt = question.createdAt {
+                        Text(createdAt, style: .relative)
+                            .font(.system(size: 11))
+                            .foregroundColor(AxerColors.textTertiary)
+                    }
+                }
+            }
+
+            // Answer (if exists)
+            if let answer = question.answer, !answer.isEmpty {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "wrench.and.screwdriver.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(AxerColors.primary)
+                        .frame(width: 24)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Taller")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(AxerColors.primary)
+
+                        Text(answer)
+                            .font(.system(size: 14))
+                            .foregroundColor(AxerColors.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        if let answeredAt = question.answeredAt {
+                            Text(answeredAt, style: .relative)
+                                .font(.system(size: 11))
+                                .foregroundColor(AxerColors.textTertiary)
+                        }
+                    }
+                }
+                .padding(.leading, 34)
+            } else {
+                // Answer button
+                Button(action: onAnswer) {
+                    HStack {
+                        Image(systemName: "arrowshape.turn.up.left.fill")
+                        Text("Responder")
+                    }
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(AxerColors.primary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(AxerColors.primaryLight)
+                    .cornerRadius(8)
+                }
+                .padding(.leading, 34)
+            }
+        }
+        .padding(14)
+        .background(question.isPending ? AxerColors.warningLight : AxerColors.background)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(question.isPending ? AxerColors.warning.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
+    }
+}
+
+// MARK: - Answer Question Sheet
+
+struct AnswerQuestionSheet: View {
+    @Environment(\.dismiss) var dismiss
+
+    let question: QuoteQuestion
+    let viewModel: QuoteViewModel
+
+    @State private var answer = ""
+    @State private var isSubmitting = false
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                // Original question
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Pregunta del cliente")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(AxerColors.textTertiary)
+
+                    Text(question.question)
+                        .font(.system(size: 15))
+                        .foregroundColor(AxerColors.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(16)
+                .background(AxerColors.background)
+                .cornerRadius(12)
+
+                // Answer input
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Tu respuesta")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(AxerColors.textTertiary)
+
+                    TextField("Escribe tu respuesta...", text: $answer, axis: .vertical)
+                        .lineLimit(4...8)
+                        .padding(14)
+                        .background(AxerColors.background)
+                        .cornerRadius(12)
+                }
+
+                Spacer()
+            }
+            .padding(20)
+            .background(AxerColors.surface)
+            .navigationTitle("Responder pregunta")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(L10n.Common.cancel) {
+                        dismiss()
+                    }
+                    .foregroundColor(AxerColors.textSecondary)
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        Task {
+                            await submitAnswer()
+                        }
+                    } label: {
+                        if isSubmitting {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Text("Enviar")
+                                .fontWeight(.semibold)
+                        }
+                    }
+                    .foregroundColor(AxerColors.primary)
+                    .disabled(answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSubmitting)
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+
+    private func submitAnswer() async {
+        isSubmitting = true
+
+        let success = await viewModel.answerQuestion(
+            questionId: question.id,
+            answer: answer.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+
+        isSubmitting = false
+
+        if success {
+            dismiss()
         }
     }
 }

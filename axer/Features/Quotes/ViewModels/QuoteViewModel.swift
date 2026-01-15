@@ -5,6 +5,7 @@ import SwiftUI
 final class QuoteViewModel: ObservableObject {
     @Published var quote: Quote?
     @Published var items: [QuoteItem] = []
+    @Published var questions: [QuoteQuestion] = []
     @Published var isLoading = false
     @Published var error: String?
     @Published var workshop: Workshop?
@@ -42,7 +43,7 @@ final class QuoteViewModel: ObservableObject {
         do {
             let response: [Quote] = try await supabase.client
                 .from("quotes")
-                .select("*, items:quote_items(*)")
+                .select("*, items:quote_items(*), questions:quote_questions(*)")
                 .eq("order_id", value: orderId.uuidString)
                 .order("created_at", ascending: false)
                 .limit(1)
@@ -52,9 +53,11 @@ final class QuoteViewModel: ObservableObject {
             if let loadedQuote = response.first {
                 self.quote = loadedQuote
                 self.items = loadedQuote.items ?? []
+                self.questions = loadedQuote.questions ?? []
             } else {
                 self.quote = nil
                 self.items = []
+                self.questions = []
             }
         } catch {
             self.error = "Error cargando cotizacion"
@@ -392,5 +395,49 @@ final class QuoteViewModel: ObservableObject {
 
         Gracias por tu preferencia.
         """
+    }
+
+    // MARK: - Questions
+
+    /// Numero de preguntas pendientes de respuesta
+    var pendingQuestionsCount: Int {
+        questions.filter { $0.isPending }.count
+    }
+
+    /// Responder una pregunta del cliente
+    func answerQuestion(questionId: UUID, answer: String) async -> Bool {
+        do {
+            let _ = try await supabase.client.rpc(
+                "answer_quote_question",
+                params: [
+                    "p_question_id": questionId.uuidString,
+                    "p_answer": answer
+                ]
+            ).execute()
+
+            // Reload to get updated questions
+            if let orderId = quote?.orderId {
+                await loadQuote(orderId: orderId)
+            }
+            return true
+        } catch {
+            self.error = "Error respondiendo pregunta"
+            print("Error answering question: \(error)")
+            return false
+        }
+    }
+
+    /// Marcar preguntas como leidas
+    func markQuestionsAsRead() async {
+        guard let quoteId = quote?.id else { return }
+
+        do {
+            let _ = try await supabase.client.rpc(
+                "mark_quote_questions_read",
+                params: ["p_quote_id": quoteId.uuidString]
+            ).execute()
+        } catch {
+            print("Error marking questions as read: \(error)")
+        }
     }
 }

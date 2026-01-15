@@ -38,16 +38,14 @@ serve(async (req: Request) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Handle approve/reject actions
-    if (req.method === 'POST' && (action === 'approve' || action === 'reject')) {
-      const rpcName = action === 'approve' ? 'approve_quote_from_tracking' : 'reject_quote_from_tracking'
-
-      const { data, error } = await supabase.rpc(rpcName, { p_order_token: token })
+    // Handle approve action
+    if (req.method === 'POST' && action === 'approve') {
+      const { data, error } = await supabase.rpc('approve_quote_from_tracking', { p_order_token: token })
 
       if (error) {
-        console.error(`Error in ${rpcName}:`, error)
+        console.error('Error in approve_quote_from_tracking:', error)
         return new Response(
-          JSON.stringify({ error: `No se pudo ${action === 'approve' ? 'aprobar' : 'rechazar'} la cotizacion` }),
+          JSON.stringify({ error: 'No se pudo aprobar la cotizacion' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
         )
       }
@@ -60,7 +58,38 @@ serve(async (req: Request) => {
       }
 
       return new Response(
-        JSON.stringify({ success: true, action }),
+        JSON.stringify({ success: true, action: 'approve' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      )
+    }
+
+    // Handle question submission
+    if (req.method === 'POST' && action === 'question') {
+      const body = await req.json()
+      const question = body.question?.trim()
+
+      if (!question) {
+        return new Response(
+          JSON.stringify({ error: 'La pregunta no puede estar vacia' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        )
+      }
+
+      const { data, error } = await supabase.rpc('add_quote_question_from_tracking', {
+        p_order_token: token,
+        p_question: question
+      })
+
+      if (error) {
+        console.error('Error in add_quote_question_from_tracking:', error)
+        return new Response(
+          JSON.stringify({ error: 'No se pudo enviar la pregunta' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        )
+      }
+
+      return new Response(
+        JSON.stringify(data),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       )
     }

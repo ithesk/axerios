@@ -766,6 +766,187 @@
       color: var(--axer-success);
     }
 
+    /* Questions section */
+    .quote-questions{
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .quote-questions-title{
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .quote-questions-title svg{width: 14px; height: 14px;}
+    .question-item{
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+      border: 1px solid var(--line);
+    }
+    .question-item:last-child{margin-bottom: 0;}
+    .question-text{
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .question-meta{
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .question-answer{
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+    }
+    .question-answer-label{
+      font-size: 10px;
+      color: var(--axer-success);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .question-answer-text{
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .question-pending{
+      font-size: 11px;
+      color: var(--axer-warning);
+      font-weight: 700;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .question-pending svg{width: 12px; height: 12px;}
+
+    /* Question Modal */
+    .modal-overlay{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.visible{
+      display: flex;
+    }
+    .modal{
+      background: #fff;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--shadow);
+      animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalPop {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .modal-header{
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title{
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .modal-close{
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .modal-close:hover{color: var(--text);}
+    .modal-close svg{width: 20px; height: 20px;}
+    .modal-body{
+      padding: 20px;
+    }
+    .modal-textarea{
+      width: 100%;
+      min-height: 120px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      resize: vertical;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .modal-textarea:focus{
+      outline: none;
+      border-color: var(--axer-primary);
+      box-shadow: var(--ring);
+    }
+    .modal-textarea::placeholder{
+      color: var(--muted2);
+    }
+    .modal-hint{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+    .modal-footer{
+      padding: 16px 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .modal-btn{
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .modal-btn:hover{transform: scale(1.02);}
+    .modal-btn:active{transform: scale(0.98);}
+    .modal-btn.cancel{
+      background: var(--soft);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .modal-btn.submit{
+      background: var(--axer-primary);
+      border: none;
+      color: #fff;
+    }
+    .modal-btn:disabled{
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
     /* Sticky CTA for mobile */
     .quote-sticky{
       position: fixed;
@@ -983,6 +1164,32 @@
 
     <!-- Sticky CTA for mobile -->
     <div class="quote-sticky" id="stickyQuote"></div>
+
+    <!-- Question Modal -->
+    <div class="modal-overlay" id="questionModal">
+      <div class="modal">
+        <div class="modal-header">
+          <span class="modal-title">Hacer una pregunta</span>
+          <button class="modal-close" onclick="closeQuestionModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <textarea
+            class="modal-textarea"
+            id="questionText"
+            placeholder="Escribe tu pregunta sobre la cotizacion..."
+          ></textarea>
+          <div class="modal-hint">
+            Tu pregunta sera enviada al taller. Podras ver la respuesta aqui mismo y seguir aprobando la cotizacion cuando estes listo.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn cancel" onclick="closeQuestionModal()">Cancelar</button>
+          <button class="modal-btn submit" id="submitQuestionBtn" onclick="submitQuestion()">Enviar pregunta</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1012,7 +1219,9 @@
       xCircle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>`,
       whatsapp: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`,
       shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4" stroke-width="2"/></svg>`,
-      clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`
+      clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+      chat: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+      send: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`
     };
 
     // Status config with friendly copy
@@ -1396,12 +1605,49 @@
         </div>
       `;
 
+      // Render questions if any
+      const questions = quote.questions || [];
+      let questionsHtml = '';
+      if (questions.length > 0) {
+        const questionItems = questions.map(q => {
+          const date = new Date(q.created_at);
+          const dateStr = date.toLocaleDateString('es-DO', { day: 'numeric', month: 'short' });
+
+          return `
+            <div class="question-item">
+              <div class="question-text">${escapeHtml(q.question)}</div>
+              <div class="question-meta">Enviada el ${dateStr}</div>
+              ${q.answer ? `
+                <div class="question-answer">
+                  <div class="question-answer-label">Respuesta del taller</div>
+                  <div class="question-answer-text">${escapeHtml(q.answer)}</div>
+                </div>
+              ` : `
+                <div class="question-pending">
+                  ${Icons.clock} Esperando respuesta
+                </div>
+              `}
+            </div>
+          `;
+        }).join('');
+
+        questionsHtml = `
+          <div class="quote-questions">
+            <div class="quote-questions-title">
+              ${Icons.chat}
+              <span>Preguntas (${questions.length})</span>
+            </div>
+            ${questionItems}
+          </div>
+        `;
+      }
+
       let actionsHtml = '';
       if (quote.status === 'sent') {
         actionsHtml = `
           <div class="quote-actions">
-            <button class="quote-btn reject" onclick="handleRejectQuote()" id="rejectBtn">
-              ${Icons.xCircle}
+            <button class="quote-btn reject" onclick="openQuestionModal()" id="questionBtn">
+              ${Icons.chat}
               <span>Tengo preguntas</span>
             </button>
             <button class="quote-btn approve" onclick="handleApproveQuote()" id="approveBtn">
@@ -1438,6 +1684,7 @@
         ${items.length > 0 ? `<div class="quote-items">${itemsHtml}</div>` : ''}
         <div class="quote-totals">${totalsHtml}</div>
         ${actionsHtml}
+        ${questionsHtml}
         ${quote.notes ? `<div style="font-size: 12px; color: var(--muted); margin-top: 10px; font-weight: 500; line-height: 1.4;">Nota: ${escapeHtml(quote.notes)}</div>` : ''}
       `;
 
@@ -1450,8 +1697,8 @@
 
         stickyQuote.innerHTML = `
           <div class="quote-actions">
-            <button class="quote-btn reject" onclick="handleRejectQuote()" id="rejectBtnSticky">
-              ${Icons.xCircle}
+            <button class="quote-btn reject" onclick="openQuestionModal()" id="questionBtnSticky">
+              ${Icons.chat}
               <span>Tengo preguntas</span>
             </button>
             <button class="quote-btn approve" onclick="handleApproveQuote()" id="approveBtnSticky">
@@ -1485,9 +1732,9 @@
     function setQuoteButtonsDisabled(disabled) {
       const buttons = [
         document.getElementById('approveBtn'),
-        document.getElementById('rejectBtn'),
+        document.getElementById('questionBtn'),
         document.getElementById('approveBtnSticky'),
-        document.getElementById('rejectBtnSticky')
+        document.getElementById('questionBtnSticky')
       ];
       buttons.forEach(btn => {
         if (btn) btn.disabled = disabled;
@@ -1529,29 +1776,71 @@
       }
     }
 
-    async function handleRejectQuote() {
+    // Question modal functions
+    function openQuestionModal() {
+      document.getElementById('questionModal').classList.add('visible');
+      document.getElementById('questionText').focus();
+    }
+
+    function closeQuestionModal() {
+      document.getElementById('questionModal').classList.remove('visible');
+      document.getElementById('questionText').value = '';
+    }
+
+    async function submitQuestion() {
+      const questionText = document.getElementById('questionText').value.trim();
+
+      if (!questionText) {
+        alert('Por favor escribe tu pregunta');
+        return;
+      }
+
       if (!currentOrderToken) return;
 
-      setQuoteButtonsDisabled(true);
+      const submitBtn = document.getElementById('submitQuestionBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
 
       try {
-        const res = await fetch(`${API_URL}/${currentOrderToken}/reject`, {
+        const res = await fetch(`${API_URL}/${currentOrderToken}/question`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: questionText })
         });
 
-        if (res.ok) {
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          closeQuestionModal();
+          // Show success message
+          alert('Pregunta enviada correctamente. El taller te respondera pronto.');
+          // Reload to show the new question
           loadOrder();
         } else {
-          alert('No se pudo enviar tu duda. Intenta de nuevo o contactanos directamente.');
-          setQuoteButtonsDisabled(false);
+          alert(data.error || 'No se pudo enviar la pregunta. Intenta de nuevo.');
         }
       } catch (e) {
         console.error(e);
         alert('Error de conexion. Intenta de nuevo.');
-        setQuoteButtonsDisabled(false);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar pregunta';
       }
     }
+
+    // Close modal on overlay click
+    document.getElementById('questionModal').addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        closeQuestionModal();
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeQuestionModal();
+      }
+    });
 
     loadOrder();
   </script>

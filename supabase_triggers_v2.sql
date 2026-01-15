@@ -14,9 +14,11 @@ CREATE TABLE IF NOT EXISTS app_config (
 ALTER TABLE app_config ENABLE ROW LEVEL SECURITY;
 
 -- PASO 2: Insertar configuración
+-- IMPORTANTE: Reemplaza estos valores con tus credenciales reales
+-- NO commits claves reales a git
 INSERT INTO app_config (key, value) VALUES
-    ('supabase_url', 'https://sllehrkityhutialtztl.supabase.co'),
-    ('supabase_service_role_key', '***REMOVED***')
+    ('supabase_url', 'https://TU_PROJECT_ID.supabase.co'),
+    ('supabase_service_role_key', 'TU_SERVICE_ROLE_KEY_AQUI')
 ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 
 

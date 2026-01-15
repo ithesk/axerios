@@ -209,6 +209,66 @@ CREATE TRIGGER quote_response_trigger
 
 
 -- ============================================
+-- TRIGGER 4: NUEVA PREGUNTA EN COTIZACIÓN
+-- ============================================
+
+CREATE OR REPLACE FUNCTION notify_new_quote_question()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_order_owner_id UUID;
+    v_order_number TEXT;
+    v_supabase_url TEXT;
+    v_service_key TEXT;
+BEGIN
+    -- Solo notificar si es pregunta del cliente
+    IF NEW.asked_by_customer = true THEN
+
+        v_supabase_url := get_app_config('supabase_url');
+        v_service_key := get_app_config('supabase_service_role_key');
+
+        IF v_supabase_url IS NULL OR v_service_key IS NULL THEN
+            RETURN NEW;
+        END IF;
+
+        -- Obtener owner de la orden
+        SELECT owner_user_id, order_number::TEXT
+        INTO v_order_owner_id, v_order_number
+        FROM orders
+        WHERE id = NEW.order_id;
+
+        IF v_order_owner_id IS NOT NULL THEN
+            PERFORM net.http_post(
+                url := v_supabase_url || '/functions/v1/send-push-notification',
+                headers := jsonb_build_object(
+                    'Content-Type', 'application/json',
+                    'Authorization', 'Bearer ' || v_service_key
+                ),
+                body := jsonb_build_object(
+                    'user_id', v_order_owner_id,
+                    'title', 'Nueva pregunta',
+                    'body', 'Orden #' || COALESCE(v_order_number, NEW.order_id::TEXT) || ': ' || LEFT(NEW.question, 50),
+                    'data', jsonb_build_object(
+                        'type', 'quote_question',
+                        'order_id', NEW.order_id::TEXT,
+                        'quote_id', NEW.quote_id::TEXT
+                    )
+                )
+            );
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS new_quote_question_trigger ON quote_questions;
+CREATE TRIGGER new_quote_question_trigger
+    AFTER INSERT ON quote_questions
+    FOR EACH ROW
+    EXECUTE FUNCTION notify_new_quote_question();
+
+
+-- ============================================
 -- VERIFICAR CONFIGURACIÓN
 -- ============================================
 DO $$

@@ -757,9 +757,26 @@ struct OrderDetailView: View {
                 } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("\(quote.items?.count ?? 0) items")
-                                .font(.system(size: 14))
-                                .foregroundColor(AxerColors.textSecondary)
+                            HStack(spacing: 8) {
+                                Text("\(quote.items?.count ?? 0) items")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(AxerColors.textSecondary)
+
+                                // Badge de preguntas pendientes
+                                if quoteViewModel.pendingQuestionsCount > 0 {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "bubble.left.fill")
+                                            .font(.system(size: 10))
+                                        Text("\(quoteViewModel.pendingQuestionsCount)")
+                                            .font(.system(size: 11, weight: .bold))
+                                    }
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(AxerColors.error)
+                                    .cornerRadius(10)
+                                }
+                            }
 
                             Text(quoteViewModel.formatCurrency(quote.total))
                                 .font(.system(size: 20, weight: .bold))

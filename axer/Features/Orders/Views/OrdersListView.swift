@@ -575,11 +575,26 @@ struct OrderCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // 1. Numero de orden (bold) + Estado (chip)
+            // 1. Numero de orden (bold) + Estado (chip) + Badge preguntas
             HStack(alignment: .center) {
                 Text(order.orderNumber)
                     .font(.system(size: 17, weight: .bold, design: .monospaced))
                     .foregroundColor(AxerColors.textPrimary)
+
+                // Badge de preguntas pendientes
+                if let count = order.pendingQuestionsCount, count > 0 {
+                    HStack(spacing: 3) {
+                        Image(systemName: "bubble.left.fill")
+                            .font(.system(size: 9))
+                        Text("\(count)")
+                            .font(.system(size: 10, weight: .bold))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(AxerColors.error)
+                    .cornerRadius(8)
+                }
 
                 Spacer()
 

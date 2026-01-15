@@ -581,6 +581,9 @@ struct Order: Codable, Identifiable {
     var customer: Customer?
     var owner: Profile?
 
+    // Computed from view (optional)
+    var pendingQuestionsCount: Int?
+
     enum CodingKeys: String, CodingKey {
         case id
         case workshopId = "workshop_id"
@@ -610,6 +613,7 @@ struct Order: Codable, Identifiable {
         case updatedAt = "updated_at"
         case customer
         case owner
+        case pendingQuestionsCount = "pending_questions_count"
     }
 }
 

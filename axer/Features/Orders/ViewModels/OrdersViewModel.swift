@@ -79,7 +79,7 @@ final class OrdersViewModel: ObservableObject {
 
         do {
             let response: [Order] = try await supabase.client
-                .from("orders")
+                .from("orders_with_pending_questions")
                 .select("*, customer:customers(*), owner:profiles!owner_user_id(id, full_name, role, avatar_url)")
                 .eq("workshop_id", value: workshopId.uuidString)
                 .order("created_at", ascending: false)
@@ -108,7 +108,7 @@ final class OrdersViewModel: ObservableObject {
 
         do {
             let response: [Order] = try await supabase.client
-                .from("orders")
+                .from("orders_with_pending_questions")
                 .select("*, customer:customers(*), owner:profiles!owner_user_id(id, full_name, role, avatar_url)")
                 .eq("workshop_id", value: workshopId.uuidString)
                 .order("created_at", ascending: false)
@@ -809,7 +809,7 @@ final class OrdersViewModel: ObservableObject {
 
         do {
             let response: [Order] = try await supabase.client
-                .from("orders")
+                .from("orders_with_pending_questions")
                 .select("*, customer:customers(*), owner:profiles!owner_user_id(id, full_name, role, avatar_url)")
                 .eq("workshop_id", value: workshopId.uuidString)
                 .eq("public_token", value: token)
@@ -849,7 +849,7 @@ final class OrdersViewModel: ObservableObject {
 
         do {
             let response: [Order] = try await supabase.client
-                .from("orders")
+                .from("orders_with_pending_questions")
                 .select("*, customer:customers(*), owner:profiles!owner_user_id(id, full_name, role, avatar_url)")
                 .eq("workshop_id", value: workshopId.uuidString)
                 .ilike("order_number", pattern: orderNumber)
